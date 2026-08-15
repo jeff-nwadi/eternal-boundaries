@@ -1,0 +1,56 @@
+{
+  "type": "bundle",
+  "id": "bundle--cc75e89d-7fba-4bf1-bf61-468df9f24e93",
+  "objects": [
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--b21350a4-3746-4cb4-9dbb-821f8a846c82",
+      "created": "2026-06-29T00:00:00.000Z",
+      "modified": "2026-08-13T14:00:00.000Z",
+      "name": "Unidentified Zero-Click Actor Group",
+      "description": "Sophisticated threat group deploying LayerZero execution-layer nullification exploits.",
+      "threat_actor_types": ["nation-state", "crimeware"]
+    },
+    {
+      "type": "malware",
+      "spec_version": "2.1",
+      "id": "malware--1aa25841-fcf0-43b9-bb22-8dfb5a2bf4e1",
+      "created": "2026-06-29T00:00:00.000Z",
+      "modified": "2026-08-13T14:00:00.000Z",
+      "name": "God Mode Payload",
+      "description": "Exploit payload designed to bypass transaction validation checks before system entry.",
+      "is_family": false,
+      "malware_types": ["exploit-kit"]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--f9b36d02-1262-421b-8390-36a4392be344",
+      "created": "2026-06-29T00:00:00.000Z",
+      "modified": "2026-08-13T14:00:00.000Z",
+      "name": "God Mode Root Flaw (CWE-1000 Track)",
+      "description": "A validation root flaw operating at LayerZero that permits execution layer state sync manipulation."
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--4b1fde92-628d-476c-8fe1-bf001fae2be5",
+      "created": "2026-06-29T00:00:00.000Z",
+      "modified": "2026-08-13T14:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--b21350a4-3746-4cb4-9dbb-821f8a846c82",
+      "target_ref": "malware--1aa25841-fcf0-43b9-bb22-8dfb5a2bf4e1"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8ee823ef-4e02-4bf1-a83a-dfda197825cf",
+      "created": "2026-06-29T00:00:00.000Z",
+      "modified": "2026-08-13T14:00:00.000Z",
+      "relationship_type": "exploits",
+      "source_ref": "malware--1aa25841-fcf0-43b9-bb22-8dfb5a2bf4e1",
+      "target_ref": "vulnerability--f9b36d02-1262-421b-8390-36a4392be344"
+    }
+  ]
+}

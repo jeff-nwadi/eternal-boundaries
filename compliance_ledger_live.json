@@ -1,0 +1,42 @@
+{
+  "frameworks": [
+    {
+      "name": "NIST SP 800-53 (Rev. 5)",
+      "summary": {
+        "total_controls_tracked": 12,
+        "covered_count": 11,
+        "open_findings_count": 1
+      },
+      "control_families": [
+        {
+          "id": "SI",
+          "name": "System and Information Integrity",
+          "status": "Review Required",
+          "details": "Tracks LayerZero transaction interception boundaries."
+        },
+        {
+          "id": "SC",
+          "name": "System and Communications Protection",
+          "status": "Compliant",
+          "details": "Boundary protection matrices and endpoint isolation logic."
+        }
+      ]
+    },
+    {
+      "name": "SOC 2 Type II (Trust Services Criteria)",
+      "summary": {
+        "total_controls_tracked": 8,
+        "covered_count": 7,
+        "open_findings_count": 1
+      },
+      "control_families": [
+        {
+          "id": "CC7.1",
+          "name": "System Operations & Vulnerability Management",
+          "status": "Action Required",
+          "details": "Mitigation ledger for edge injection execution pathways."
+        }
+      ]
+    }
+  ]
+}

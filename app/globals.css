@@ -1,26 +1,189 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+/* Dark-only product: the class is set on <html>, but tokens resolve on :root
+   so utilities work regardless. Kept as a variant for future shadcn primitives. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens — the single source of truth for every phase.       */
+/*  Values come straight from CLAUDE.md §4 (Lime Frost palette).      */
+/* ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Frost-leaning dark neutrals */
+  --background: #0a0d10; /* app background */
+  --foreground: #e4ebf1; /* primary text, cool near-white */
+
+  --card: #11161b; /* panel */
+  --card-foreground: #e4ebf1;
+  --popover: #151c22; /* raised panel */
+  --popover-foreground: #e4ebf1;
+
+  /* Lime brand accent — primary actions, active states, boundary motif */
+  --primary: #aff33e;
+  --primary-foreground: #0a0d10; /* dark text sits on lime */
+
+  --secondary: #151c22;
+  --secondary-foreground: #e4ebf1;
+
+  --muted: #151c22;
+  --muted-foreground: #8b97a4; /* cool gray, ~4.6:1 on background */
+
+  --accent: #1c242b;
+  --accent-foreground: #e4ebf1;
+
+  /* Destructive maps to the Critical severity token */
+  --destructive: #f0465b;
+  --destructive-foreground: #0a0d10;
+
+  --border: #1c242b; /* structural hairline */
+  --border-strong: #28323b; /* emphasised divider */
+  --input: #28323b;
+  --ring: #aff33e; /* lime focus ring */
+
+  /* Severity scale — fixed, do not reassign per-component (CLAUDE.md §4) */
+  --severity-critical: #f0465b;
+  --severity-high: #ff8a3d;
+  --severity-medium: #f5c244;
+  --severity-low: #2dd4bf; /* teal, deliberately not lime */
+
+  /* Header font stack — Lucida Sans (system). Body font injected by next/font. */
+  --font-heading: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande",
+    var(--font-geist-sans), system-ui, sans-serif;
+
+  --radius: 0.75rem;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Map tokens to Tailwind's theme so utilities are generated.        */
+/* ------------------------------------------------------------------ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-critical: var(--severity-critical);
+  --color-high: var(--severity-high);
+  --color-medium: var(--severity-medium);
+  --color-low: var(--severity-low);
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-heading: var(--font-heading);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ------------------------------------------------------------------ */
+/*  Base layer                                                         */
+/* ------------------------------------------------------------------ */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  /* Headings use the Lucida stack and tighter metrics */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Lime brand selection */
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 28%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Consistent, on-brand focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------ */
+/*  Boundary line — the project's signature motif (CLAUDE.md §3.1).    */
+/*  A lime-cored hairline that fades to transparent at both ends.      */
+/* ------------------------------------------------------------------ */
+.boundary-line {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--primary) 55%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+.boundary-vertical {
+  width: 2px;
+  flex: 1 1 auto;
+  border-radius: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in oklab, var(--primary) 60%, transparent) 50%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px 0 color-mix(in oklab, var(--primary) 22%, transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll-reveal — compositor-only, respects reduced motion.         */
+/*  Elements are hidden only when motion is allowed AND JS marks them  */
+/*  pending, so content is never lost if scripting/animation is off.   */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  [data-reveal] {
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+  }
 }
