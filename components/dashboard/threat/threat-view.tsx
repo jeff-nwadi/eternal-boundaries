@@ -51,21 +51,26 @@ export function ThreatView({
     objects.find((o) => o.id === selectedId) ??
     (selectedId === PLACEHOLDER_ASSET_ID ? null : objects[0]);
 
+  if (objects.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center text-sm text-muted-foreground">
+          No indicators in the STIX sample.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-xl font-semibold text-foreground">
-          Threat Intelligence
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Indicator feed and relationship chain from the STIX sample, split
-          across the trust boundary.
-        </p>
-      </header>
+      <p className="text-sm text-muted-foreground">
+        Indicator feed and relationship chain from the STIX sample, split across
+        the trust boundary.
+      </p>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* Relationship chain across the boundary */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Relationship chain</CardTitle>
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -80,7 +85,7 @@ export function ThreatView({
             </div>
           </CardHeader>
           <CardContent className="overflow-x-auto">
-            <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-center">
+            <div className="flex flex-col items-stretch gap-4 lg:w-max lg:flex-row lg:items-center">
               {/* External / untrusted: the resolved chain */}
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                 {chain.map((step, i) => (
@@ -174,7 +179,7 @@ function ThreatNode({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "group w-full min-w-[168px] rounded-lg border bg-popover p-3 text-left transition-colors duration-150 ease-out",
+        "group w-full shrink-0 lg:w-44 rounded-lg border bg-popover p-3 text-left transition-colors duration-150 ease-out",
         selected ? "border-primary ring-1 ring-primary/40" : "border-border hover:border-border-strong"
       )}
     >
@@ -213,7 +218,7 @@ function PlaceholderAssetNode({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "group w-full min-w-[168px] rounded-lg border border-dashed bg-popover p-3 text-left transition-colors duration-150 ease-out",
+        "group w-full shrink-0 lg:w-44 rounded-lg border border-dashed bg-popover p-3 text-left transition-colors duration-150 ease-out",
         selected ? "border-primary ring-1 ring-primary/40" : "border-border-strong hover:border-primary/40"
       )}
     >

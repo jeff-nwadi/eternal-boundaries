@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { desc } from "drizzle-orm";
 
 import { requireAdmin } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { invite, user, type Invite, type User } from "@/lib/db/schema";
-import { BrandMark } from "@/components/landing/brand-mark";
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { Button } from "@/components/ui/button";
 import { CreateInviteForm } from "@/components/admin/create-invite-form";
 import { PromoteButton } from "@/components/admin/promote-button";
 
@@ -44,27 +40,11 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-          <BrandMark />
-          <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl flex-1 space-y-12 px-6 py-12">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-foreground">Admin</h1>
-          <p className="text-sm text-muted-foreground">
-            Issue invites and manage roles. Accounts can only be created from an
-            invite; auditor is granted here, never through an invite.
-          </p>
-        </div>
+    <div className="space-y-10">
+      <p className="max-w-2xl text-sm text-muted-foreground">
+        Issue invites and manage roles. Accounts can only be created from an
+        invite; auditor is granted here, never through an invite.
+      </p>
 
         {/* Create invite */}
         <section className="space-y-4">
@@ -168,7 +148,6 @@ export default async function AdminPage() {
             </table>
           </div>
         </section>
-      </main>
     </div>
   );
 }

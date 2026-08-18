@@ -5,7 +5,11 @@ import { Filter } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { VulnFinding } from "@/lib/mock-data";
-import { Badge, severityVariant } from "@/components/ui/badge";
+import {
+  StatusPill,
+  severityTone,
+  patchTone,
+} from "@/components/dashboard/status-pill";
 import {
   Table,
   TableBody,
@@ -27,7 +31,7 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
       : findings.filter((f) => f.severity.toUpperCase() === filter);
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <Filter
@@ -71,7 +75,10 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
           <TableBody>
             {visible.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center whitespace-normal text-muted-foreground"
+                >
                   No findings at this severity in the sample.
                 </TableCell>
               </TableRow>
@@ -85,41 +92,21 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
                     {f.vulnerability_name}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={severityVariant(f.severity)}>
-                      {f.severity}
-                    </Badge>
+                    <StatusPill label={f.severity} tone={severityTone(f.severity)} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {f.affected_asset}
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 text-xs",
-                        f.patch_status.toLowerCase() === "patched"
-                          ? "text-low"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "size-1.5 rounded-full",
-                          f.patch_status.toLowerCase() === "patched"
-                            ? "bg-low"
-                            : "bg-high"
-                        )}
-                        aria-hidden
-                      />
-                      {f.patch_status}
-                    </span>
+                    <StatusPill label={f.patch_status} tone={patchTone(f.patch_status)} />
                   </TableCell>
                   {/*
                     Rendered verbatim from mock_vuln_scan.json. This text is
                     UNVERIFIED per CLAUDE.md §5.3 ("Termux gateway", invented
-                    proper nouns, etc.) — it is not audited or actionable
-                    guidance and must not be presented as production-ready.
+                    proper nouns, etc.) — not audited or actionable guidance,
+                    and must not be presented as production-ready.
                   */}
-                  <TableCell className="text-pretty text-sm leading-relaxed text-muted-foreground">
+                  <TableCell className="min-w-[280px] whitespace-normal text-pretty text-sm leading-relaxed text-muted-foreground">
                     {f.remediation_guidance}
                   </TableCell>
                 </TableRow>

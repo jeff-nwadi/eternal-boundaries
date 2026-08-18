@@ -2,41 +2,36 @@ import type { Metadata } from "next";
 
 import { complianceFrameworks, type ComplianceFramework } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StatusPill, complianceTone } from "@/components/dashboard/status-pill";
 import { ExportReportButton } from "@/components/dashboard/compliance/export-report-button";
 
 export const metadata: Metadata = { title: "Compliance Mapping" };
-
-function statusVariant(status: string): "low" | "medium" | "high" | "outline" {
-  const s = status.toLowerCase();
-  if (s === "compliant") return "low";
-  if (s.includes("review")) return "medium";
-  if (s.includes("action")) return "high";
-  return "outline";
-}
 
 export default function CompliancePage() {
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-foreground">
-            Compliance Mapping
-          </h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            Control coverage as reported in the compliance ledger. Figures are
-            the ledger&apos;s own summary values — the sample has no link back to
-            the vulnerability findings, so none is shown.
-          </p>
-        </div>
+        <p className="max-w-2xl text-sm text-muted-foreground">
+          Control coverage as reported in the compliance ledger. Figures are the
+          ledger&apos;s own summary values — the sample has no link back to the
+          vulnerability findings, so none is shown.
+        </p>
         <ExportReportButton />
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {complianceFrameworks.map((framework) => (
-          <FrameworkCard key={framework.name} framework={framework} />
-        ))}
-      </div>
+      {complianceFrameworks.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            No frameworks in the compliance ledger sample.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {complianceFrameworks.map((framework) => (
+            <FrameworkCard key={framework.name} framework={framework} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -98,9 +93,11 @@ function FrameworkCard({ framework }: { framework: ComplianceFramework }) {
                     {family.details}
                   </p>
                 </div>
-                <Badge variant={statusVariant(family.status)} className="shrink-0">
-                  {family.status}
-                </Badge>
+                <StatusPill
+                  label={family.status}
+                  tone={complianceTone(family.status)}
+                  className="shrink-0"
+                />
               </li>
             ))}
           </ul>

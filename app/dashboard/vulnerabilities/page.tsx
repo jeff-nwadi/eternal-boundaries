@@ -4,15 +4,9 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { vulnSummary, vulnFindings } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { VulnTable } from "@/components/dashboard/vulnerabilities/vuln-table";
+import { SeverityChart } from "@/components/dashboard/vulnerabilities/severity-chart";
 
 export const metadata: Metadata = { title: "Vulnerabilities" };
-
-const SEVERITIES = [
-  { key: "CRITICAL", label: "Critical", color: "bg-critical", text: "text-critical" },
-  { key: "HIGH", label: "High", color: "bg-high", text: "text-high" },
-  { key: "MEDIUM", label: "Medium", color: "bg-medium", text: "text-medium" },
-  { key: "LOW", label: "Low", color: "bg-low", text: "text-low" },
-] as const;
 
 export default function VulnerabilitiesPage() {
   const counts: Record<string, number> = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
@@ -20,23 +14,28 @@ export default function VulnerabilitiesPage() {
     const key = f.severity.toUpperCase();
     if (key in counts) counts[key] += 1;
   }
+
+  const chartData = [
+    { label: "Critical", count: counts.CRITICAL, color: "var(--severity-critical)" },
+    { label: "High", count: counts.HIGH, color: "var(--severity-high)" },
+    { label: "Medium", count: counts.MEDIUM, color: "var(--severity-medium)" },
+    { label: "Low", count: counts.LOW, color: "var(--severity-low)" },
+  ];
+
   const total = vulnSummary.total_vulnerabilities;
   const trendDown = vulnSummary.trend.toLowerCase() === "decreasing";
   const TrendIcon = trendDown ? TrendingDown : TrendingUp;
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-xl font-semibold text-foreground">Vulnerabilities</h1>
-        <p className="text-sm text-muted-foreground">
-          Scan results from the sample, filterable by severity.
-        </p>
-      </header>
+      <p className="text-sm text-muted-foreground">
+        Scan results from the sample, filterable by severity.
+      </p>
 
       {/* Executive summary rollup */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Card>
-          <CardContent className="p-4 pt-4">
+          <CardContent className="px-4 py-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Total
@@ -59,9 +58,9 @@ export default function VulnerabilitiesPage() {
         <StatCard label="Remediated" value={vulnSummary.remediated_count} accent="text-low" />
       </div>
 
-      {/* Severity distribution */}
+      {/* Severity distribution (recharts) */}
       <Card>
-        <CardContent className="space-y-3 p-5">
+        <CardContent className="space-y-3 px-5 py-5">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-foreground">
               Severity distribution
@@ -70,26 +69,7 @@ export default function VulnerabilitiesPage() {
               {total} findings
             </span>
           </div>
-          <div className="space-y-2">
-            {SEVERITIES.map((sev) => {
-              const count = counts[sev.key];
-              const pct = total > 0 ? (count / total) * 100 : 0;
-              return (
-                <div key={sev.key} className="flex items-center gap-3">
-                  <span className={`w-16 text-xs ${sev.text}`}>{sev.label}</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                    <div
-                      className={`h-full rounded-full ${sev.color}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <span className="w-6 text-right text-xs tabular-nums text-muted-foreground">
-                    {count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <SeverityChart data={chartData} />
         </CardContent>
       </Card>
 
@@ -110,7 +90,7 @@ function StatCard({
 }) {
   return (
     <Card>
-      <CardContent className="p-4 pt-4">
+      <CardContent className="px-4 py-4">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </span>
