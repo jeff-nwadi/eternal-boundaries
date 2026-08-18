@@ -112,6 +112,35 @@ File: `ETB_LayerZero_Framework/compliance_ledger_live.json` (received)
 - **SOC 2 Type II**, criteria in scope: `CC6` (Logical and Physical Access Controls) and `CC7` (System Operations — monitoring, incident detection).
 - CVE → control mapping logic is currently **hardcoded per mock finding** and not derived from a real rule (e.g. CWE category → control family). This is a known gap — do not present compliance percentages as authoritative until real mapping logic exists. Flag this prominently if asked to build the PDF export feature.
 
+## 6a. Auth & roles (Phase 2)
+
+> Reconstructed from the Phase 2 kickoff instructions — this section was referenced but missing from the file when Phase 2 began. The two rules below are non-negotiable.
+
+- **Roles:** `analyst`, `auditor`, `admin`.
+- **No public signup.** Account creation happens only via a valid, unexpired **invite token**. There is no open sign-up endpoint.
+- **Rule 1 — deny by default:** the account-creation path (invite redemption) must **never** result in an `auditor` role. If an invite record carries a role field, an `auditor` value is rejected/ignored at that layer. `auditor` promotion is a **separate, explicit admin action**, never settable at invite-creation or redemption time. (Enforced at schema level: the invite role type does not include `auditor`; and clamped again in redemption code.)
+- **Rule 2 — admin attribution:** the `invites` table must record the issuing `admin` user ID (**not-null foreign key** to `user.id`), the invite creation timestamp, and redemption status/timestamp — enforced at the **schema level**, not by convention.
+- **Future option, NOT current scope:** a domain-restricted signup model (auto-allow signups from a verified corporate email domain) has been discussed as a possible future addition. Do not build it in this phase.
+
+### 6a.1 First-admin bootstrap — the one sanctioned exception
+
+The invite system is a closed loop: accounts come only from invites, and invites can only be issued by an existing admin (schema-enforced not-null FK, `invited_by_admin_id → user.id`). A fresh database therefore has no way to create its first admin from inside the app. The **only** sanctioned exception is a manual seed script, `scripts/seed-admins.ts`, run once by an operator:
+
+```
+npm run db:seed-admins -- first.admin@company.com second.admin@company.com
+# or set ADMIN_EMAIL_1 / ADMIN_EMAIL_2 in .env.local and run: npm run db:seed-admins
+```
+
+It creates the first two admin accounts, prints a generated temporary password for each **once** (never stored in plaintext — only BetterAuth's hash is persisted), and exits.
+
+**Why this is safe and does not weaken "no account creation without an invite":**
+- **Not an endpoint.** It is a local CLI script, never wired to any route or handler, so it cannot be triggered by an HTTP request in any environment.
+- **One-time.** It checks for an existing admin first and refuses to run if any exists — it can only ever succeed on a fresh database, and never re-seed one that is already set up.
+- **Dev/setup only.** It refuses to run under `NODE_ENV=production`.
+- **No standing privilege.** After bootstrap, all further accounts (including additional admins) go through the normal admin-issued invite flow. The temporary passwords are meant to be changed on first sign-in.
+
+Do not add any HTTP-exposed variant of this. Adding admins after bootstrap is an invite-flow operation, not a script.
+
 ## 7. Tech stack
 
 - **Framework:** Next.js (App Router). Server components for static/summary views where possible; client components for anything interactive (filters, tabs, the relationship-chain drill-down).

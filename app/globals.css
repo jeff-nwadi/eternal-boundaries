@@ -49,7 +49,7 @@
 
   /* Header font stack — Lucida Sans (system). Body font injected by next/font. */
   --font-heading: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande",
-    var(--font-geist-sans), system-ui, sans-serif;
+    var(--font-inter), system-ui, sans-serif;
 
   --radius: 0.75rem;
 }
@@ -84,7 +84,7 @@
   --color-medium: var(--severity-medium);
   --color-low: var(--severity-low);
 
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-heading: var(--font-heading);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -185,5 +185,108 @@
   [data-reveal="shown"] {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero visual — threat probes stopped at the boundary line.          */
+/*  Transform/opacity only; paused off-screen; disabled for reduced    */
+/*  motion (animations live inside the media query below).             */
+/* ------------------------------------------------------------------ */
+.hv-pulse,
+.hv-impact {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hv-active="true"] .hv-scan {
+    animation: hv-scan 3.6s linear infinite;
+  }
+  [data-hv-active="true"] .hv-pulse {
+    animation: hv-pulse 2.8s ease-in-out infinite;
+  }
+  [data-hv-active="true"] .hv-pulse-soft {
+    animation: hv-pulse-soft 4s ease-in-out infinite;
+  }
+  [data-hv-active="true"] .hv-attack {
+    animation: hv-attack 2.8s ease-in infinite;
+  }
+  [data-hv-active="true"] .hv-impact {
+    animation: hv-impact 2.8s ease-out infinite;
+  }
+}
+
+@keyframes hv-scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(316px);
+    opacity: 0;
+  }
+}
+
+@keyframes hv-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.9;
+  }
+}
+
+@keyframes hv-pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes hv-attack {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(var(--hv-dist, 100px));
+    opacity: 0;
+  }
+}
+
+@keyframes hv-impact {
+  0%,
+  50% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  68% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
   }
 }

@@ -30,7 +30,11 @@ export function Reveal({
   children,
   ...props
 }: RevealProps) {
-  const Comp = (as ?? "div") as React.ElementType;
+  // Loosely typed on purpose: keeps the polymorphic `as` spread type-checking
+  // even when a global JSX augmentation (e.g. @react-three/fiber) widens
+  // JSX.IntrinsicElements and would otherwise collapse these props to `never`.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Comp: any = as ?? "div";
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [shown, setShown] = React.useState(false);
 

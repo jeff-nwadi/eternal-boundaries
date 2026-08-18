@@ -7,6 +7,7 @@ const NAV = [
   { label: "Features", href: "#platform" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Standards", href: "#standards" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export function SiteHeader() {

@@ -1,29 +1,45 @@
 import Link from "next/link";
-import { Activity, ArrowRight, ScrollText, ShieldAlert } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { SiteHeader } from "@/components/landing/site-header";
 import { SiteFooter } from "@/components/landing/site-footer";
-import { BoundaryShowcase } from "@/components/landing/boundary-showcase";
+import { HeroVisual } from "@/components/landing/hero-visual";
+import { FeatureSection } from "@/components/landing/feature-section";
 import HowItWorks from "@/components/ui/how-it-works";
-import { FeatureCard, type Feature } from "@/components/landing/feature-card";
+import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
 
-const FEATURES: Feature[] = [
+const FAQ = [
   {
-    icon: Activity,
-    title: "Threat Intelligence",
-    body: "Read a live STIX 2.1 indicator feed and walk any indicator's full relationship chain — actor to malware to attack pattern to the asset it targets.",
+    id: 1,
+    question: "What is Eternal Boundaries?",
+    answer:
+      "One dashboard that brings your threat feed, vulnerabilities, and compliance status together so your team can act on them.",
   },
   {
-    icon: ShieldAlert,
-    title: "Vulnerabilities",
-    body: "Every finding lands in a filterable table with severity, CVSS, and status — each one carrying human-readable remediation guidance, not just a raw scan dump.",
+    id: 2,
+    question: "Do I need to replace my current tools?",
+    answer:
+      "No. It reads the data your existing tools produce and gives you one clear place to work from.",
   },
   {
-    icon: ScrollText,
-    title: "Compliance Mapping",
-    body: "Roll findings up against NIST SP 800-53 and SOC 2 control families to see open-versus-covered coverage per control, ready to export for review.",
+    id: 3,
+    question: "How do the fix-it steps work?",
+    answer:
+      "Each vulnerability comes with plain-language steps to fix it — not just a raw scan result.",
+  },
+  {
+    id: 4,
+    question: "Which compliance standards do you cover?",
+    answer:
+      "Findings map to NIST 800-53 and SOC 2 control families, so coverage is easy to trace.",
+  },
+  {
+    id: 5,
+    question: "Who is it built for?",
+    answer:
+      "SOC analysts, CISOs, and compliance auditors who need one accountable view of what's happening.",
   },
 ];
 
@@ -43,14 +59,6 @@ export default function Home() {
         <section className="mx-auto w-full max-w-6xl px-6 pb-16 pt-16 sm:pt-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
             <div className="flex flex-col items-start gap-6">
-              <Reveal
-                as="span"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
-              >
-                <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
-                Cyber threat intelligence &amp; compliance
-              </Reveal>
-
               <Reveal
                 as="h1"
                 delay={60}
@@ -81,7 +89,7 @@ export default function Home() {
             </div>
 
             <Reveal delay={140}>
-              <BoundaryShowcase />
+              <HeroVisual />
             </Reveal>
           </div>
         </section>
@@ -90,29 +98,8 @@ export default function Home() {
           <div className="boundary-line" />
         </div>
 
-        {/* Platform / features */}
-        <section id="platform" className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20">
-          <Reveal className="flex max-w-2xl flex-col gap-3">
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
-              Features
-            </span>
-            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
-              Three views. One accountable picture.
-            </h2>
-            <p className="text-pretty text-base leading-relaxed text-muted-foreground">
-              No sprawling SIEM console — the dashboard stays deliberately narrow
-              so the signal your teams act on stays legible.
-            </p>
-          </Reveal>
-
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {FEATURES.map((feature, i) => (
-              <Reveal key={feature.title} delay={i * 90} className="h-full">
-                <FeatureCard feature={feature} className="h-full" />
-              </Reveal>
-            ))}
-          </div>
-        </section>
+        {/* Features */}
+        <FeatureSection />
 
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="boundary-line" />
@@ -166,21 +153,57 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Closing CTA */}
-        <section className="mx-auto w-full max-w-6xl px-6 py-24">
-          <Reveal className="flex flex-col items-center gap-6 text-center">
-            <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
-              Bring your threat and compliance signal inside the boundary.
+        {/* FAQ */}
+        <section
+          id="faq"
+          className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
+        >
+          <Reveal className="flex max-w-2xl flex-col gap-3">
+            <span className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
+              FAQ
+            </span>
+            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
+              Questions, answered.
             </h2>
-            <p className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground">
-              Sign in to the dashboard, or start a new workspace for your team.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/login">
-                Get started
-                <ArrowRight strokeWidth={1.75} />
-              </Link>
-            </Button>
+          </Reveal>
+
+          <Reveal delay={80} className="mt-8">
+            <FaqAccordion
+              data={FAQ}
+              timestamp=""
+              className="max-w-2xl p-0"
+              answerClassName="bg-card border border-border text-foreground"
+            />
+          </Reveal>
+        </section>
+
+        {/* Closing CTA */}
+        <section className="mx-auto w-full max-w-6xl px-6 py-20">
+          <Reveal className="relative overflow-hidden rounded-3xl border border-border bg-card px-6 py-16 sm:px-10 sm:py-20">
+            {/* Subtle monitoring-surface grid */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(var(--color-border-strong) 1px, transparent 1px)",
+                backgroundSize: "100% 32px",
+              }}
+            />
+            <div className="relative z-10 flex flex-col items-center gap-6 text-center">
+              <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
+                Bring your threat and compliance signal inside the boundary.
+              </h2>
+              <p className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground">
+                Sign in to the dashboard, or start a new workspace for your team.
+              </p>
+              <Button asChild size="lg">
+                <Link href="/login">
+                  Get started
+                  <ArrowRight strokeWidth={1.75} />
+                </Link>
+              </Button>
+            </div>
           </Reveal>
         </section>
       </main>
