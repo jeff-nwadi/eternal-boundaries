@@ -5,6 +5,16 @@ import { nextCookies } from "better-auth/next-js";
 import { db } from "@/lib/db";
 import { schema } from "@/lib/db/schema";
 
+function getAuthBaseUrl() {
+  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  return "http://localhost:3000";
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
 
@@ -13,7 +23,17 @@ export const auth = betterAuth({
   secret:
     process.env.BETTER_AUTH_SECRET ||
     "development-placeholder-secret-set-a-real-one-in-env",
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: getAuthBaseUrl(),
+  trustedOrigins: [
+    "https://eternal-boundaries-hnri.vercel.app",
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : undefined,
+  ].filter(Boolean) as string[],
+
 
   emailAndPassword: {
     enabled: true,
