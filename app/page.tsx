@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/landing/site-footer";
 import { HeroVisual } from "@/components/landing/hero-visual";
 import { FeatureSection } from "@/components/landing/feature-section";
 import HowItWorks from "@/components/ui/how-it-works";
+import { AsciiContourBackground } from "@/components/landing/ascii-contour-background";
 import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
 
 const FAQ = [
@@ -180,14 +181,15 @@ export default function Home() {
         {/* Closing CTA */}
         <section className="mx-auto w-full max-w-6xl px-6 py-20">
           <Reveal className="relative overflow-hidden rounded-3xl border border-border bg-card px-6 py-16 sm:px-10 sm:py-20">
-            {/* Subtle monitoring-surface grid */}
+            {/* Animated Canvas2D "contour" ASCII effect (silk field). */}
+            <AsciiContourBackground />
+            {/* Radial scrim keeps the heading + CTA crisp over the effect. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-[0.04]"
+              className="pointer-events-none absolute inset-0"
               style={{
-                backgroundImage:
-                  "linear-gradient(var(--color-border-strong) 1px, transparent 1px)",
-                backgroundSize: "100% 32px",
+                background:
+                  "radial-gradient(62% 62% at 50% 50%, color-mix(in oklab, var(--card) 80%, transparent) 0%, transparent 100%)",
               }}
             />
             <div className="relative z-10 flex flex-col items-center gap-6 text-center">
