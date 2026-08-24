@@ -12,17 +12,13 @@ export const metadata: Metadata = { title: "Threat Intelligence" };
 
 export default function ThreatIntelligencePage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header Toolbar */}
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <ShieldAlert className="size-6 text-primary" />
             Threat Intelligence Console
           </h1>
-          <p className="text-xs text-muted-foreground">
-            Real-time STIX 2.1 threat feed, attack vector graphs, &amp; threat indicators
-          </p>
         </div>
 
         {/* Action Controls */}
