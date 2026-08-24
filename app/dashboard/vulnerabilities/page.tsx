@@ -4,7 +4,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { vulnSummary, vulnFindings } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { VulnTable } from "@/components/dashboard/vulnerabilities/vuln-table";
-import { SeverityChart } from "@/components/dashboard/vulnerabilities/severity-chart";
+import { SeverityChart, VulnStatusBySeverityChart } from "@/components/dashboard/vulnerabilities/severity-chart";
 
 export const metadata: Metadata = { title: "Vulnerabilities" };
 
@@ -29,7 +29,7 @@ export default function VulnerabilitiesPage() {
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground">
-        Scan results from the sample, filterable by severity.
+        Weak spots in your systems, ranked by severity. Sample data.
       </p>
 
       {/* Executive summary rollup */}
@@ -55,23 +55,27 @@ export default function VulnerabilitiesPage() {
         <StatCard label="Critical" value={vulnSummary.critical_count} accent="text-critical" />
         <StatCard label="High" value={vulnSummary.high_count} accent="text-high" />
         <StatCard label="Medium" value={vulnSummary.medium_count} accent="text-medium" />
-        <StatCard label="Remediated" value={vulnSummary.remediated_count} accent="text-low" />
+        <StatCard label="Fixed" value={vulnSummary.remediated_count} accent="text-low" />
       </div>
 
-      {/* Severity distribution (recharts) */}
-      <Card>
-        <CardContent className="space-y-3 px-5 py-5">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-foreground">
-              Severity distribution
-            </span>
-            <span className="text-xs tabular-nums text-muted-foreground">
-              {total} findings
-            </span>
-          </div>
-          <SeverityChart data={chartData} />
-        </CardContent>
-      </Card>
+      {/* Charts section: Distribution & Open vs. Patched Breakdown */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="flex flex-col justify-between">
+          <CardContent className="space-y-3 px-5 py-5">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-foreground">
+                By severity
+              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {total} findings
+              </span>
+            </div>
+            <SeverityChart data={chartData} />
+          </CardContent>
+        </Card>
+
+        <VulnStatusBySeverityChart findings={vulnFindings} />
+      </div>
 
       {/* Findings table */}
       <VulnTable findings={vulnFindings} />

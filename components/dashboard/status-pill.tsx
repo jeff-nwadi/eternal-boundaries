@@ -11,7 +11,7 @@ const toneClass: Record<Tone, string> = {
   high: "border-high/30 bg-high/10 text-high",
   medium: "border-medium/30 bg-medium/10 text-medium",
   low: "border-low/30 bg-low/10 text-low",
-  positive: "border-primary/30 bg-primary/10 text-primary",
+  positive: "border-foreground/20 bg-muted text-foreground font-medium",
   neutral: "border-border bg-secondary text-muted-foreground",
 };
 

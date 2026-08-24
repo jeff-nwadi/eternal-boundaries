@@ -16,7 +16,7 @@ export function ExportReportButton() {
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <Button variant="outline" size="sm" onClick={() => setNoted(true)}>
+      <Button variant="default" size="sm" onClick={() => setNoted(true)}>
         <FileDown strokeWidth={1.75} />
         Export report
       </Button>

@@ -27,15 +27,24 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { eq } from "drizzle-orm";
 
 import { db } from "../lib/db";
-import { schema, user } from "../lib/db/schema";
+import { schema, tenant, user } from "../lib/db/schema";
+import { MASTER_TENANT_ID, MASTER_TENANT_NAME } from "../lib/tenancy";
 
 // CLI-only BetterAuth instance — no nextCookies plugin, so it works outside a
 // request context. Account creation here is in-process and never touches the
 // HTTP sign-up endpoint (which is blocked anyway).
+//
+// tenantId must be a declared additionalField (input: true) so the signup body
+// can set the NOT NULL tenant column at insert time (CLAUDE.md §6b).
 const cliAuth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   secret: process.env.BETTER_AUTH_SECRET,
   emailAndPassword: { enabled: true, minPasswordLength: 8 },
+  user: {
+    additionalFields: {
+      tenantId: { type: "string", required: true, input: true },
+    },
+  },
 });
 
 function generatePassword(): string {
@@ -92,12 +101,19 @@ async function main() {
     );
   }
 
+  // Ensure the founders' master tenant exists (§6b). Idempotent.
+  await db
+    .insert(tenant)
+    .values({ id: MASTER_TENANT_ID, name: MASTER_TENANT_NAME, isMaster: true })
+    .onConflictDoNothing();
+
   const created: { email: string; password: string }[] = [];
   for (const email of [email1, email2]) {
     const password = generatePassword();
     try {
       const res = await cliAuth.api.signUpEmail({
-        body: { email, password, name: email.split("@")[0] },
+        // Both founders belong to the master tenant.
+        body: { email, password, name: email.split("@")[0], tenantId: MASTER_TENANT_ID },
       });
       await db.update(user).set({ role: "admin" }).where(eq(user.id, res.user.id));
       created.push({ email, password });

@@ -19,10 +19,10 @@ const FEATURES = [
     description: "See incoming threats as they arrive, all in one live feed.",
   },
   {
-    title: "Threat connections",
+    title: "See how an attack connects",
     icon: Waypoints,
     description:
-      "Click any threat to see how the attacker, the malware, and the target link up.",
+      "Click any threat to see how the attacker, their tools, and the target link up.",
   },
   {
     title: "Vulnerability list",
@@ -35,10 +35,10 @@ const FEATURES = [
     description: "Each issue comes with simple, plain-language steps to fix it.",
   },
   {
-    title: "Compliance tracking",
+    title: "Audit readiness",
     icon: ClipboardCheck,
     description:
-      "See how your security controls line up with the standards auditors check.",
+      "See how you measure up against the checklists auditors use, like NIST and SOC 2.",
   },
   {
     title: "Shareable reports",

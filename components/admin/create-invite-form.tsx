@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { createInvite } from "@/app/actions/invites";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,7 @@ const inputClass =
   "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30";
 
 export function CreateInviteForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   // Note: no `auditor` option — invites can only grant analyst or admin.
   const [role, setRole] = useState<"analyst" | "admin">("analyst");
@@ -24,7 +27,13 @@ export function CreateInviteForm() {
     const res = await createInvite({ email, role });
     setLoading(false);
     setResult(res);
-    if ("inviteUrl" in res) setEmail("");
+    if ("inviteUrl" in res) {
+      toast.success(`Invite created for ${email}.`);
+      setEmail("");
+      router.refresh();
+    } else {
+      toast.error(res.error);
+    }
   }
 
   return (

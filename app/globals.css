@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 /* Dark-only product: the class is set on <html>, but tokens resolve on :root
    so utilities work regardless. Kept as a variant for future shadcn primitives. */
@@ -10,58 +11,65 @@
 /*  Values come straight from CLAUDE.md §4 (Lime Frost palette).      */
 /* ------------------------------------------------------------------ */
 :root {
-  /* Frost-leaning dark neutrals */
-  --background: #0a0d10; /* app background */
-  --foreground: #e4ebf1; /* primary text, cool near-white */
+  /* Frost-leaning dark neutrals (CLAUDE.md §4) */
+  --background: #0a0d10;
+  --foreground: #f0f4f8;
 
-  --card: #11161b; /* panel */
-  --card-foreground: #e4ebf1;
-  --popover: #151c22; /* raised panel */
-  --popover-foreground: #e4ebf1;
+  --card: #11161b;
+  --card-foreground: #f0f4f8;
+  --popover: #151c22;
+  --popover-foreground: #f0f4f8;
 
   /* Lime brand accent — primary actions, active states, boundary motif */
   --primary: #aff33e;
-  --primary-foreground: #0a0d10; /* dark text sits on lime */
+  --primary-foreground: #0a0d10;
 
-  --secondary: #151c22;
-  --secondary-foreground: #e4ebf1;
+  --secondary: #161e26;
+  --secondary-foreground: #f0f4f8;
 
-  --muted: #151c22;
-  --muted-foreground: #8b97a4; /* cool gray, ~4.6:1 on background */
+  --muted: #161e26;
+  --muted-foreground: #8a99a8;
 
-  --accent: #1c242b;
-  --accent-foreground: #e4ebf1;
+  --accent: #1c2630;
+  --accent-foreground: #aff33e;
 
-  /* Destructive maps to the Critical severity token */
+  /* Destructive maps to Critical severity token */
   --destructive: #f0465b;
   --destructive-foreground: #0a0d10;
 
-  --border: #1c242b; /* structural hairline */
-  --border-strong: #28323b; /* emphasised divider */
-  --input: #28323b;
-  --ring: #aff33e; /* lime focus ring */
+  --border: #1c242b;
+  --border-strong: #28323b;
+  --input: #1c242b;
+  --ring: #aff33e;
 
-  /* Severity scale — fixed, do not reassign per-component (CLAUDE.md §4) */
+  /* Severity scale — fixed (CLAUDE.md §4) */
   --severity-critical: #f0465b;
   --severity-high: #ff8a3d;
   --severity-medium: #f5c244;
-  --severity-low: #2dd4bf; /* teal, deliberately not lime */
+  --severity-low: #2dd4bf;
 
-  /* Header font stack — Lucida Sans (system). Body font injected by next/font. */
-  --font-heading: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande",
-    var(--font-inter), system-ui, sans-serif;
+  /* Header font stack — Bricolage Grotesque. Body font — Plus Jakarta Sans. */
+  --font-heading: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta), system-ui, sans-serif;
 
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 
-  /* Sidebar — dark-adapted to the Lime Frost palette (came in as light HSL). */
-  --sidebar: #0c1014;
-  --sidebar-foreground: #e4ebf1;
+  /* Sidebar — Lime Frost palette */
+  --sidebar: #0d1117;
+  --sidebar-foreground: #f0f4f8;
   --sidebar-primary: #aff33e;
   --sidebar-primary-foreground: #0a0d10;
-  --sidebar-accent: #1c242b;
-  --sidebar-accent-foreground: #e4ebf1;
+  --sidebar-accent: #161e26;
+  --sidebar-accent-foreground: #aff33e;
   --sidebar-border: #1c242b;
   --sidebar-ring: #aff33e;
+
+  /* Chart palette — matching severity & brand */
+  --chart-1: #f0465b;
+  --chart-2: #ff8a3d;
+  --chart-3: #f5c244;
+  --chart-4: #2dd4bf;
+  --chart-5: #aff33e;
 }
 
 /* ------------------------------------------------------------------ */
@@ -94,8 +102,8 @@
   --color-medium: var(--severity-medium);
   --color-low: var(--severity-low);
 
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-heading: var(--font-heading);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-sans);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -109,6 +117,14 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 /* ------------------------------------------------------------------ */
@@ -117,24 +133,30 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    @apply border-border outline-ring/50;
   }
 
   html {
     color-scheme: dark;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    @apply font-sans;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    @apply bg-background text-foreground;
   }
 
-  /* Headings use the Lucida stack and tighter metrics */
+  /* Headings use Bricolage Grotesque and tighter metrics */
   h1,
   h2,
-  h3 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
     font-weight: 600;
     line-height: 1.08;
@@ -154,6 +176,17 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scrollbar Hiding Utility                                          */
+/* ------------------------------------------------------------------ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ------------------------------------------------------------------ */
@@ -310,12 +343,51 @@
 }
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --background: #0a0d10;
+  --foreground: #f0f4f8;
+
+  --card: #11161b;
+  --card-foreground: #f0f4f8;
+  --popover: #151c22;
+  --popover-foreground: #f0f4f8;
+
+  --primary: #aff33e;
+  --primary-foreground: #0a0d10;
+
+  --secondary: #161e26;
+  --secondary-foreground: #f0f4f8;
+
+  --muted: #161e26;
+  --muted-foreground: #8a99a8;
+
+  --accent: #1c2630;
+  --accent-foreground: #aff33e;
+
+  --destructive: #f0465b;
+  --destructive-foreground: #0a0d10;
+
+  --border: #1c242b;
+  --border-strong: #28323b;
+  --input: #1c242b;
+  --ring: #aff33e;
+
+  --severity-critical: #f0465b;
+  --severity-high: #ff8a3d;
+  --severity-medium: #f5c244;
+  --severity-low: #2dd4bf;
+
+  --sidebar: #0d1117;
+  --sidebar-foreground: #f0f4f8;
+  --sidebar-primary: #aff33e;
+  --sidebar-primary-foreground: #0a0d10;
+  --sidebar-accent: #161e26;
+  --sidebar-accent-foreground: #aff33e;
+  --sidebar-border: #1c242b;
+  --sidebar-ring: #aff33e;
+
+  --chart-1: #f0465b;
+  --chart-2: #ff8a3d;
+  --chart-3: #f5c244;
+  --chart-4: #2dd4bf;
+  --chart-5: #aff33e;
 }

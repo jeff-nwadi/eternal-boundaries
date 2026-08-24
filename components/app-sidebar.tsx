@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  LayoutDashboard,
   Radar,
   ShieldAlert,
   ClipboardCheck,
@@ -33,9 +34,10 @@ import {
 
 type NavItem = { title: string; url: string; icon: LucideIcon };
 
-// Primary nav → the three locked views (CLAUDE.md §3).
+// Primary nav → Overview + the three detail views (CLAUDE.md §3).
 const NAV: NavItem[] = [
-  { title: "Threat Intelligence", url: "/dashboard", icon: Radar },
+  { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Threat Intelligence", url: "/dashboard/threat", icon: Radar },
   { title: "Vulnerabilities", url: "/dashboard/vulnerabilities", icon: ShieldAlert },
   { title: "Compliance", url: "/dashboard/compliance", icon: ClipboardCheck },
 ];

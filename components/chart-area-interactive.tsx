@@ -173,7 +173,7 @@ export function ChartAreaInteractive() {
         <CardTitle>Activity trend</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Illustrative — sample data, not a live feed
+            Sample data, not a live feed
           </span>
           <span className="@[540px]/card:hidden">Sample data</span>
         </CardDescription>

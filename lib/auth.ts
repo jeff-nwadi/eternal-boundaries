@@ -56,6 +56,17 @@ export const auth = betterAuth({
         // only ever be analyst or admin there — see actions/invites.ts).
         input: false,
       },
+      // Tenant isolation (§6b). `input: true` so the server-side redemption
+      // action can set it at account creation (satisfying the NOT NULL column
+      // atomically). This is safe ONLY because the public HTTP /sign-up
+      // endpoint is blocked (app/api/auth/[...all]/route.ts): the sole caller
+      // is redeemInvite, which sources tenantId from the invite row — never
+      // from redeemer input.
+      tenantId: {
+        type: "string",
+        required: true,
+        input: true,
+      },
     },
   },
 

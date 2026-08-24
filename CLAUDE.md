@@ -63,7 +63,22 @@ Valid STIX 2.1 bundle structurally (`type`, `id`, `spec_version`, `created`/`mod
 - `POST http://localhost:8080` — send raw alert JSON; backend converts to a valid STIX 2.1 package and updates graph linkages.
 - Live file: `ETB_LayerZero_Framework/stix_stream_live.json`
 - Mock/review file: `ETB_LayerZero_Framework/stix_stream_sample.json` (received — see §5.1)
-- ⚠️ `localhost:8080` only resolves on whichever machine is running the backend engine. This will not work from a different machine or once the app is deployed. Confirm with the backend owner how this gets reached in practice (tunnel, shared network, hosted URL) before building the integration around it.
+- ⚠️ `localhost:8080` only resolves on whichever machine is running the backend engine.
+- **CONFIRMED (2026-08-22):** a `GET /api/threats/live` variant exists but is test-only, used by the backend owner to verify STIX payload structure locally. **Production direction remains push-based POST** as originally specified — don't build a pull/polling loop for the main threat feed.
+- **Reachability — CONFIRMED, tunnel now live:** backend owner has exposed a public tunnel at `https://eternal-boundaries-419.loca.lt`, claimed to route all engine endpoints (health, threat stream, admin invite, compliance metrics). Per backend owner, every route requires two headers or returns 401:
+  - `X-Tenant-Id`
+  - `X-ETBV-License-Key`
+  - Test/staging values received: `X-Tenant-Id: tenant-stage-941a`, `X-ETBV-License-Key: etbv_live_tst_6f2e8c1b9a3d4f5e6b7c8d9e`. Treat as staging-only; do not hardcode in source, load from env, and confirm with backend owner before assuming these work in any deployed environment.
+  - **Not yet independently verified.** Automated fetch attempts against this tunnel from outside tooling are blocked (robots-disallowed response) — this must be tested manually (curl/Postman/actual app) before being trusted as working.
+
+- **⚠️ NEW tunnel URL received (2026-08-23), unverified, do not treat as replacing the above without confirming:** `https://cent-plots-threats-tender.trycloudflare.com` — a Cloudflare Tunnel (different provider than the `loca.lt` one above, no explanation given for the switch). Backend owner asked to wire this into the frontend directly.
+  - **Unconfirmed whether the `X-Tenant-Id` / `X-ETBV-License-Key` headers still apply to this endpoint** — do not assume; confirm explicitly before building against it.
+  - Same as the `loca.lt` tunnel: not independently verified from outside tooling. Test manually before trusting.
+  - Do not remove any "sample data" UI disclaimers on the basis of this tunnel going live. Disclaimer removal is gated on the still-open items in §8 (CWE-1000 terminology, confirmation that the CVE-2026-12345 fix has actually propagated to the live endpoint), not on connectivity alone.
+
+### 5.2a Admin/invite endpoints on the backend — CONFIRMED unrelated to app auth
+- Backend owner has separate `POST /api/admin/invite` and `POST /api/auth/register` routes on his engine. **Confirmed (2026-08-22): these are standalone management hooks for provisioning admin access to the ETBV filtering engine itself — not connected to this app's user accounts in any way.**
+- **Do not wire the app's invite/register UI to these endpoints.** Our own BetterAuth + Neon stack (§6a) remains the sole source of truth for app user accounts, roles, and the deny-by-default/admin-attribution rules already built. This was an important point to nail down since the endpoint shapes looked similar enough to cause confusion.
 
 ### 5.3 Vulnerability scan module — received shape
 
@@ -82,29 +97,106 @@ File: `ETB_LayerZero_Framework/mock_vuln_scan.json` (received)
 - `remediation_guidance` text is dense with proper-noun-sounding phrases ("LayerZero transaction execution bypass vectors," "Termux gateway," "webhook remediation framework," "boundary protection matrices") that don't read as concrete, actionable steps. Compare to what real remediation guidance looks like (e.g. "upgrade package X to version Y," "close port Z," "rotate credential"). **"Termux gateway" in particular does not belong in enterprise infrastructure guidance — Termux is an Android terminal app.** This needs a real explanation before it goes in front of a client.
 - Only 3 findings total in this sample — too small to validate the severity-distribution chart or filtering UI meaningfully; ask for a larger sample once the content issues above are resolved.
 
-### 5.4 Compliance ledger — received shape
+### 5.4 Compliance ledger — UPDATED (2026-08-22): live endpoint now includes real per-finding linking
 
-```
+Original static file (`compliance_ledger_live.json`) had no link between individual CVEs and control counts (see original flags below, still valid for that file). **Backend owner has since shipped a new endpoint that appears to resolve this:**
+
+`GET /api/compliance/metrics` (via the tunnel, see §5.2) — sample response received:
+```json
 {
-  "frameworks": [
+  "status": "success",
+  "timestamp": "2026-08-22T07:05:00Z",
+  "summary": { "total_cves_evaluated": 142, "compliant_controls": 12, "non_compliant_controls": 3 },
+  "findings": [
     {
-      "name", "summary": { "total_controls_tracked", "covered_count", "open_findings_count" },
-      "control_families": [ { "id", "name", "status", "details" } ]
+      "cve_id": "CVE-2026-34567",
+      "severity": "CRITICAL",
+      "cvss_score": 9.8,
+      "linked_controls": [
+        { "control_id": "NIST-SP-800-53-SI-2", "control_name": "Flaw Remediation", "status": "NON_COMPLIANT", "mapping_confidence": "HIGH" },
+        { "control_id": "SOC2-CC-7.1", "control_name": "Vulnerability Management", "status": "NON_COMPLIANT", "mapping_confidence": "HIGH" }
+      ]
     }
   ]
 }
 ```
-File: `ETB_LayerZero_Framework/compliance_ledger_live.json` (received)
+This shape has a real link (`findings[].cve_id` → `linked_controls[]`) with a `mapping_confidence` field, which is a meaningfully better design than the earlier disconnected totals — **if it holds up under real testing.**
 
-**⚠️ Content flags — this is the most important one to resolve before building the Compliance Mapping view against this data:**
-- There is **no linking field** between this file and `mock_vuln_scan.json` — no shared CVE ID, control-family reference, or finding ID connects the two. The "1 open finding" claimed under NIST `SI` and the "1 open finding" under SOC2 `CC7.1` cannot currently be traced back to which of the 3 vulnerabilities in the scan file they correspond to.
-- The NIST section only lists 2 control families (`SI`, `SC`) but claims `"total_controls_tracked": 12` — the other 10 aren't represented anywhere in the file. Same issue for SOC2: only `CC7.1` is listed but `"total_controls_tracked": 8`.
-- `details` fields ("Tracks LayerZero transaction interception boundaries," "Mitigation ledger for edge injection execution pathways") are descriptive-sounding but not verifiable against anything else in the data — they don't cite a specific control requirement or a specific finding.
-- **Do not build the real CVE→control mapping logic from this file as-is.** Get the backend owner to either (a) add the missing linking field, or (b) explain how the 12/8 totals and the open-findings counts are actually derived, before treating these numbers as something a compliance team could rely on.
+**⚠️ CVE-2026-12345 severity — RESOLVED (2026-08-22):** confirmed as a copy-paste slip on the backend owner's mock data. Correct value is **MEDIUM** (CVSS ~5.5), matching `mock_vuln_scan.json`. Backend owner is updating the live `/api/compliance/metrics` payload to match. Verify the live response reflects this before building — don't assume the fix has propagated without checking.
 
-### 5.5 Remediation action — ⚠️ UNVERIFIED, do not treat "covered" as ground truth yet
-- `PUT http://localhost:8080/remediate` with `{"vulnerability_name": "..."}` — triggers backend to mark the threat resolved and roll compliance ledgers back toward 100%.
-- **Open question, unresolved as of this doc:** does this reflect an actual re-scan/verification, or does it just flip a status flag? Given the disconnect already found between the vuln scan file and the compliance ledger file (§5.4), there's added reason to suspect this may just be a flag flip rather than a real re-verification. Do not label a "Verify Mitigation" button as verified/audited in the UI copy until this is confirmed by the backend owner. Until confirmed, UI copy should say something neutral like "Mark as remediated" rather than implying automatic re-verification.
+**Endpoint relationship — CONFIRMED (2026-08-22):** `mock_vuln_scan.json`-equivalent data (SOC analyst table) and `/api/compliance/metrics` (auditor compliance bars) remain two separate endpoints/tables intentionally, but backend owner states both draw from the same underlying database so CVE data will stay identical across both — no client-side reconciliation should be needed once live. Still worth spot-checking in practice once both are live, given the mismatch that already occurred once.
+
+- Only one real sample response has been seen from `/api/compliance/metrics` beyond the corrected sample. Fetch/verify the actual live endpoint yourself before wiring the Compliance Mapping view to it.
+
+**Original static file flags (still apply to `compliance_ledger_live.json` if used instead of the live endpoint):**
+- No linking field between file and `mock_vuln_scan.json`.
+- NIST section only lists 2 control families but claims 12 tracked; SOC2 lists 1 but claims 8 tracked.
+- `details` fields are descriptive but not independently verifiable.
+
+### 5.5 Remediation action — CONFIRMED architecture (production model)
+
+This section was previously marked unverified. The backend owner has now confirmed the production design below, including a working HMAC verification code sample. Build against this.
+
+**Flow:**
+1. Analyst clicks "Mark as remediated" (do not label as "Verified"/"Confirmed" in UI copy — that label is earned by the flow below, not by the click itself) on a finding in the Vulnerabilities/Compliance view.
+2. Our backend sends an internal webhook to the client's on-prem engine instance (production deployment runs on the client's own network infrastructure — NOT the backend owner's local Termux dev environment, which is dev/test only).
+3. The client's engine instance replays the original exploit/attack pattern against the target asset. If the attempt is intercepted/blocked/logged, the asset is considered verified-isolated for that specific finding.
+4. The engine POSTs the result back to our webhook receiver, signed via **HMAC-SHA256** (see below).
+5. Our receiver verifies the signature before touching the database. Only on a valid signature does the finding flip to "Covered" and the compliance ledger update.
+
+**Fail-closed — hard requirement, not a nice-to-have:**
+- If the client's engine is unreachable, times out, or the webhook fails, the record **must remain "Open."** No code path may flip a finding to "Covered" without a verified signed response.
+- UI must show a distinct "Verification Error: Engine Unreachable" state (not the same as "Open" from an un-remediated finding) so analysts can tell the difference between "not yet fixed" and "fix attempted but couldn't be confirmed."
+
+**Latency / UI state:**
+- Actual re-scan: <50ms on the engine side. Full round trip (network + DB write + propagation to dashboard): ~1–2 seconds.
+- UI must show an active "Verifying Matrix Isolation..." pending state during this window — don't show a static spinner with no label, and don't optimistically flip to "Covered" before confirmation arrives.
+
+**Webhook authentication — HMAC-SHA256, confirmed implementation:**
+- Shared secret (`GATE_ENGINE_SECRET`) is provisioned to both the client's engine instance and our backend `.env` at install time.
+- Engine concatenates key result fields (e.g. `vulnerability_id + target_asset + verification_status`), computes an HMAC-SHA256 hash using the shared secret, and sends it in the `X-Engine-Signature` header.
+- Our API route must recompute the same HMAC over the same fields using our copy of the secret and compare using **`crypto.timingSafeEqual`** — never a plain `===`/`==` comparison, which can leak timing information.
+- Reject with `401 Unauthorized` on any mismatch, and do not update any DB state before the signature check passes.
+- **Secret rotation:** verify against an array of currently-valid secrets (current + incoming), not a single hardcoded string, so the key can be rotated without downtime. Confirmed reference implementation:
+
+```js
+const crypto = require('crypto');
+
+function verifySignatureDualSecret(payload, receivedSignature, secretsArray) {
+  const receivedBuffer = Buffer.from(receivedSignature, 'utf8');
+  for (const secret of secretsArray) {
+    const computedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    const computedBuffer = Buffer.from(computedSignature, 'utf8');
+    if (computedBuffer.length === receivedBuffer.length) {
+      if (crypto.timingSafeEqual(computedBuffer, receivedBuffer)) return true;
+    }
+  }
+  return false;
+}
+```
+
+**Still open / unresolved — do not treat as answered:**
+- The "God Mode Root Flaw," "CWE-1000 Track," and general product terminology questions raised earlier have not been answered. Don't let confirmed backend architecture (this section) imply the content-level flags in §5.1/§5.3/§5.4 are resolved — they aren't. Those are a separate issue from this verification flow.
+
+**Signature spec — re-confirmed after a mismatch was caught (2026-08-19):** a later message from the backend owner briefly proposed a different header name (`X-Gate-Engine-Signature`) and a different signing method (hash of the raw minified JSON body) than what's specified above. This was flagged as a breaking inconsistency and the backend owner confirmed reverting to the **original spec above is authoritative**: header `X-Engine-Signature`, signature computed over the concatenated fields (`vulnerability_id + target_asset + verification_status`), not the raw request body. If any future message from the backend side proposes a different header name or signing method again, treat it as a red flag requiring explicit reconciliation before touching the webhook code — do not silently support both.
+
+## 5.6 Active infrastructure mitigation (block-ip / isolate-host / revoke-credentials) — OUT OF SCOPE, do not build
+
+A payload schema for the dashboard to actively command the client's infrastructure was proposed by the backend owner (2026-08-19):
+```json
+{ "action": "block-ip", "target": "198.51.100.42" }
+{ "action": "isolate-host", "target": "host-prod-db-04" }
+{ "action": "revoke-credentials", "target": "user-session-token-9981" }
+```
+This is explicitly **not current scope** and was confirmed as future work by the backend owner after being flagged. This is a fundamentally different and much higher-stakes capability than the remediation-*verification* flow in §5.5 — this would let the dashboard take real, potentially destructive action on a client's live production infrastructure (blocking an IP, quarantining a host, revoking a session).
+
+**Do not build any UI, route, or button toward this schema until all of the following are explicitly designed and agreed, not just assumed:**
+- Role-based access control — who is allowed to trigger this (almost certainly `admin` only, not `analyst`/`auditor`)
+- A confirmation/multi-factor gate before an action fires (no single-click execution of an infrastructure-mutating action)
+- Full audit logging of who triggered what action, on what target, and when
+- Clear, non-optimistic UI feedback matching the fail-closed philosophy already established in §5.5
+
+If asked to "add a block-ip button" or similar without this scaffolding having been explicitly discussed first, treat that as scope creep and flag it rather than building it.
 
 ## 6. Compliance framework mapping reference
 
@@ -112,34 +204,23 @@ File: `ETB_LayerZero_Framework/compliance_ledger_live.json` (received)
 - **SOC 2 Type II**, criteria in scope: `CC6` (Logical and Physical Access Controls) and `CC7` (System Operations — monitoring, incident detection).
 - CVE → control mapping logic is currently **hardcoded per mock finding** and not derived from a real rule (e.g. CWE category → control family). This is a known gap — do not present compliance percentages as authoritative until real mapping logic exists. Flag this prominently if asked to build the PDF export feature.
 
-## 6a. Auth & roles (Phase 2)
+## 6a. Auth & role architecture — decided, do not deviate without re-confirming
 
-> Reconstructed from the Phase 2 kickoff instructions — this section was referenced but missing from the file when Phase 2 began. The two rules below are non-negotiable.
+- **Access model: invite-only.** No public signup endpoint. Decided specifically because the `auditor` role carries compliance weight and needs a strict audit trail — a public signup path is an unacceptable risk for that role.
+- **Rule 1 — deny by default:** the registration/account-creation path must never be able to auto-assign or default a new account to the `auditor` role. If invite-based account creation accepts a role parameter, the code path must reject or ignore an `auditor` value unless the actor issuing the invite is themselves an `admin` performing an explicit, separate promotion action — not part of generic signup logic.
+- **Rule 2 — admin attribution:** every invite must be logged in the database with the specific `admin` user ID who issued it. This is a hard schema requirement, not optional metadata — the audit trail depends on being able to answer "who authorized this account" for any user, especially auditors.
+- **Roles:** `analyst`, `auditor`, `admin`. Only an `admin` can create invites or promote a user to `auditor`.
+- **Future scaling note (not built now):** if invite-only becomes a bottleneck later, the agreed fallback is a **hybrid domain-restricted model** — signup open to approved company domains, but still only ever auto-assigning the lowest `analyst` tier. `auditor` promotion stays a manual admin action even in that future model. Don't build the domain-restricted path now; this is documented so a future implementation doesn't quietly loosen the auditor rule.
 
-- **Roles:** `analyst`, `auditor`, `admin`.
-- **No public signup.** Account creation happens only via a valid, unexpired **invite token**. There is no open sign-up endpoint.
-- **Rule 1 — deny by default:** the account-creation path (invite redemption) must **never** result in an `auditor` role. If an invite record carries a role field, an `auditor` value is rejected/ignored at that layer. `auditor` promotion is a **separate, explicit admin action**, never settable at invite-creation or redemption time. (Enforced at schema level: the invite role type does not include `auditor`; and clamped again in redemption code.)
-- **Rule 2 — admin attribution:** the `invites` table must record the issuing `admin` user ID (**not-null foreign key** to `user.id`), the invite creation timestamp, and redemption status/timestamp — enforced at the **schema level**, not by convention.
-- **Future option, NOT current scope:** a domain-restricted signup model (auto-allow signups from a verified corporate email domain) has been discussed as a possible future addition. Do not build it in this phase.
+## 6b. Multi-tenancy — CONFIRMED (2026-08-23), schema change required, supersedes single-tenant Phase 2 build
 
-### 6a.1 First-admin bootstrap — the one sanctioned exception
+The Phase 2 auth build (users/roles/invites) was built single-tenant — this must be extended before any real client onboarding. Confirmed architecture:
 
-The invite system is a closed loop: accounts come only from invites, and invites can only be issued by an existing admin (schema-enforced not-null FK, `invited_by_admin_id → user.id`). A fresh database therefore has no way to create its first admin from inside the app. The **only** sanctioned exception is a manual seed script, `scripts/seed-admins.ts`, run once by an operator:
-
-```
-npm run db:seed-admins -- first.admin@company.com second.admin@company.com
-# or set ADMIN_EMAIL_1 / ADMIN_EMAIL_2 in .env.local and run: npm run db:seed-admins
-```
-
-It creates the first two admin accounts, prints a generated temporary password for each **once** (never stored in plaintext — only BetterAuth's hash is persisted), and exits.
-
-**Why this is safe and does not weaken "no account creation without an invite":**
-- **Not an endpoint.** It is a local CLI script, never wired to any route or handler, so it cannot be triggered by an HTTP request in any environment.
-- **One-time.** It checks for an existing admin first and refuses to run if any exists — it can only ever succeed on a fresh database, and never re-seed one that is already set up.
-- **Dev/setup only.** It refuses to run under `NODE_ENV=production`.
-- **No standing privilege.** After bootstrap, all further accounts (including additional admins) go through the normal admin-issued invite flow. The temporary passwords are meant to be changed on first sign-in.
-
-Do not add any HTTP-exposed variant of this. Adding admins after bootstrap is an invite-flow operation, not a script.
+- **Every `users` and `invites` record requires a mandatory `tenant_id` field.** Not nullable, not optional.
+- **Tenant isolation is enforced at the query level:** when a client's own `admin` (e.g. their SOC lead) views the admin panel, all user/invite queries must be scoped to that admin's `tenant_id` — they should never be able to see or affect another tenant's users. This needs to be enforced in the query/data layer, not just hidden in the UI (a client admin hitting the API directly must not be able to fetch another tenant's data).
+- **We (the two founders) operate under a separate global/master tenant** (e.g. `system-admin-01` or similar) that is allowed to provision new tenant/client profiles during onboarding, but does **not** have standing access to a client's day-to-day employee invites once their tenant is set up. Don't build us a backdoor "view all tenants' users" capability beyond the explicit tenant-provisioning action — keep our own access scoped the same way any tenant admin's is, aside from the ability to create new tenants.
+- **Matches backend engine design:** the engine already scopes its own auth via `X-Tenant-Id` (see §5.2) for telemetry isolation between client organizations — this app's schema needs to align with the same `tenant_id` concept so a future integration (e.g. filtering the STIX feed or compliance data per tenant) isn't fighting two different tenant models.
+- **Still to decide when this is actually built:** how `tenant_id` gets assigned to an invite (does the inviting admin's own `tenant_id` just propagate automatically to invites they create — almost certainly yes, but confirm this explicitly when scoping the Claude Code prompt for this change), and whether `auditor` promotion (§6a Rule 1) also needs to be tenant-scoped (an admin should only be able to promote users within their own tenant — near-certainly yes, but make this explicit in the implementation, don't leave it implicit).
 
 ## 7. Tech stack
 
@@ -160,9 +241,17 @@ Do not add any HTTP-exposed variant of this. Adding admins after bootstrap is an
 
 ## 8. Open items / things not to assume are decided
 
-- **Real STIX/vuln/compliance sample files have been received but contain multiple unresolved content issues — see §5.1, §5.3, §5.4 for specifics.** Do not build production data-mapping logic against these files until the flagged items (invalid-looking CVE ID, non-standard CWE citation, "Termux gateway" in remediation text, missing link between vuln findings and compliance control counts) are resolved with the backend owner. Safe to use structurally (for wiring up parsers/UI) but not as a source of truth for content shown to real users yet.
+- **"God Mode Root Flaw" / CWE-1000 terminology — RESOLVED (2026-08-23).** Final agreed naming:
+  - Vulnerability name: **"LayerZero Injection Flaw"**
+  - Classification: **"Internal review, not yet CWE-mapped"** (explicitly does not claim an active external MITRE review process — this was corrected from an earlier draft, "Pending MITRE Structural Review," which implied a specific external process that wasn't actually underway)
+  - Use these exact strings in templates/UI going forward. Safe to use in client-facing/demo content.
+  - Other renamed object names (confirmed 2026-08-22, no issue with these):
+    - Threat actor: "Unidentified Zero-Click Actor Group" → "Advanced Persistent Threat (APT) Group - Out-of-Band Vector"
+    - Malware: "God Mode Payload" → "Arbitrary Execution Stream Injection Payload"
+    - CVE-2026-99812: "Network Edge Bypass" → "Boundary Verification Bypass"
+- **Real STIX/vuln/compliance sample files still contain other unresolved content issues — see §5.1, §5.3.** Do not build production data-mapping logic against flagged fields until resolved.
 - CVE-to-control mapping logic has no real link in the received data (§5.4) — needs a resolved field or explanation from the backend owner, not an invented one.
-- `/remediate` verification semantics unconfirmed (§5.5) — treat as a real risk item for compliance-facing accuracy, not a nice-to-have.
+- ~~`/remediate` verification semantics unconfirmed~~ — **RESOLVED, see §5.5.** Production remediation flow is confirmed: on-prem engine replay-verification, fail-closed default, HMAC-SHA256 signed webhook responses with timing-safe comparison and rotation support. Build against §5.5 as specified.
 - PDF/report export is a stub — no real generation logic yet.
 - AI features (summarization, prioritization, remediation drafting, report narration) have been discussed as a possible future addition but are explicitly **deferred** until the core three views are built and tested. Do not add AI features speculatively.
 - Business/legal terms (LLC structure, revenue split, IP reversion) live outside this codebase's concern — don't encode business logic assumptions (e.g. licensing checks) into the frontend without an explicit ask.

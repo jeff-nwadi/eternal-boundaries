@@ -51,8 +51,8 @@ export function SiteFooter() {
             <div className="flex flex-col gap-3">
               <BrandMark className="text-xl" />
               <p className="max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground">
-                Threat intelligence, vulnerability, and compliance signal — read
-                in one place, by the teams accountable for it.
+                Your security alerts, weak spots, and compliance status — all in
+                one place, for the teams accountable for it.
               </p>
             </div>
 

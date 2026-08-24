@@ -34,20 +34,20 @@ const FAQ = [
     id: 4,
     question: "Which compliance standards do you cover?",
     answer:
-      "Findings map to NIST 800-53 and SOC 2 control families, so coverage is easy to trace.",
+      "Your results line up with NIST 800-53 and SOC 2 — the checklists auditors use — so coverage is easy to trace.",
   },
   {
     id: 5,
     question: "Who is it built for?",
     answer:
-      "SOC analysts, CISOs, and compliance auditors who need one accountable view of what's happening.",
+      "Security teams, their leaders, and compliance auditors who need one clear view of what's happening.",
   },
 ];
 
 const STANDARDS = [
-  { name: "NIST SP 800-53", detail: "SC · SI control families" },
-  { name: "SOC 2 Type II", detail: "CC6 · CC7 criteria" },
-  { name: "STIX 2.1", detail: "Structured threat intel" },
+  { name: "NIST 800-53", detail: "U.S. government security checklist" },
+  { name: "SOC 2", detail: "Trust & security audit standard" },
+  { name: "STIX", detail: "Standard format for sharing threat data" },
 ];
 
 export default function Home() {
@@ -57,26 +57,25 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="mx-auto w-full max-w-6xl px-6 pb-16 pt-16 sm:pt-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
-            <div className="flex flex-col items-start gap-6">
+        <section className="mx-auto w-full max-w-5xl px-6 pb-16 pt-16 sm:pt-24">
+          <div className="flex flex-col items-center text-center gap-12">
+            <div className="flex max-w-3xl flex-col items-center gap-6">
               <Reveal
                 as="h1"
                 delay={60}
                 className="text-4xl font-semibold text-foreground sm:text-5xl lg:text-[3.4rem]"
               >
-                See the boundary between{" "}
-                <span className="text-primary">threat</span> and asset.
+                Know what&apos;s putting your business{" "}
+                <span className="text-primary">at risk</span> — and fix it first.
               </Reveal>
 
-              <Reveal as="p" delay={120} className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-                Eternal Boundaries turns STIX threat feeds, vulnerability scans,
-                and control coverage into one clear picture — built for the SOC
-                analysts, CISOs, and auditors accountable for what crosses the
-                line.
+              <Reveal as="p" delay={120} className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
+                Eternal Boundaries brings your security alerts, weak spots, and
+                compliance status into one clear dashboard — so your team can see
+                what&apos;s exposed, fix what matters, and prove it to auditors.
               </Reveal>
 
-              <Reveal delay={180} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Reveal delay={180} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
                 <Button asChild size="lg">
                   <Link href="/login">
                     Get started
@@ -89,7 +88,7 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <Reveal delay={140}>
+            <Reveal delay={140} className="w-full max-w-2xl">
               <HeroVisual />
             </Reveal>
           </div>
@@ -128,11 +127,11 @@ export default function Home() {
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-14 lg:flex-row lg:items-center lg:justify-between">
             <Reveal className="max-w-md">
               <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
-                Grounded in the frameworks your auditors already use.
+                Built on the security standards auditors already trust.
               </h2>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
-                Findings map to named control families, not invented scores — so
-                the coverage you show is the coverage you can trace.
+                Your results line up with recognized standards like NIST and SOC 2
+                — so the coverage you report is coverage you can back up.
               </p>
             </Reveal>
 
@@ -194,7 +193,7 @@ export default function Home() {
             />
             <div className="relative z-10 flex flex-col items-center gap-6 text-center">
               <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
-                Bring your threat and compliance signal inside the boundary.
+                Get a clear picture of your security — starting today.
               </h2>
               <p className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground">
                 Sign in to the dashboard, or start a new workspace for your team.

@@ -10,6 +10,8 @@ import {
   severityTone,
   patchTone,
 } from "@/components/dashboard/status-pill";
+import { RemediationControl } from "@/components/dashboard/vulnerabilities/remediation-control";
+import type { RemediationStatusMap } from "@/app/api/remediate/status/route";
 import {
   Table,
   TableBody,
@@ -18,12 +20,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const SEVERITY_FILTERS = ["ALL", "CRITICAL", "HIGH", "MEDIUM", "LOW"] as const;
 type SeverityFilter = (typeof SEVERITY_FILTERS)[number];
 
 export function VulnTable({ findings }: { findings: VulnFinding[] }) {
   const [filter, setFilter] = React.useState<SeverityFilter>("ALL");
+  const [statuses, setStatuses] = React.useState<RemediationStatusMap>({});
+
+  // Load persisted remediation status once so each row starts in the right
+  // state (open / verifying / covered / verification_error) across reloads.
+  React.useEffect(() => {
+    let active = true;
+    fetch("/api/remediate/status", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { statuses: {} }))
+      .then((d: { statuses?: RemediationStatusMap }) => {
+        if (active) setStatuses(d.statuses ?? {});
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const visible =
     filter === "ALL"
@@ -64,19 +87,29 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>CVE</TableHead>
+              <TableHead>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-help underline decoration-dotted decoration-muted-foreground/40 underline-offset-2">
+                      CVE
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>The public ID for a known security flaw.</TooltipContent>
+                </Tooltip>
+              </TableHead>
               <TableHead>Vulnerability</TableHead>
               <TableHead>Severity</TableHead>
-              <TableHead>Affected asset</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="min-w-[280px]">Remediation guidance</TableHead>
+              <TableHead>Affected system</TableHead>
+              <TableHead>Patch status</TableHead>
+              <TableHead className="min-w-[280px]">How to fix it</TableHead>
+              <TableHead className="min-w-[180px]">Verify fix</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visible.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="py-10 text-center whitespace-normal text-muted-foreground"
                 >
                   No findings at this severity in the sample.
@@ -108,6 +141,14 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
                   */}
                   <TableCell className="min-w-[280px] whitespace-normal text-pretty text-sm leading-relaxed text-muted-foreground">
                     {f.remediation_guidance}
+                  </TableCell>
+                  <TableCell className="min-w-[180px] whitespace-normal">
+                    <RemediationControl
+                      vulnerabilityId={f.cve_id}
+                      targetAsset={f.affected_asset}
+                      initialStatus={statuses[f.cve_id]?.status ?? "open"}
+                      initialDetail={statuses[f.cve_id]?.detail ?? null}
+                    />
                   </TableCell>
                 </TableRow>
               ))

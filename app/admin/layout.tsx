@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { requireAdmin } from "@/lib/auth-guards";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
+import { CommandMenu } from "@/components/dashboard/command-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,7 @@ export default async function AdminLayout({
           {children}
         </div>
       </SidebarInset>
+      <CommandMenu isAdmin={role === "admin"} />
     </SidebarProvider>
   );
 }
