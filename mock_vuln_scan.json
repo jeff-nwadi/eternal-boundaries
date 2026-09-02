@@ -10,7 +10,7 @@
   "scan_results": [
     {
       "cve_id": "CVE-2026-ETBV-001",
-      "vulnerability_name": "God Mode Root Flaw (CWE-1000 Track)",
+      "vulnerability_name": "LayerZero Injection Flaw",
       "severity": "CRITICAL",
       "affected_asset": "Finance-Core-Gateway-L0",
       "patch_status": "Open",
@@ -18,7 +18,7 @@
     },
     {
       "cve_id": "CVE-2026-99812",
-      "vulnerability_name": "Network Edge Bypass",
+      "vulnerability_name": "Boundary Verification Bypass",
       "severity": "HIGH",
       "affected_asset": "SOC-Edge-Router-Primary",
       "patch_status": "Open",

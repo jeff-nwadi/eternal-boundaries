@@ -8,7 +8,7 @@
       "id": "threat-actor--b21350a4-3746-4cb4-9dbb-821f8a846c82",
       "created": "2026-06-29T00:00:00.000Z",
       "modified": "2026-08-13T14:00:00.000Z",
-      "name": "Unidentified Zero-Click Actor Group",
+      "name": "Advanced Persistent Threat (APT) Group - Out-of-Band Vector",
       "description": "Sophisticated threat group deploying LayerZero execution-layer nullification exploits.",
       "threat_actor_types": ["nation-state", "crimeware"]
     },
@@ -18,7 +18,7 @@
       "id": "malware--1aa25841-fcf0-43b9-bb22-8dfb5a2bf4e1",
       "created": "2026-06-29T00:00:00.000Z",
       "modified": "2026-08-13T14:00:00.000Z",
-      "name": "God Mode Payload",
+      "name": "Arbitrary Execution Stream Injection Payload",
       "description": "Exploit payload designed to bypass transaction validation checks before system entry.",
       "is_family": false,
       "malware_types": ["exploit-kit"]
@@ -29,7 +29,7 @@
       "id": "vulnerability--f9b36d02-1262-421b-8390-36a4392be344",
       "created": "2026-06-29T00:00:00.000Z",
       "modified": "2026-08-13T14:00:00.000Z",
-      "name": "God Mode Root Flaw (CWE-1000 Track)",
+      "name": "LayerZero Injection Flaw",
       "description": "A validation root flaw operating at LayerZero that permits execution layer state sync manipulation."
     },
     {

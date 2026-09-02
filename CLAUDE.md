@@ -65,23 +65,15 @@ Valid STIX 2.1 bundle structurally (`type`, `id`, `spec_version`, `created`/`mod
 - Mock/review file: `ETB_LayerZero_Framework/stix_stream_sample.json` (received — see §5.1)
 - ⚠️ `localhost:8080` only resolves on whichever machine is running the backend engine.
 - **CONFIRMED (2026-08-22):** a `GET /api/threats/live` variant exists but is test-only, used by the backend owner to verify STIX payload structure locally. **Production direction remains push-based POST** as originally specified — don't build a pull/polling loop for the main threat feed.
-- **Reachability — CONFIRMED, tunnel now live:** backend owner has exposed a public tunnel at `https://eternal-boundaries-419.loca.lt`, claimed to route all engine endpoints (health, threat stream, admin invite, compliance metrics). Per backend owner, every route requires two headers or returns 401:
-  - `X-Tenant-Id`
-  - `X-ETBV-License-Key`
-  - Test/staging values received: `X-Tenant-Id: tenant-stage-941a`, `X-ETBV-License-Key: etbv_live_tst_6f2e8c1b9a3d4f5e6b7c8d9e`. Treat as staging-only; do not hardcode in source, load from env, and confirm with backend owner before assuming these work in any deployed environment.
-  - **Not yet independently verified.** Automated fetch attempts against this tunnel from outside tooling are blocked (robots-disallowed response) — this must be tested manually (curl/Postman/actual app) before being trusted as working.
+- **Reachability history (superseded — see AWS migration below):** backend engine previously ran on the backend owner's mobile phone via Termux, causing repeated dead tunnel URLs across three providers (loca.lt → Cloudflare → localhost.run) as the phone's power-saving/carrier behavior killed the connections. Auth headers used with these tunnels: `X-Tenant-Id`, `X-ETBV-License-Key` (test/staging values: `X-Tenant-Id: tenant-stage-941a`, `X-ETBV-License-Key: etbv_live_tst_6f2e8c1b9a3d4f5e6b7c8d9e` — staging only, load from env, never hardcode).
 
-- **⚠️ NEW tunnel URL received (2026-08-23), unverified, do not treat as replacing the above without confirming:** `https://cent-plots-threats-tender.trycloudflare.com` — a Cloudflare Tunnel (different provider than the `loca.lt` one above, no explanation given for the switch). Backend owner asked to wire this into the frontend directly.
-  - **Unconfirmed whether the `X-Tenant-Id` / `X-ETBV-License-Key` headers still apply to this endpoint** — do not assume; confirm explicitly before building against it.
-  - Same as the `loca.lt` tunnel: not independently verified from outside tooling. Test manually before trusting.
-  - Do not remove any "sample data" UI disclaimers on the basis of this tunnel going live. Disclaimer removal is gated on the still-open items in §8 (CWE-1000 terminology, confirmation that the CVE-2026-12345 fix has actually propagated to the live endpoint), not on connectivity alone.
-
-- **⚠️ Tunnel instability confirmed (2026-08-23) — do not wire any tunnel URL into production/deployed env vars.** The Cloudflare quick-tunnel above went dead (DNS `ENOTFOUND`) within the same session it was issued. Backend owner explained this is because the tunnel process is running on a **mobile device**, and cycles/disconnects due to the device's background battery management and mobile network drops. Two further URLs were issued in quick succession as the tunnel kept cycling:
-  - `https://dca18831eb72ab.lhr.life` (localhost.run tunnel — third different tunnel provider used so far: loca.lt → Cloudflare → localhost.run)
-  - `https://f3306a4b1027ad.lhr.life` (replacement after the previous one dropped again, same session)
-  - **Only ever put the current tunnel URL in local `.env.local` for manual testing.** Do not put a tunnel URL in any Vercel/deployed environment config — it will go stale unpredictably and break the deployed app.
-  - **Open question, not yet answered:** is the backend engine itself running on this mobile device, or is this just how the backend owner is tunneling into a properly-hosted engine running elsewhere? These are very different situations — the former would be inconsistent with the "pre-compiled, hardware-speed enterprise engine" description from the original project brief, and is worth a direct, plain answer before assuming either way.
-  - **Backend owner has confirmed the real fix**: a permanent named domain (`api.eternalboundaries.com`) via a verified custom domain tunnel, replacing the free ephemeral quick-tunnels. **Not yet delivered as of this doc.** Treat every quick-tunnel URL as temporary/manual-testing-only until this permanent domain is live.
+- **✅ AWS migration completed (2026-08-2X) — engine now runs on dedicated infrastructure, not a phone.** Confirmed specs:
+  - Instance ID: `i-09544569498b34851`, type `t3.micro`, Ubuntu 26.04, `us-east-2`
+  - Public IPv4: `3.17.182.27` / Public DNS: `ec2-3-17-182-27.us-east-2.compute.amazonaws.com`
+  - VPC/subnet isolated; **IMDSv2 set to Required** (confirmed, good practice)
+  - Security group hardening requested and in progress: remove `0.0.0.0/0` open ingress, restrict SSH (22) to backend owner's IP only, restrict data-streaming ports similarly.
+  - **This is a bare IP, not a domain** — the earlier-promised permanent named domain (`api.eternalboundaries.com`) has not been delivered; treat the raw IP as the current working endpoint but expect it may still change. Use an env var (`GATE_ENGINE_URL`), never hardcode.
+  - **Not yet confirmed:** whether the `X-Tenant-Id` / `X-ETBV-License-Key` auth headers work against this new AWS endpoint the same way they did against the old tunnels. Test explicitly, don't assume.
 
 ### 5.2a Admin/invite endpoints on the backend — CONFIRMED unrelated to app auth
 - Backend owner has separate `POST /api/admin/invite` and `POST /api/auth/register` routes on his engine. **Confirmed (2026-08-22): these are standalone management hooks for provisioning admin access to the ETBV filtering engine itself — not connected to this app's user accounts in any way.**
@@ -264,6 +256,8 @@ The Phase 2 auth build (users/roles/invites) was built single-tenant — this mu
 - PDF/report export is a stub — no real generation logic yet.
 - AI features (summarization, prioritization, remediation drafting, report narration) have been discussed as a possible future addition but are explicitly **deferred** until the core three views are built and tested. Do not add AI features speculatively.
 - Business/legal terms (LLC structure, revenue split, IP reversion) live outside this codebase's concern — don't encode business logic assumptions (e.g. licensing checks) into the frontend without an explicit ask.
+- **⚠️ MITRE CWE submission (ES2606-11f89c19) moved to CONSULTATION phase (2026-08-2X) with real, substantive reviewer concerns — do not treat as "on track."** Official MITRE response (verified, forwarded directly): the submission is flagged as **"too attack-focused"** — describing a chain of existing weaknesses rather than a new distinct weakness — and the reviewer explicitly floats the alternative outcome that ETBV may end up represented as *chaining relationships between existing CWE entries* rather than a new CWE at all. Also flagged: the submitted reference link 404s and needs to be made publicly accessible, or the submission is unlikely to progress. **Do not use "pending review" language that implies a routine/on-track status — the actual reviewer feedback is a real, open technical objection.** Submission addressed to "Justin Schomer" — confirm this is the backend owner's legal name.
+
 
 ## 9. Commands
 
