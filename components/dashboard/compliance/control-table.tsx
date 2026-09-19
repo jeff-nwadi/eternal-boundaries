@@ -94,6 +94,56 @@ const columns: ColumnDef<ControlFamily>[] = [
   },
 ];
 
+import type { ComplianceMapping } from "@/lib/queries/use-compliance-mappings";
+
+const liveColumns: ColumnDef<ComplianceMapping>[] = [
+  {
+    accessorKey: "control_id",
+    header: "Control ID",
+    cell: ({ row }) => (
+      <span className="rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
+        {row.original.control_id}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "framework_component",
+    header: "Framework Component",
+    meta: { className: "min-w-[220px] whitespace-normal" },
+    cell: ({ row }) => (
+      <span className="text-sm font-medium leading-relaxed text-foreground">
+        {row.original.framework_component}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <ComplianceStatus status={row.original.status} />,
+  },
+  {
+    accessorKey: "last_assessed",
+    header: "Last Assessed",
+    cell: ({ row }) => (
+      <span className="font-mono text-xs text-muted-foreground">
+        {row.original.last_assessed}
+      </span>
+    ),
+  },
+];
+
+export function LiveControlTable({ mappings }: { mappings: ComplianceMapping[] }) {
+  return (
+    <TooltipProvider delayDuration={150}>
+      <DataTable
+        columns={liveColumns}
+        data={mappings}
+        emptyMessage="No compliance mappings reported by the backend engine."
+      />
+    </TooltipProvider>
+  );
+}
+
 export function ControlTable({ families }: { families: ControlFamily[] }) {
   return (
     <TooltipProvider delayDuration={150}>

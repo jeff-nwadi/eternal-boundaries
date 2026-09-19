@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     "Enterprise cyber threat intelligence and compliance dashboard. Turn STIX threat feeds, vulnerability scans, and control coverage into decisions your SOC and auditors can act on.",
 };
 
+import { Providers } from "@/components/providers";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -38,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         className="min-h-dvh bg-background text-foreground"
         suppressHydrationWarning
       >
-        {children}
+        <Providers>{children}</Providers>
         <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>

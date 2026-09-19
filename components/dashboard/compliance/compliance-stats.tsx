@@ -1,9 +1,14 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, ShieldCheck, FileCheck, Layers, TrendingUp } from "lucide-react";
+import { CheckCircle2, ShieldCheck, FileCheck, Layers } from "lucide-react";
+import type { ComplianceMapping } from "@/lib/queries/use-compliance-mappings";
 
-export function ComplianceStats() {
+export function ComplianceStats({ mappings }: { mappings?: ComplianceMapping[] }) {
+  const total = mappings?.length ?? 0;
+  const compliantCount = mappings?.filter((m) => m.status.toUpperCase() === "COMPLIANT").length ?? 0;
+  const percentage = total > 0 ? Math.round((compliantCount / total) * 100) : 71.5;
+
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {/* Card 1: Overall Compliance Score */}
@@ -15,11 +20,11 @@ export function ComplianceStats() {
                 Overall Compliance Score
               </span>
               <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                71.5%
+                {percentage}%
               </p>
               <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-primary">
-                <TrendingUp className="size-3" />
-                <span>+5.2% this quarter</span>
+                <ShieldCheck className="size-3" />
+                <span>{mappings ? "Live Engine Audit" : "Sample Data"}</span>
               </div>
             </div>
             <span className="flex size-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
@@ -29,20 +34,20 @@ export function ComplianceStats() {
         </CardContent>
       </Card>
 
-      {/* Card 2: NIST SP 800-53 (Rev. 5) */}
+      {/* Card 2: Controls Assessed */}
       <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
         <CardContent className="p-0">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-medium text-muted-foreground">
-                NIST SP 800-53 (Rev. 5)
+                Controls Assessed
               </span>
               <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                68%
+                {mappings ? total : 50}
               </p>
               <div className="mt-2 flex items-center gap-1">
                 <span className="inline-flex items-center gap-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                  34 / 50 Controls
+                  {mappings ? `${compliantCount} Compliant` : "34 / 50 Compliant"}
                 </span>
               </div>
             </div>
@@ -53,20 +58,20 @@ export function ComplianceStats() {
         </CardContent>
       </Card>
 
-      {/* Card 3: SOC 2 Type II */}
+      {/* Card 3: Non-Compliant / Gaps */}
       <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
         <CardContent className="p-0">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-medium text-muted-foreground">
-                SOC 2 Type II
+                Active Gaps
               </span>
               <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                75%
+                {mappings ? total - compliantCount : 10}
               </p>
               <div className="mt-2 flex items-center gap-1">
-                <span className="inline-flex items-center gap-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                  30 / 40 Controls
+                <span className="inline-flex items-center gap-1 rounded bg-medium/15 px-1.5 py-0.5 text-[10px] font-semibold text-medium">
+                  {mappings ? `${total - compliantCount} Action Required` : "10 Action Required"}
                 </span>
               </div>
             </div>
@@ -77,20 +82,20 @@ export function ComplianceStats() {
         </CardContent>
       </Card>
 
-      {/* Card 4: Tracked Control Families */}
+      {/* Card 4: Framework Info */}
       <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
         <CardContent className="p-0">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-medium text-muted-foreground">
-                Tracked Control Families
+                Active Engine Framework
               </span>
-              <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                9
+              <p className="mt-1 text-lg font-bold leading-tight truncate text-foreground">
+                ETB Layer-Zero
               </p>
               <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-primary">
-                <CheckCircle2 className="size-3" />
-                <span>All 9 Operational</span>
+                <Layers className="size-3" />
+                <span>v1.0.0 Enforced</span>
               </div>
             </div>
             <span className="flex size-8 items-center justify-center rounded-lg border border-border/60 bg-secondary text-foreground">

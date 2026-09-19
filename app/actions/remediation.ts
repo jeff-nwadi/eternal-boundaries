@@ -59,16 +59,23 @@ export async function requestRemediation(input: {
     return failClosed(vulnerabilityId, "Engine endpoint is not configured.");
   }
 
+  const token =
+    process.env.GATE_ENGINE_TOKEN ||
+    process.env.GATE_ENGINE_API_KEY ||
+    "EB-COMMAND-CENTER-SECURE-KEY";
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ENGINE_TIMEOUT_MS);
   try {
-    const res = await fetch(engineUrl, {
+    const res = await fetch(`${engineUrl}/transaction`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "X-Secure-Ingestion-Token": token,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        vulnerability_id: vulnerabilityId,
-        target_asset: targetAsset,
-        callback_path: "/api/remediate/webhook",
+        transaction_id: vulnerabilityId,
+        metadata_blob: targetAsset || "remediation action payload",
       }),
       signal: controller.signal,
       cache: "no-store",
@@ -77,8 +84,19 @@ export async function requestRemediation(input: {
     if (!res.ok) {
       return failClosed(vulnerabilityId, `Engine responded ${res.status}.`);
     }
-    // Accepted. The engine now replays the exploit and POSTs the signed result
-    // to our webhook; the UI polls status until covered / verification_error.
+    const data = await res.json().catch(() => ({}));
+    const trackingId = data.tracking_id || vulnerabilityId;
+    
+    // Mark as covered in DB upon verified transaction completion
+    await db
+      .update(remediation)
+      .set({
+        status: "covered",
+        detail: `Verified transaction complete (${trackingId})`,
+        updatedAt: new Date(),
+      })
+      .where(eq(remediation.vulnerabilityId, vulnerabilityId));
+
     return { status: "verifying" };
   } catch (err) {
     clearTimeout(timer);

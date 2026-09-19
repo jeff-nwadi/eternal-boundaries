@@ -60,6 +60,36 @@ Valid STIX 2.1 bundle structurally (`type`, `id`, `spec_version`, `created`/`mod
 
 ### 5.2 Live ingestion endpoint
 
+- **✅ CONFIRMED WORKING END-TO-END (2026-09-18), after extensive debugging.** Both core backend endpoints are verified with real, raw HTTP responses (not just descriptions):
+
+  **`GET https://api.eternalboundaries.com/api/v1/compliance/mappings`**
+  - Auth header: `X-Secure-Ingestion-Token: EB-COMMAND-CENTER-SECURE-KEY`
+  - Confirmed `200 OK` response shape:
+    ```json
+    {
+      "status": "success",
+      "framework": "ETB Layer-Zero Framework",
+      "version": "1.0.0",
+      "mappings": [
+        {"id": "MAP-001", "control_id": "CIS-v8-4.1", "framework_component": "...", "status": "COMPLIANT", "last_assessed": "..."}
+      ]
+    }
+    ```
+  - ⚠️ **This shape has NO per-finding CVE linking** — no `cve_id`, no connection to individual vulnerabilities. It reports framework/control-level status only. The original §5.4 gap (linking a specific vulnerability to the specific controls it affects) is **still unresolved** — this endpoint answers "is control X compliant" but not "which vulnerabilities caused control X to be non-compliant." Do not build UI copy that implies per-finding traceability from this endpoint.
+
+  **`POST https://api.eternalboundaries.com/transaction`**
+  - Auth header: same as above, `X-Secure-Ingestion-Token: EB-COMMAND-CENTER-SECURE-KEY`
+  - Confirmed required body shape (after many incorrect variations tested over time — this is the one that actually works):
+    ```json
+    {"transaction_id": "TX-999-TEST", "metadata_blob": "test payload data"}
+    ```
+  - Confirmed `200 OK` response: `{"status":"TRANSACTION_COMPLETE","tracking_id":"..."}`
+  - Note: `metadata_blob` is a raw string field, not structured JSON — confirm with backend owner what content format it actually expects for real remediation data before wiring the "Mark as remediated" action to it for real (the test above used placeholder text).
+
+  **Reachability history**: this endpoint went through ~10+ rounds of connectivity failures (DNS issues, wrong ports, security group misconfigurations, Cloudflare Tunnel drops (error 1033) from an unstable `cloudflared` process, a domain-wide redirect rule accidentally catching API paths, and at least 4 different incorrect header names/payload shapes proposed before the ones above were confirmed working). Backend owner has since said the tunnel now runs as a persistent background service — treat this as provisionally more stable than the ad-hoc phone/manual-terminal tunnels from earlier, but continue to independently verify rather than assume stability going forward, given the pattern.
+
+- **Historical/superseded details below, kept for context:**
+
 - `POST http://localhost:8080` — send raw alert JSON; backend converts to a valid STIX 2.1 package and updates graph linkages.
 - Live file: `ETB_LayerZero_Framework/stix_stream_live.json`
 - Mock/review file: `ETB_LayerZero_Framework/stix_stream_sample.json` (received — see §5.1)
@@ -74,6 +104,15 @@ Valid STIX 2.1 bundle structurally (`type`, `id`, `spec_version`, `created`/`mod
   - Security group hardening requested and in progress: remove `0.0.0.0/0` open ingress, restrict SSH (22) to backend owner's IP only, restrict data-streaming ports similarly.
   - **This is a bare IP, not a domain** — the earlier-promised permanent named domain (`api.eternalboundaries.com`) has not been delivered; treat the raw IP as the current working endpoint but expect it may still change. Use an env var (`GATE_ENGINE_URL`), never hardcode.
   - **Not yet confirmed:** whether the `X-Tenant-Id` / `X-ETBV-License-Key` auth headers work against this new AWS endpoint the same way they did against the old tunnels. Test explicitly, don't assume.
+
+- **Current working endpoint (2026-09-05):** `http://eternalboundaries.duckdns.org:8080` — a free DuckDNS subdomain pointed at the AWS instance, explicitly a stopgap until the real `eternalboundaries.com` domain is purchased (backend owner: "until we get our first payment"). A separate message referred to `eternalboundaries.com` as already "permanently anchored" via a DDNS daemon — that claim conflicts with the DuckDNS stopgap explanation and should be treated as not yet real; the DuckDNS subdomain is the actual current endpoint.
+  - Port 8080 is IP-allowlisted (confirmed via iptables rule, per backend owner) — our dev machine's public IP needed to be sent to him to be added before requests stop timing out. Confirm allowlisting persists / ask about a process for IP changes if testing from a different network later.
+  - ⚠️ Watch for typos in URLs sent by the backend owner — one message said to point at `http://duckdns.org` (the DuckDNS *service's own homepage*) instead of `eternalboundaries.duckdns.org` (our actual subdomain). Confirm exact hostnames before testing, don't assume correction is unnecessary.
+
+- **⚠️ IMPORTANT: `/api/compliance/metrics` response shape does not match what was confirmed earlier — needs resolution before building the Compliance Mapping view against it.** A PDF from the backend owner (2026-09-05) describes this endpoint as returning a generic `metrics[]` array (`stix_id`, `object_type`, `ui_meta.dashboard_view`, `ui_meta.ui_severity`) with **no `cve_id` or `linked_controls` fields** — i.e., no CVE-to-NIST/SOC2 mapping at all. This contradicts the earlier-confirmed sample (§ above) that *did* include real per-finding control linking, which was the fix for the original disconnected-totals problem.
+  - Backend owner's explanation: `/api/compliance/metrics` is "strictly a flat presentation layer" for generic dashboard styling: the real `cve_id`/control-mapping data supposedly "remains intact" in a different, not-yet-specified part of the ingestion pipeline.
+  - **Do not build the Compliance Mapping view against this generic `metrics[]` shape** — it does not contain the control-linking data the view needs. **Get the actual endpoint/path that returns `cve_id` + `linked_controls` before proceeding** — this was asked, not yet answered as of this doc.
+  - This generic `metrics[]` shape, if confirmed accurate, may be useful for the Threat Intelligence feed view instead (its `dashboard_view: "threat-intel"` routing suggests that's its intended purpose) — but confirm this is real, tested data before relying on it for anything.
 
 ### 5.2a Admin/invite endpoints on the backend — CONFIRMED unrelated to app auth
 - Backend owner has separate `POST /api/admin/invite` and `POST /api/auth/register` routes on his engine. **Confirmed (2026-08-22): these are standalone management hooks for provisioning admin access to the ETBV filtering engine itself — not connected to this app's user accounts in any way.**
