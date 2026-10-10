@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Users, Bug, ShieldOff, ChevronRight, type LucideIcon } from "lucide-react";
+import { Users, Bug, ShieldOff, Search, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { StixObject, StixEdge } from "@/lib/mock-data";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -13,7 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Panel } from "@/components/dashboard/ui/panel";
 import { StatusLabel } from "@/components/dashboard/ui/status-label";
 import { EmptyState } from "@/components/dashboard/ui/empty-state";
 
@@ -59,59 +65,102 @@ export function ThreatIndicators({
   edges: StixEdge[];
 }) {
   const [selected, setSelected] = React.useState<StixObject | null>(null);
+  const [query, setQuery] = React.useState("");
   const chain = React.useMemo(() => buildChain(objects, edges), [objects, edges]);
 
-  if (objects.length === 0) {
-    return <EmptyState message="No indicators in the sample feed yet." />;
-  }
+  const filtered = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return objects;
+    return objects.filter((o) =>
+      [o.name ?? o.id, typeMeta(o.type).label].some((s) => s.toLowerCase().includes(q))
+    );
+  }, [objects, query]);
+
+  const search = (
+    <div className="relative w-full sm:w-64">
+      <Search
+        className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-white/40"
+        aria-hidden
+      />
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search indicators…"
+        className="h-9 pl-8"
+        aria-label="Search indicators"
+      />
+    </div>
+  );
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white/[0.04]">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="text-sm font-normal text-white/55">Indicator</TableHead>
-            <TableHead className="text-sm font-normal text-white/55">Type</TableHead>
-            <TableHead className="text-sm font-normal text-white/55">Status</TableHead>
-            <TableHead className="text-right text-sm font-normal text-white/55">Updated</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {objects.map((obj) => {
-            const meta = typeMeta(obj.type);
-            return (
-              <TableRow
-                key={obj.id}
-                onClick={() => setSelected(obj)}
-                className="cursor-pointer"
-              >
-                <TableCell className="font-medium text-white">
-                  {obj.name ?? obj.id}
-                </TableCell>
-                <TableCell className="text-white/55">{meta.label}</TableCell>
-                <TableCell>
-                  {/* Unverified sample data — status is a claim, not a verified fact. */}
-                  <StatusLabel value="CLAIMED" />
-                </TableCell>
-                <TableCell className="text-right text-white/55">
-                  {fmt(obj.modified)}
-                </TableCell>
+    <Panel title="Indicators" action={search}>
+      {objects.length === 0 ? (
+        <EmptyState message="No indicators in the sample feed yet." />
+      ) : (
+        <div className="-mx-3 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-sm font-normal text-white/55">Indicator</TableHead>
+                <TableHead className="text-sm font-normal text-white/55">Type</TableHead>
+                <TableHead className="text-sm font-normal text-white/55">Status</TableHead>
+                <TableHead className="text-right text-sm font-normal text-white/55">
+                  Updated
+                </TableHead>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={4} className="h-20 text-center text-white/55">
+                    No indicators match “{query}”.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((obj) => {
+                  const meta = typeMeta(obj.type);
+                  return (
+                    <TableRow
+                      key={obj.id}
+                      onClick={() => setSelected(obj)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View ${obj.name ?? obj.id}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelected(obj);
+                        }
+                      }}
+                      className="cursor-pointer focus-visible:bg-white/[0.04] focus-visible:outline-none"
+                    >
+                      <TableCell className="font-medium text-white">
+                        {obj.name ?? obj.id}
+                      </TableCell>
+                      <TableCell className="text-white/55">{meta.label}</TableCell>
+                      <TableCell>
+                        {/* Unverified sample data — status is a claim, not a verified fact. */}
+                        <StatusLabel value="CLAIMED" />
+                      </TableCell>
+                      <TableCell className="text-right text-white/55">
+                        {fmt(obj.modified)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
-      {/* Relationship-chain side panel */}
-      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <SheetContent side="right" className="w-full border-0 bg-background p-0 sm:max-w-md">
-          <SheetTitle className="sr-only">Indicator detail</SheetTitle>
-          {selected ? (
-            <IndicatorDetail selected={selected} chain={chain} />
-          ) : null}
-        </SheetContent>
-      </Sheet>
-    </div>
+      {/* Relationship-chain detail — centered modal */}
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-lg gap-0 p-0 ring-white/10">
+          {selected ? <IndicatorDetail selected={selected} chain={chain} /> : null}
+        </DialogContent>
+      </Dialog>
+    </Panel>
   );
 }
 
@@ -123,12 +172,12 @@ function IndicatorDetail({
   chain: { node: StixObject; edgeType?: string }[];
 }) {
   return (
-    <div className="flex h-full flex-col gap-8 overflow-y-auto p-6">
+    <div className="flex max-h-[80vh] flex-col gap-8 overflow-y-auto p-6">
       <div className="flex flex-col gap-1">
         <span className="text-sm text-white/55">{typeMeta(selected.type).label}</span>
-        <h2 className="font-heading text-2xl font-semibold text-white">
+        <DialogTitle className="font-heading text-2xl font-semibold text-white">
           {selected.name ?? selected.id}
-        </h2>
+        </DialogTitle>
       </div>
 
       {selected.description ? (
@@ -179,9 +228,7 @@ function IndicatorDetail({
             <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
               Boundary
             </span>
-            <span className="text-sm text-white/55">
-              Your systems (not in sample)
-            </span>
+            <span className="text-sm text-white/55">Your systems (not in sample)</span>
           </div>
         </div>
       </div>

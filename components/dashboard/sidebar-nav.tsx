@@ -27,8 +27,7 @@ const NAV: NavItem[] = [
   { label: "Vulnerabilities", href: "/dashboard/vulnerabilities", icon: ShieldAlert },
   { label: "Compliance", href: "/dashboard/compliance", icon: ClipboardCheck },
   { label: "Admin", href: "/admin", icon: Shield, adminOnly: true },
-  // Settings route does not exist yet — placeholder.
-  { label: "Settings", href: "#", icon: Settings },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 function initialOf(name: string) {
