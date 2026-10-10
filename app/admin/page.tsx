@@ -5,7 +5,7 @@ import { requireAdmin, tenantScopeOf } from "@/lib/auth-guards";
 import { isMasterTenant } from "@/lib/tenancy";
 import { db } from "@/lib/db";
 import { invite, user, type Invite, type User } from "@/lib/db/schema";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatCard } from "@/components/dashboard/overview/stat-card";
 import { CreateInviteForm } from "@/components/admin/create-invite-form";
 import { ProvisionTenantForm } from "@/components/admin/provision-tenant-form";
 import { AdminUsersTable } from "@/components/admin/admin-users-table";
@@ -55,56 +55,53 @@ export default async function AdminPage() {
   const admins = users.filter((u) => u.role === "admin").length;
 
   return (
-    <div className="space-y-8">
-      <p className="max-w-2xl text-sm text-muted-foreground">
-        Add people to your team and set what they can do. New accounts are
-        created by invite only.
-      </p>
+    <div className="flex flex-col gap-10">
+      <header className="flex flex-col gap-1">
+        <h1 className="font-heading text-4xl font-semibold text-white">Admin</h1>
+        <p className="text-sm text-white/55">
+          Manage your team and access. Accounts are invite-only.
+        </p>
+      </header>
 
-      {/* Headline overview */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Users" value={users.length} />
-        <StatTile label="Admins" value={admins} accent="text-primary" />
-        <StatTile label="Auditors" value={auditors} accent="text-low" />
-        <StatTile label="Pending invites" value={pendingInvites} accent="text-medium" />
+      {/* Headline numbers */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="Users" value={users.length} />
+        <StatCard label="Admins" value={admins} />
+        <StatCard label="Auditors" value={auditors} />
+        <StatCard label="Pending invites" value={pendingInvites} />
       </div>
 
       {/* Provision new tenant — master tenant only (§6b point 6) */}
       {isMaster && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Provision client tenant</CardTitle>
-            <CardDescription>
-              Founders only. Creates a new client organization and its first
-              admin invite. You won&apos;t see that tenant&apos;s users or invites
-              afterward — provisioning is the only cross-tenant action.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ProvisionTenantForm />
-          </CardContent>
-        </Card>
+        <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-sm font-medium text-white">Provision client tenant</h2>
+            <p className="text-sm text-white/55">
+              Founders only. Creates a new client organization and its first admin
+              invite. You will not see that tenant&apos;s users or invites afterward.
+            </p>
+          </div>
+          <ProvisionTenantForm />
+        </section>
       )}
 
       {/* Create invite */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Create invite</CardTitle>
-          <CardDescription>
-            Sends a one-time sign-up link for your organization. To make someone
-            an auditor, promote them after they&apos;ve joined.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CreateInviteForm />
-        </CardContent>
-      </Card>
+      <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-medium text-white">Create invite</h2>
+          <p className="text-sm text-white/55">
+            Sends a one-time sign-up link for your organization. To make someone an
+            auditor, promote them after they join.
+          </p>
+        </div>
+        <CreateInviteForm />
+      </section>
 
       {/* Invites */}
-      <section className="space-y-3">
+      <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-heading text-base font-medium text-foreground">Invites</h2>
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <h2 className="text-sm font-medium text-white">Invites</h2>
+          <span className="text-sm tabular-nums text-white/55">
             {invites.length} total
           </span>
         </div>
@@ -112,34 +109,15 @@ export default async function AdminPage() {
       </section>
 
       {/* Users */}
-      <section className="space-y-3">
+      <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-heading text-base font-medium text-foreground">Users</h2>
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <h2 className="text-sm font-medium text-white">Users</h2>
+          <span className="text-sm tabular-nums text-white/55">
             {users.length} total
           </span>
         </div>
         <AdminUsersTable users={users} />
       </section>
-    </div>
-  );
-}
-
-function StatTile({
-  label,
-  value,
-  accent = "text-foreground",
-}: {
-  label: string;
-  value: number;
-  accent?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        {label}
-      </span>
-      <p className={`mt-1 text-2xl font-semibold tabular-nums ${accent}`}>{value}</p>
     </div>
   );
 }

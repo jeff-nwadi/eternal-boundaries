@@ -10,6 +10,7 @@ import { LiveControlTable, ControlTable } from "@/components/dashboard/complianc
 import { ComplianceCaveat } from "@/components/dashboard/compliance/compliance-caveat";
 import { ComplianceStats } from "@/components/dashboard/compliance/compliance-stats";
 import { ComplianceAuditMatrix } from "@/components/dashboard/compliance/compliance-audit-matrix";
+import { DashboardTable } from "@/components/dashboard/DashboardTable";
 import { complianceFrameworks } from "@/lib/mock-data";
 
 export default function CompliancePage() {
@@ -151,6 +152,9 @@ export default function CompliancePage() {
           ))}
         </Tabs>
       )}
+
+      {/* Standalone CVE Control Enforcement Matrix Panel */}
+      <DashboardTable />
     </div>
   );
 }

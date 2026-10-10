@@ -1,45 +1,48 @@
 /**
- * One-time bootstrap for the first TWO admin accounts.
+ * One-time bootstrap (and optional reset) for the single master-tenant admin account.
  *
  * Why this exists: the invite system is a closed loop — accounts are created
  * only from invites, and invites can only be issued by an existing admin
- * (schema-enforced not-null FK to user.id). On a fresh database there is no
+ * (schema-enforced NOT NULL FK to user.id). On a fresh database there is no
  * admin to issue that first invite, so there is no in-app way to create one.
  * This manual script is the single sanctioned exception (CLAUDE.md §6a).
  *
- * Safety properties:
- *   - Not an HTTP route. It cannot be triggered by a request — it only runs
- *     when an operator executes it from a shell.
- *   - One-time. It refuses to run if ANY admin already exists, so it can never
- *     re-seed a database that has already been set up.
- *   - Dev/setup only. It refuses to run under NODE_ENV=production.
- *   - Passwords are generated, printed once, and never stored in plaintext —
- *     only BetterAuth's hash reaches the database.
+ * Safety properties (all retained from the original):
+ *   - Not an HTTP route. Runs only when an operator executes it from a shell.
+ *   - One-time by default. Refuses to run if ANY admin already exists, unless
+ *     the --reset flag is passed with explicit intent to wipe and recreate.
+ *   - Dev/setup only. Refuses to run under NODE_ENV=production.
+ *   - Password is typed interactively with hidden/masked input — it is NEVER
+ *     printed, logged, or stored in plaintext. Only BetterAuth's hash is written.
  *
- * Run (needs a real DATABASE_URL + BETTER_AUTH_SECRET in .env.local):
- *   npm run db:seed-admins -- first.admin@company.com second.admin@company.com
- * or set ADMIN_EMAIL_1 / ADMIN_EMAIL_2 in .env.local and run:
+ * Run (needs DATABASE_URL + BETTER_AUTH_SECRET in .env.local):
+ *
+ *   # Fresh database — no admin yet:
+ *   npm run db:seed-admins -- admin@company.com
+ *
+ *   # Reset: wipe existing admin(s) and start fresh:
+ *   npm run db:seed-admins -- admin@company.com --reset
+ *
+ *   # Or set ADMIN_EMAIL in .env.local and omit the argument:
  *   npm run db:seed-admins
+ *   npm run db:seed-admins -- --reset
  */
-import { randomBytes } from "node:crypto";
+import * as readline from "node:readline";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { db } from "../lib/db";
-import { schema, tenant, user } from "../lib/db/schema";
+import { schema, tenant, user, account, session, invite } from "../lib/db/schema";
 import { MASTER_TENANT_ID, MASTER_TENANT_NAME } from "../lib/tenancy";
 
-// CLI-only BetterAuth instance — no nextCookies plugin, so it works outside a
-// request context. Account creation here is in-process and never touches the
-// HTTP sign-up endpoint (which is blocked anyway).
-//
-// tenantId must be a declared additionalField (input: true) so the signup body
-// can set the NOT NULL tenant column at insert time (CLAUDE.md §6b).
+// ---------------------------------------------------------------------------
+// CLI-only BetterAuth instance — no nextCookies plugin, no HTTP exposure.
+// ---------------------------------------------------------------------------
 const cliAuth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   secret: process.env.BETTER_AUTH_SECRET,
-  emailAndPassword: { enabled: true, minPasswordLength: 8 },
+  emailAndPassword: { enabled: true, minPasswordLength: 12 },
   user: {
     additionalFields: {
       tenantId: { type: "string", required: true, input: true },
@@ -47,19 +50,88 @@ const cliAuth = betterAuth({
   },
 });
 
-function generatePassword(): string {
-  // ~24 chars, URL-safe, ~108 bits of entropy.
-  return randomBytes(18).toString("base64url");
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function fail(message: string): never {
+  console.error(`\n  ✗ ${message}\n`);
+  process.exit(1);
 }
 
 function isEmail(value: string): boolean {
   return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value);
 }
 
-function fail(message: string): never {
-  console.error(`\n  ✗ ${message}\n`);
-  process.exit(1);
+/**
+ * Prompts for a password with hidden/masked input (input is NOT echoed to the
+ * terminal). Returns the typed string. Works on Windows and Unix.
+ */
+async function promptPassword(label: string): Promise<string> {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    // Hide input: replace the stream's write so nothing is echoed.
+    const originalWrite = (rl as unknown as { output: { write: (s: string) => void } }).output.write.bind(
+      (rl as unknown as { output: { write: (s: string) => void } }).output
+    );
+    (rl as unknown as { output: { write: (s: string) => void } }).output.write = (s: string) => {
+      // Allow the prompt label itself; suppress everything that follows.
+      if (s === label) originalWrite(s);
+    };
+
+    rl.question(label, (answer) => {
+      // Emit a newline since we suppressed the \n from Enter.
+      originalWrite("\n");
+      rl.close();
+      resolve(answer);
+    });
+  });
 }
+
+// ---------------------------------------------------------------------------
+// Reset: delete existing admin users and their related rows
+// ---------------------------------------------------------------------------
+
+async function deleteExistingAdmins() {
+  const existing = await db
+    .select({ id: user.id, email: user.email })
+    .from(user)
+    .where(eq(user.role, "admin"));
+
+  if (existing.length === 0) return;
+
+  const ids = existing.map((u) => u.id);
+
+  console.log("\n  Existing admin accounts to be removed:");
+  for (const u of existing) {
+    console.log(`    • ${u.email} (id: ${u.id})`);
+  }
+  console.log();
+
+  // Cascade manually in the correct dependency order.
+  // session → account have ON DELETE CASCADE from user, but invite.invited_by_admin_id
+  // is RESTRICT, so we null-ify / delete dependent invites first.
+  //
+  // Un-redeem invites issued BY these admins (set invited_by_admin_id is RESTRICT FK).
+  // Since we're wiping the whole admin tier, delete those invites entirely.
+  await db.delete(invite).where(inArray(invite.invitedByAdminId, ids));
+
+  // sessions and accounts are ON DELETE CASCADE from user, but drizzle-ORM won't
+  // automatically cascade — call explicit deletes for safety.
+  await db.delete(session).where(inArray(session.userId, ids));
+  await db.delete(account).where(inArray(account.userId, ids));
+  await db.delete(user).where(inArray(user.id, ids));
+
+  console.log(`  ✓ Removed ${existing.length} admin account(s) and their related rows.\n`);
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
 
 async function main() {
   if (process.env.NODE_ENV === "production") {
@@ -68,74 +140,114 @@ async function main() {
   if (!process.env.DATABASE_URL) {
     fail("DATABASE_URL is not set. Point it at your Neon instance in .env.local first.");
   }
+  if (!process.env.BETTER_AUTH_SECRET) {
+    fail("BETTER_AUTH_SECRET is not set in .env.local.");
+  }
 
-  // Emails: positional args win, otherwise ADMIN_EMAIL_1 / ADMIN_EMAIL_2.
-  const args = process.argv.slice(2).filter((a) => !a.startsWith("-"));
-  const email1 = (args[0] ?? process.env.ADMIN_EMAIL_1 ?? "").trim().toLowerCase();
-  const email2 = (args[1] ?? process.env.ADMIN_EMAIL_2 ?? "").trim().toLowerCase();
+  // Parse args: any non-flag arg is the email; --reset enables wipe mode.
+  const rawArgs = process.argv.slice(2);
+  const flags = new Set(rawArgs.filter((a) => a.startsWith("--")));
+  const positional = rawArgs.filter((a) => !a.startsWith("--"));
 
-  if (!email1 || !email2) {
+  const isReset = flags.has("--reset");
+  const email = (positional[0] ?? process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
+
+  if (!email) {
     fail(
-      "Two admin emails are required.\n" +
-        "    Usage: npm run db:seed-admins -- admin1@company.com admin2@company.com\n" +
-        "    Or set ADMIN_EMAIL_1 and ADMIN_EMAIL_2 in .env.local."
+      "An admin email is required.\n" +
+        "    Usage: npm run db:seed-admins -- admin@company.com\n" +
+        "    Or set ADMIN_EMAIL in .env.local and omit the argument."
     );
   }
-  if (!isEmail(email1) || !isEmail(email2)) {
-    fail("One of the provided values is not a valid email address.");
-  }
-  if (email1 === email2) {
-    fail("Provide two distinct email addresses.");
+  if (!isEmail(email)) {
+    fail(`"${email}" is not a valid email address.`);
   }
 
-  // One-time guard: refuse if the database already has any admin.
-  const existingAdmin = await db
-    .select({ id: user.id })
+  // ---------------------------------------------------------------------------
+  // Guard: check for existing admin
+  // ---------------------------------------------------------------------------
+  const existingAdmins = await db
+    .select({ id: user.id, email: user.email })
     .from(user)
-    .where(eq(user.role, "admin"))
-    .limit(1);
-  if (existingAdmin.length > 0) {
+    .where(eq(user.role, "admin"));
+
+  if (existingAdmins.length > 0 && !isReset) {
+    const list = existingAdmins.map((u) => `  • ${u.email}`).join("\n");
     fail(
-      "This database already has an admin. Bootstrap is one-time — use the in-app\n" +
-        "    invite flow to add more admins."
+      `This database already has ${existingAdmins.length} admin account(s):\n\n${list}\n\n` +
+        "  Bootstrap is one-time by default.\n" +
+        "  To wipe and recreate, re-run with --reset:\n" +
+        "    npm run db:seed-admins -- admin@company.com --reset"
     );
   }
 
-  // Ensure the founders' master tenant exists (§6b). Idempotent.
+  // ---------------------------------------------------------------------------
+  // Collect password interactively — hidden/masked, never printed
+  // ---------------------------------------------------------------------------
+  console.log(`\n  Setting up admin account: ${email}`);
+  if (isReset) {
+    console.log("  ⚠  --reset mode: existing admin(s) will be deleted before creating the new one.\n");
+  }
+
+  let password = "";
+  let confirmed = "";
+
+  while (true) {
+    password = await promptPassword("  Enter password (min 12 chars): ");
+    if (password.length < 12) {
+      console.error("  ✗ Password must be at least 12 characters. Try again.\n");
+      continue;
+    }
+    confirmed = await promptPassword("  Confirm password: ");
+    if (password !== confirmed) {
+      console.error("  ✗ Passwords do not match. Try again.\n");
+      continue;
+    }
+    break;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Reset: delete existing admins if --reset was passed
+  // ---------------------------------------------------------------------------
+  if (isReset) {
+    await deleteExistingAdmins();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Ensure master tenant exists (idempotent)
+  // ---------------------------------------------------------------------------
   await db
     .insert(tenant)
     .values({ id: MASTER_TENANT_ID, name: MASTER_TENANT_NAME, isMaster: true })
     .onConflictDoNothing();
 
-  const created: { email: string; password: string }[] = [];
-  for (const email of [email1, email2]) {
-    const password = generatePassword();
-    try {
-      const res = await cliAuth.api.signUpEmail({
-        // Both founders belong to the master tenant.
-        body: { email, password, name: email.split("@")[0], tenantId: MASTER_TENANT_ID },
-      });
-      await db.update(user).set({ role: "admin" }).where(eq(user.id, res.user.id));
-      created.push({ email, password });
-    } catch (err) {
-      console.error(
-        `  ✗ Could not create ${email}: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
+  // ---------------------------------------------------------------------------
+  // Create the admin account via BetterAuth (password is hashed in-process)
+  // ---------------------------------------------------------------------------
+  try {
+    const res = await cliAuth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name: email.split("@")[0],
+        tenantId: MASTER_TENANT_ID,
+      },
+    });
+    await db.update(user).set({ role: "admin" }).where(eq(user.id, res.user.id));
+  } catch (err) {
+    fail(
+      `Could not create admin account: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 
-  if (created.length === 0) {
-    fail("No admin accounts were created.");
-  }
+  // Explicitly clear the password variable from memory.
+  password = "";
+  confirmed = "";
 
-  console.log("\n  ✓ Admin accounts created.");
-  console.log("  Copy these temporary passwords NOW — they are not stored anywhere");
-  console.log("  and will never be shown again.\n");
-  for (const c of created) {
-    console.log(`    email:    ${c.email}`);
-    console.log(`    password: ${c.password}\n`);
-  }
-  console.log("  Sign in at /login, then change each password immediately.\n");
+  console.log("\n  ✓ Admin account created successfully.");
+  console.log(`    email:  ${email}`);
+  console.log("    tenant: " + MASTER_TENANT_ID);
+  console.log("\n  Sign in at /login.\n");
   process.exit(0);
 }
 
