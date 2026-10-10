@@ -210,7 +210,7 @@ export default function Home() {
         <PricingTeaser />
 
         {/* ---------- Testimonials (structurally ready, intentionally empty) ---------- */}
-        <section className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20">
+        {/* <section className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20">
           <Reveal className="flex flex-col items-center gap-3 text-center">
             <Eyebrow>Customer stories</Eyebrow>
             <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
@@ -222,7 +222,7 @@ export default function Home() {
                 : ""}
             </p>
           </Reveal>
-        </section>
+        </section> */}
 
         {/* ---------- FAQ ---------- */}
         <section
