@@ -11,7 +11,7 @@ import { ProvisionTenantForm } from "@/components/admin/provision-tenant-form";
 import { AdminUsersTable } from "@/components/admin/admin-users-table";
 import { AdminInvitesTable } from "@/components/admin/admin-invites-table";
 
-export const metadata: Metadata = { title: "Admin" };
+export const metadata: Metadata = { title: "Team" };
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-4xl font-semibold text-white">Admin</h1>
+        <h1 className="font-heading text-4xl font-semibold text-white">Team</h1>
         <p className="text-sm text-white/55">
           Manage your team and access. Accounts are invite-only.
         </p>

@@ -11,21 +11,25 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Severity / status shown with TEXT + ICON WEIGHT only — no color (CLAUDE.md §4
- * restyle rule). Higher severity reads heavier (fuller white, thicker stroke);
- * lower reads quieter. The value is rendered as-is so CLAIMED stays CLAIMED.
+ * Severity / status shown with text + an icon. Severities (critical/high/medium/
+ * low) carry their fixed palette color (CLAUDE.md §4); everything else stays
+ * monochrome, reading heavier or quieter by weight. The icon inherits the text
+ * color via currentColor. The value renders as-is so CLAIMED stays CLAIMED.
  */
-const META: Record<string, { icon: LucideIcon; strong?: boolean; quiet?: boolean }> = {
-  critical: { icon: AlertTriangle, strong: true },
-  high: { icon: ShieldAlert, strong: true },
-  medium: { icon: CircleDot },
-  low: { icon: Minus, quiet: true },
+const META: Record<
+  string,
+  { icon: LucideIcon; strong?: boolean; quiet?: boolean; tone?: string }
+> = {
+  critical: { icon: AlertTriangle, strong: true, tone: "text-critical" },
+  high: { icon: ShieldAlert, strong: true, tone: "text-high" },
+  medium: { icon: CircleDot, strong: true, tone: "text-medium" },
+  low: { icon: Minus, tone: "text-low" },
   open: { icon: CircleDot, strong: true },
   "open finding": { icon: CircleDot, strong: true },
   patched: { icon: CheckCircle2, quiet: true },
   covered: { icon: CheckCircle2, quiet: true },
   compliant: { icon: CheckCircle2, quiet: true },
-  "non_compliant": { icon: AlertTriangle, strong: true },
+  "non_compliant": { icon: AlertTriangle, strong: true, tone: "text-critical" },
   claimed: { icon: Circle },
 };
 
@@ -42,7 +46,13 @@ export function StatusLabel({
     <span
       className={cn(
         "inline-flex items-center gap-1.5 whitespace-nowrap text-sm",
-        meta.strong ? "font-medium text-white" : meta.quiet ? "text-white/55" : "text-white/75",
+        meta.tone
+          ? cn("font-medium", meta.tone)
+          : meta.strong
+            ? "font-medium text-white"
+            : meta.quiet
+              ? "text-white/55"
+              : "text-white/75",
         className
       )}
     >

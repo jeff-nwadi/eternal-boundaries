@@ -54,7 +54,7 @@ export function Hero() {
             size="lg"
             className="rounded-full px-6 font-semibold"
           >
-            <Link href="/contact">Request a demo</Link>
+            <Link href="/login">Get Started</Link>
           </Button>
         </Reveal>
 

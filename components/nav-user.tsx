@@ -50,8 +50,8 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground [&>svg]:transition-transform [&>svg]:duration-200 [&>svg]:ease-out hover:[&>svg]:scale-110"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarFallback className="rounded-lg bg-primary/15 text-xs font-medium text-primary">
+              <Avatar className="h-8 w-8 rounded-lg bg-primary">
+                <AvatarFallback className="rounded-lg bg-primary text-xs font-medium text-primary">
                   {initialsOf(user.name)}
                 </AvatarFallback>
               </Avatar>
@@ -72,8 +72,8 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg bg-primary/15 text-xs font-medium text-primary">
+                <Avatar className="h-8 w-8 rounded-lg bg-primary">
+                  <AvatarFallback className="rounded-lg bg-primary text-xs font-medium text-primary">
                     {initialsOf(user.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -92,12 +92,6 @@ export function NavUser({
                 <a href="#">
                   <UserCircle />
                   Account
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a href="#">
-                  <Settings />
-                  Settings
                 </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>

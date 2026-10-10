@@ -125,26 +125,26 @@ export function DashboardTable({ className }: { className?: string }) {
               <TableBody>
                 {items.map((item, idx) => (
                   <TableRow key={item.cve_id || idx}>
-                    <TableCell className="font-mono text-sm font-medium text-white">
+                    <TableCell className="py-5 align-top font-mono text-sm font-medium text-white">
                       {item.cve_id}
                     </TableCell>
-                    <TableCell className="font-mono text-sm text-white/55">
+                    <TableCell className="py-5 align-top font-mono text-sm text-white/55">
                       {item.affected_asset}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-5 align-top">
                       <StatusLabel value={item.severity} />
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-2 py-1">
+                    <TableCell className="py-5 align-top">
+                      <div className="flex flex-col gap-3">
                         {item.linked_controls && item.linked_controls.length > 0 ? (
                           item.linked_controls.map((ctrl, cIdx) => (
                             <div
                               key={ctrl.control_id || cIdx}
-                              className="flex flex-wrap items-center gap-2"
+                              className="flex min-w-[320px] items-center gap-3"
                             >
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="cursor-help rounded-md bg-white/[0.06] px-1.5 py-0.5 font-mono text-xs text-white underline-offset-2 decoration-dotted decoration-white/30 hover:underline">
+                                  <span className="shrink-0 cursor-help rounded-md bg-white/[0.06] px-2 py-1 font-mono text-xs text-white underline-offset-2 decoration-dotted decoration-white/30 hover:underline">
                                     {ctrl.control_id}
                                   </span>
                                 </TooltipTrigger>
@@ -157,12 +157,14 @@ export function DashboardTable({ className }: { className?: string }) {
                                   ) : null}
                                 </TooltipContent>
                               </Tooltip>
-                              <span className="text-sm text-white/55">{ctrl.control_name}</span>
+                              <span className="flex-1 text-sm text-white/55">
+                                {ctrl.control_name}
+                              </span>
                               {/* §5.4: nested control status is restricted to CLAIMED
                                   (unverified) until gate-off/gate-on tests pass. */}
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="cursor-help">
+                                  <span className="shrink-0 cursor-help">
                                     <StatusLabel value="CLAIMED" />
                                   </span>
                                 </TooltipTrigger>

@@ -26,7 +26,7 @@ const NAV: NavItem[] = [
   { label: "Threat Intelligence", href: "/dashboard/threat", icon: Radar },
   { label: "Vulnerabilities", href: "/dashboard/vulnerabilities", icon: ShieldAlert },
   { label: "Compliance", href: "/dashboard/compliance", icon: ClipboardCheck },
-  { label: "Admin", href: "/admin", icon: Shield, adminOnly: true },
+  { label: "Team", href: "/admin", icon: Shield, adminOnly: true },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
