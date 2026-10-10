@@ -236,6 +236,15 @@ This is explicitly **not current scope** and was confirmed as future work by the
 
 If asked to "add a block-ip button" or similar without this scaffolding having been explicitly discussed first, treat that as scope creep and flag it rather than building it.
 
+**⚠️ Resurfaced (2026-09-20) via `metadata_blob` payload spec — caught and resolved.** Backend owner's proposed `metadata_blob` structure for the `/transaction` remediation endpoint (§5.2) included `remediation_action` values of `isolate-host` and `block-ip` — i.e., the exact out-of-scope capability from above, quietly folded into what was framed as a routine payload detail. Flagged directly; backend owner agreed fully and confirmed:
+
+- **Current phase (Phase 1 UI): simulation only.** The "Mark as remediated" / "Intent to Remediate" button changes a **UI-only status flag** (e.g., `ALERTING` → `PENDING RECOUP`) or appends a simulated event string. **It must NOT trigger any outbound command to real infrastructure.** Build and treat this as frontend-only state for now — no live backend mutation of real client systems, regardless of what `/transaction` accepts on the backend side.
+- **Before any real infrastructure action is wired**, the following must be designed and built first (backend owner's own stated roadmap, agreed 2026-09-20):
+  - RBAC split: `SecOps-Viewer` (read-only) vs. `SecOps-Admin` (authorized to deploy gates) — note this doesn't map 1:1 to the existing `analyst`/`auditor`/`admin` roles in §6a; reconcile explicitly when this is actually designed, don't assume equivalence.
+  - A mandatory double-confirmation modal before any destructive action fires.
+  - An immutable, cryptographically-verifiable audit log entry per action (who, what, when) for compliance purposes.
+- **Do not build toward real infrastructure mutation until the above is explicitly designed together** — this section's original scope boundary stands; this incident is a confirmation of it holding, not a replacement for it. If a future payload spec, endpoint change, or "quick addition" reintroduces real infrastructure command execution without this safety plane being built first, flag it again the same way.
+
 ## 6. Compliance framework mapping reference
 
 - **NIST SP 800-53**, families in scope: `SC-*` (System and Communications Protection — e.g., SC-7 Boundary Protection, SC-8 Transmission Confidentiality, SC-13 Cryptographic Protection, SC-5 DoS Protection) and `SI-*` (System and Information Integrity — e.g., SI-2 Flaw Remediation, SI-4 System Monitoring, SI-7 Software Integrity).

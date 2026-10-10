@@ -1,188 +1,254 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { SiteHeader } from "@/components/landing/site-header";
 import { SiteFooter } from "@/components/landing/site-footer";
-import { HeroVisual } from "@/components/landing/hero-visual";
+import { CloudFieldBackground } from "@/components/landing/cloud-field-background";
+import { Hero } from "@/components/landing/hero";
+import { BoundaryDiagram } from "@/components/landing/boundary-diagram";
 import { FeatureSection } from "@/components/landing/feature-section";
+import { PricingTeaser } from "@/components/landing/pricing-teaser";
 import HowItWorks from "@/components/ui/how-it-works";
 import { AsciiContourBackground } from "@/components/landing/ascii-contour-background";
 import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
+import {
+  STATS,
+  PRODUCT_VIEWS,
+  COMPLIANCE_FRAMEWORKS,
+  SECURITY_POINTS,
+  TESTIMONIALS,
+  FAQS,
+} from "@/lib/content";
 
-const FAQ = [
-  {
-    id: 1,
-    question: "What is Eternal Boundaries?",
-    answer:
-      "One dashboard that brings your threat feed, vulnerabilities, and compliance status together so your team can act on them.",
-  },
-  {
-    id: 2,
-    question: "Do I need to replace my current tools?",
-    answer:
-      "No. It reads the data your existing tools produce and gives you one clear place to work from.",
-  },
-  {
-    id: 3,
-    question: "How do the fix-it steps work?",
-    answer:
-      "Each vulnerability comes with plain-language steps to fix it — not just a raw scan result.",
-  },
-  {
-    id: 4,
-    question: "Which compliance standards do you cover?",
-    answer:
-      "Your results line up with NIST 800-53 and SOC 2 — the checklists auditors use — so coverage is easy to trace.",
-  },
-  {
-    id: 5,
-    question: "Who is it built for?",
-    answer:
-      "Security teams, their leaders, and compliance auditors who need one clear view of what's happening.",
-  },
-];
+function Divider() {
+  return (
+    <div className="mx-auto w-full max-w-6xl px-6">
+      <div className="boundary-line" />
+    </div>
+  );
+}
 
-const STANDARDS = [
-  { name: "NIST 800-53", detail: "U.S. government security checklist" },
-  { name: "SOC 2", detail: "Trust & security audit standard" },
-  { name: "STIX", detail: "Standard format for sharing threat data" },
-];
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="text-xs font-medium uppercase tracking-[0.2em]">
+      {children}
+    </span>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="relative flex min-h-dvh flex-col bg-background">
+      {/* Cloud-field WebGL background behind the nav + hero (ThreeUI cloud-field) */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[720px] overflow-hidden sm:h-[840px]">
+        <CloudFieldBackground className="absolute inset-0" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/5 to-background"
+        />
+      </div>
+
       <SiteHeader />
 
-      <main className="flex-1">
-        {/* Hero */}
-        <section className="mx-auto w-full max-w-5xl px-6 pb-16 pt-16 sm:pt-24">
-          <div className="flex flex-col items-center text-center gap-12">
-            <div className="flex max-w-3xl flex-col items-center gap-6">
-              <Reveal
-                as="h1"
-                delay={60}
-                className="text-4xl font-semibold text-foreground sm:text-5xl lg:text-[3.4rem]"
-              >
-                Know what&apos;s putting your business{" "}
-                <span className="text-primary">at risk</span> — and fix it first.
-              </Reveal>
+      <main className="relative z-10 flex-1">
+        {/* ---------- Hero ---------- */}
+        <Hero />
 
-              <Reveal as="p" delay={120} className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-                Eternal Boundaries brings your security alerts, weak spots, and
-                compliance status into one clear dashboard — so your team can see
-                what&apos;s exposed, fix what matters, and prove it to auditors.
-              </Reveal>
+        {/* ---------- Three-view product strip ---------- */}
+        <section
+          id="product"
+          className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
+        >
+          <Reveal className="flex max-w-2xl flex-col gap-3">
+            <Eyebrow>The platform</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+              Three views, one clear picture.
+            </h2>
+            <p className="text-pretty text-base leading-relaxed text-muted-foreground">
+              Threats, weak spots, and compliance in one place.
+            </p>
+          </Reveal>
 
-              <Reveal delay={180} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
-                <Button asChild size="lg">
-                  <Link href="/login">
-                    Get started
-                    <ArrowRight strokeWidth={1.75} />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link href="/login">Sign in</Link>
-                </Button>
-              </Reveal>
-            </div>
-
-            <Reveal delay={140} className="w-full max-w-2xl">
-              <HeroVisual />
-            </Reveal>
+          <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {PRODUCT_VIEWS.map((view, i) => {
+              const Icon = view.icon;
+              return (
+                <Reveal
+                  key={view.name}
+                  delay={60 + i * 70}
+                  className="group flex flex-col rounded-2xl bg-card p-6 ring-1 ring-white/8 transition-colors duration-200 hover:ring-primary/30"
+                >
+                  <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Icon className="size-5" strokeWidth={1.75} />
+                  </span>
+                  <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
+                    {view.name}
+                  </h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    {view.summary}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                    Learn more
+                    <ArrowUpRight
+                      className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      strokeWidth={2}
+                    />
+                  </span>
+                </Reveal>
+              );
+            })}
           </div>
         </section>
 
-        <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="boundary-line" />
-        </div>
+        {/* ---------- Boundary diagram (anime.js) ---------- */}
+        <section className="mx-auto w-full max-w-5xl scroll-mt-20 px-6 py-20">
+          <Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
+            <Eyebrow>The boundary</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+              External out. Protected in.
+            </h2>
+            <p className="text-pretty text-base leading-relaxed text-muted-foreground">
+              Every threat is resolved at the line between untrusted and protected.
+            </p>
+          </Reveal>
+          <Reveal delay={80} className="mt-10">
+            <BoundaryDiagram />
+          </Reveal>
+        </section>
 
-        {/* Features */}
+        {/* ---------- Features ---------- */}
         <FeatureSection />
 
-        <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="boundary-line" />
-        </div>
-
-        {/* How it works */}
+        {/* ---------- How it works ---------- */}
         <section
           id="how-it-works"
           className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
         >
           <Reveal className="flex max-w-2xl flex-col gap-3">
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
-              How it works
-            </span>
-            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
+            <Eyebrow>How it works</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
               Get started in three simple steps.
             </h2>
           </Reveal>
-
           <HowItWorks className="mt-10" />
         </section>
 
-        {/* Standards strip */}
-        <section id="standards" className="scroll-mt-20 border-y border-border bg-card/40">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-14 lg:flex-row lg:items-center lg:justify-between">
-            <Reveal className="max-w-md">
-              <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
-                Built on the security standards auditors already trust.
+        {/* ---------- Compliance frameworks ---------- */}
+        <section
+          id="compliance"
+          className="scroll-mt-20 border-y border-white/8 bg-card/40"
+        >
+          <div className="mx-auto w-full max-w-4xl px-6 py-20">
+            <Reveal className="flex max-w-2xl flex-col gap-3">
+              <Eyebrow>Compliance mapping</Eyebrow>
+              <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+                Mapped to the standards auditors trust.
               </h2>
-              <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
-                Your results line up with recognized standards like NIST and SOC 2
-                — so the coverage you report is coverage you can back up.
+              <p className="text-pretty text-base leading-relaxed text-muted-foreground">
+                Every finding ties to real control families, in plain language.
               </p>
             </Reveal>
 
-            <Reveal delay={100} className="grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-3 lg:w-auto">
-              {STANDARDS.map((s) => (
-                <div
-                  key={s.name}
-                  className="rounded-lg border border-border bg-background px-4 py-3"
+            <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
+              {COMPLIANCE_FRAMEWORKS.map((fw, i) => (
+                <Reveal
+                  key={fw.name}
+                  delay={60 + i * 80}
+                  className="rounded-2xl bg-background p-6 ring-1 ring-white/8"
                 >
-                  <div className="text-sm font-semibold text-foreground">
-                    {s.name}
+                  <div className="flex items-baseline justify-between gap-4">
+                    <h3 className="font-heading text-lg font-semibold text-foreground">
+                      {fw.name}
+                    </h3>
+                    <span className="text-xs font-medium text-primary">
+                      {fw.scope}
+                    </span>
                   </div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">
-                    {s.detail}
-                  </div>
-                </div>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {fw.plain}
+                  </p>
+                </Reveal>
               ))}
-            </Reveal>
+            </div>
           </div>
         </section>
 
-        {/* FAQ */}
+        {/* ---------- Security overview ---------- */}
+        <section
+          id="security"
+          className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
+        >
+          <Reveal className="flex max-w-2xl flex-col gap-3">
+            <Eyebrow>Security and architecture</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+              Built for teams that answer to auditors.
+            </h2>
+          </Reveal>
+
+          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            {SECURITY_POINTS.map((point, i) => (
+              <Reveal
+                key={point.title}
+                delay={40 + i * 50}
+                className="border-t border-white/10 pt-4"
+              >
+                <h3 className="font-heading text-base font-semibold text-foreground">
+                  {point.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  {point.description}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+
+        {/* ---------- Pricing ---------- */}
+        <PricingTeaser />
+
+        {/* ---------- Testimonials (structurally ready, intentionally empty) ---------- */}
+        <section className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20">
+          <Reveal className="flex flex-col items-center gap-3 text-center">
+            <Eyebrow>Customer stories</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+              Coming soon.
+            </h2>
+            <p className="max-w-xl text-pretty text-base leading-relaxed text-muted-foreground">
+              {TESTIMONIALS.length === 0
+                ? "Onboarding our first design partners. Real stories land here, never placeholders."
+                : ""}
+            </p>
+          </Reveal>
+        </section>
+
+        {/* ---------- FAQ ---------- */}
         <section
           id="faq"
           className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
         >
           <Reveal className="flex max-w-2xl flex-col gap-3">
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
-              FAQ
-            </span>
-            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
               Questions, answered.
             </h2>
           </Reveal>
-
           <Reveal delay={80} className="mt-8">
             <FaqAccordion
-              data={FAQ}
+              data={FAQS}
               timestamp=""
               className="max-w-2xl p-0"
-              answerClassName="bg-card border border-border text-foreground"
+              answerClassName="bg-card border border-white/8 text-foreground"
             />
           </Reveal>
         </section>
 
-        {/* Closing CTA */}
+        {/* ---------- Closing CTA ---------- */}
         <section className="mx-auto w-full max-w-6xl px-6 py-20">
-          <Reveal className="relative overflow-hidden rounded-3xl border border-border bg-card px-6 py-16 sm:px-10 sm:py-20">
-            {/* Animated Canvas2D "contour" ASCII effect (silk field). */}
+          <Reveal className="relative overflow-hidden rounded-3xl bg-card px-6 py-16 ring-1 ring-white/8 sm:px-10 sm:py-20">
             <AsciiContourBackground />
-            {/* Radial scrim keeps the heading + CTA crisp over the effect. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0"
@@ -192,11 +258,11 @@ export default function Home() {
               }}
             />
             <div className="relative z-10 flex flex-col items-center gap-6 text-center">
-              <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
-                Get a clear picture of your security — starting today.
+              <h2 className="max-w-2xl font-heading text-3xl font-semibold text-foreground sm:text-4xl">
+                See your security clearly.
               </h2>
               <p className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground">
-                Sign in to the dashboard, or start a new workspace for your team.
+                Sign in, or start a workspace for your team.
               </p>
               <Button asChild size="lg">
                 <Link href="/login">

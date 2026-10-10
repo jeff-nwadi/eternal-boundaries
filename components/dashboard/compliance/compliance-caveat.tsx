@@ -21,14 +21,14 @@ export function ComplianceCaveat() {
           <button
             type="button"
             aria-label="About this data"
-            className="inline-flex size-5 items-center justify-center rounded-full text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
+            className="inline-flex size-5 items-center justify-center rounded-full text-white/55 transition-colors duration-150 ease-out hover:text-white"
           >
             <Info className="size-4" strokeWidth={1.75} />
           </button>
         </TooltipTrigger>
         <TooltipContent className="max-w-xs">
           <p className="font-medium">Unverified sample data</p>
-          <p className="mt-1 text-xs text-primary-foreground/70">
+          <p className="mt-1 text-xs text-background/70">
             These numbers come from the sample records. They aren&apos;t yet
             connected to the actual weak spots, and only some checks are shown.
             Not audited.

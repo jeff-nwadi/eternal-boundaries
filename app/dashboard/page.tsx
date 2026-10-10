@@ -1,174 +1,76 @@
 import type { Metadata } from "next";
-import {
-  AlertTriangle,
-  Calendar,
-  CheckCircle2,
-  ChevronDown,
-  Download,
-  MoreHorizontal,
-  Shield,
-  ShieldCheck,
-  TrendingUp,
-} from "lucide-react";
+import Link from "next/link";
 
-import { requireAuth } from "@/lib/auth-guards";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ThreatTacticsMatrix } from "@/components/dashboard/overview/threat-tactics-matrix";
-import { ThreatMap } from "@/components/dashboard/overview/threat-map";
-import { AlertCenter } from "@/components/dashboard/overview/alert-center";
-import { SecurityThreatsTable } from "@/components/dashboard/overview/security-threats-table";
-import { ResponseDistributionChart } from "@/components/dashboard/overview/response-distribution-chart";
+import { stixObjects, vulnFindings, complianceFrameworks } from "@/lib/mock-data";
+import { StatCard } from "@/components/dashboard/overview/stat-card";
+import { ActivityCard } from "@/components/dashboard/overview/activity-card";
+import { EngineStatus } from "@/components/dashboard/overview/engine-status";
 
-export const metadata: Metadata = { title: "Overview Dashboard" };
+export const metadata: Metadata = { title: "Overview" };
 
-export default async function OverviewPage() {
-  const session = await requireAuth();
-  const userName = session.user.name ?? "Schweid";
+export default function OverviewPage() {
+  // All figures derived from the received sample data (flagged "Sample data" in
+  // the sidebar). No invented numbers.
+  const openFindings = vulnFindings.filter(
+    (f) => f.patch_status.toLowerCase() !== "patched"
+  ).length;
+  const actors = stixObjects.filter((o) => o.type === "threat-actor").length;
+  const malware = stixObjects.filter((o) => o.type === "malware").length;
+  const activeIndicators = actors + malware;
+  const controlsTracked = complianceFrameworks.reduce(
+    (sum, f) => sum + f.summary.total_controls_tracked,
+    0
+  );
+  // Simulation-only (CLAUDE.md §5.6). No real remediation records exist yet.
+  const pendingRemediation = 0;
 
   return (
-    <div className="space-y-4">
-      {/* Top Header Row with Date & Action Controls */}
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-            Welcome back, {userName}
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Latest security activity overview
+    <div className="flex flex-col gap-10">
+      {/* Heading + the single lime action */}
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-heading text-4xl font-semibold text-white">Overview</h1>
+          <p className="text-sm text-white/55">
+            What your security console is showing right now.
           </p>
         </div>
-
-        {/* Date Selector & Action Buttons (matching screenshot) */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-3 py-1.5 text-xs text-muted-foreground shadow-2xs">
-            <Calendar className="size-3.5" />
-            <span className="font-medium text-foreground">Jan 15 - Jan 19, 2026</span>
-            <ChevronDown className="size-3" />
-          </div>
-
-          <Button variant="default" size="sm" className="h-8 gap-1.5 px-3 text-xs font-semibold">
-            <Download className="size-3.5" />
-            Export
-          </Button>
-
-          <Button variant="outline" size="icon-sm" className="h-8 size-8">
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </div>
+        <Link
+          href="/dashboard/vulnerabilities"
+          className="inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90"
+        >
+          View open findings
+        </Link>
       </header>
 
-      {/* Top Metric Cards Row (4 Cards) */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {/* Card 1: Threats Blocked */}
-        <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
-          <CardContent className="p-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Threats Blocked
-                </span>
-                <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                  14,832
-                </p>
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-primary">
-                  <TrendingUp className="size-3" />
-                  <span>+42% from last week</span>
-                </div>
-              </div>
-              <span className="flex size-8 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400">
-                <Shield className="size-4" />
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card 2: Active Incidents */}
-        <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
-          <CardContent className="p-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Active Incidents
-                </span>
-                <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                  7
-                </p>
-                <div className="mt-2 flex items-center gap-1">
-                  <span className="inline-flex items-center gap-1 rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-semibold text-destructive">
-                    <AlertTriangle className="size-2.5" />
-                    2 Critical
-                  </span>
-                </div>
-              </div>
-              <span className="flex size-8 items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 text-destructive">
-                <AlertTriangle className="size-4" />
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card 3: Risk Score */}
-        <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
-          <CardContent className="p-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Risk Score
-                </span>
-                <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                  94<span className="text-base font-normal text-muted-foreground">/100</span>
-                </p>
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-primary">
-                  <CheckCircle2 className="size-3" />
-                  <span>Excellent</span>
-                </div>
-              </div>
-              <span className="flex size-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
-                <TrendingUp className="size-4" />
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card 4: Compliance */}
-        <Card className="border-border/60 bg-card/80 p-3.5 shadow-2xs">
-          <CardContent className="p-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Compliance
-                </span>
-                <p className="mt-1 text-2xl font-bold leading-none tabular-nums text-foreground">
-                  98.3%
-                </p>
-                <div className="mt-2 flex items-center gap-1">
-                  <span className="inline-flex items-center gap-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                    <CheckCircle2 className="size-2.5" />
-                    SOC 2 Certified
-                  </span>
-                </div>
-              </div>
-              <span className="flex size-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
-                <ShieldCheck className="size-4" />
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Four headline numbers — the focal point */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Open findings"
+          value={openFindings}
+          caption={`${vulnFindings.length} total`}
+        />
+        <StatCard
+          label="Active indicators"
+          value={activeIndicators}
+          caption={`${actors} actor${actors === 1 ? "" : "s"}, ${malware} malware`}
+        />
+        <StatCard
+          label="Controls tracked"
+          value={controlsTracked}
+          caption="Status: claimed"
+        />
+        <StatCard
+          label="Pending remediation"
+          value={pendingRemediation}
+          caption="Simulated"
+        />
       </div>
 
-      {/* Middle Section (3 Grid Columns) */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <ThreatTacticsMatrix />
-        <ThreatMap />
-        <AlertCenter />
-      </div>
+      {/* Activity */}
+      <ActivityCard />
 
-      {/* Bottom Section (2 Grid Columns) */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <SecurityThreatsTable />
-        <ResponseDistributionChart />
-      </div>
+      {/* Quiet engine line */}
+      <EngineStatus />
     </div>
   );
 }

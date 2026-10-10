@@ -1,15 +1,14 @@
-import type { CSSProperties } from "react";
+import { eq } from "drizzle-orm";
 
 import { requireAdmin } from "@/lib/auth-guards";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { CommandMenu } from "@/components/dashboard/command-menu";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { db } from "@/lib/db";
+import { tenant } from "@/lib/db/schema";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export const dynamic = "force-dynamic";
 
-// Admin lives inside the same dashboard shell so the sidebar persists when you
-// navigate to it. requireAdmin guards the whole section (non-admins → /dashboard).
+// Admin lives inside the same minimal shell as the dashboard. requireAdmin
+// guards the whole section (non-admins redirect to /dashboard).
 export default async function AdminLayout({
   children,
 }: {
@@ -18,24 +17,25 @@ export default async function AdminLayout({
   const session = await requireAdmin();
   const { name, email } = session.user;
   const role = session.user.role ?? "admin";
+  const tenantId = (session.user as { tenantId?: string }).tenantId;
+
+  let orgName = "Your organization";
+  if (tenantId) {
+    try {
+      const [row] = await db
+        .select({ name: tenant.name })
+        .from(tenant)
+        .where(eq(tenant.id, tenantId))
+        .limit(1);
+      if (row?.name) orgName = row.name;
+    } catch {
+      // No DB configured — keep the fallback.
+    }
+  }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 68)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" user={{ name, email, role }} />
-      <SidebarInset className="min-w-0">
-        <SiteHeader />
-        <div className="flex min-w-0 flex-1 flex-col gap-6 p-4 md:p-6">
-          {children}
-        </div>
-      </SidebarInset>
-      <CommandMenu isAdmin={role === "admin"} />
-    </SidebarProvider>
+    <DashboardShell user={{ name, email, role }} orgName={orgName}>
+      {children}
+    </DashboardShell>
   );
 }
