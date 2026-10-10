@@ -49,7 +49,7 @@ export function SiteHeader() {
           <div className="flex shrink-0 items-center gap-1.5">
             <Link
               href="/login"
-              className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90"
+              className=" h-9 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90 hidden md:flex"
             >
               Sign in
             </Link>
