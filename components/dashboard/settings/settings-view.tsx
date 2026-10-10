@@ -99,7 +99,7 @@ export function SettingsView({
         </div>
       </Panel>
 
-      {/* Organization — read-only (tenant scoping is server-enforced) */}
+      {/* Organization — read-only (tenant scoping is server-enforced, §6b) */}
       <Panel title="Organization">
         <div className="flex flex-col gap-5">
           <Field label="Organization">

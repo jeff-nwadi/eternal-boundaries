@@ -4,6 +4,7 @@ import { useComplianceMappings } from "@/lib/queries/use-compliance-mappings";
 import { PageHeader } from "@/components/dashboard/ui/page-header";
 import { Panel } from "@/components/dashboard/ui/panel";
 import { LiveControlTable, ControlTable } from "@/components/dashboard/compliance/control-table";
+import { CoverageCard } from "@/components/dashboard/compliance/coverage-card";
 import { ComplianceCaveat } from "@/components/dashboard/compliance/compliance-caveat";
 import { DashboardTable } from "@/components/dashboard/DashboardTable";
 import { complianceFrameworks } from "@/lib/mock-data";
@@ -24,7 +25,6 @@ export default function CompliancePage() {
 
   const covered = hasLive ? liveCompliant : mockCovered;
   const total = hasLive ? liveTotal : mockTotal;
-  const coverage = total > 0 ? Math.round((covered / total) * 100) : 0;
   const sourceLabel = hasLive
     ? `${data?.framework ?? "Engine"} v${data?.version ?? "1.0.0"} · reported by engine, not independently verified`
     : "Sample data · not yet verified against live findings";
@@ -37,33 +37,19 @@ export default function CompliancePage() {
         action={<ComplianceCaveat />}
       />
 
-      {/* Coverage headline — the one focal point for this view */}
+      {/* Coverage summary — the one focal point for this view */}
       {isLoading ? (
-        <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
-          <div className="h-12 w-32 animate-pulse rounded-lg bg-white/[0.06]" />
-          <div className="h-1.5 w-full animate-pulse rounded-full bg-white/[0.06]" />
+        <section className="flex items-center gap-10 rounded-2xl bg-white/[0.04] p-6">
+          <div className="size-[140px] shrink-0 animate-pulse rounded-full bg-white/[0.06]" />
+          <div className="h-10 flex-1 animate-pulse rounded-lg bg-white/[0.06]" />
         </section>
       ) : (
-        <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm text-white/55">Control coverage</span>
-              <span className="font-heading text-5xl font-semibold tabular-nums text-white">
-                {coverage}%
-              </span>
-            </div>
-            <span className="text-sm text-white/55">
-              {covered} of {total} controls {hasLive ? "compliant" : "covered"}
-            </span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
-            <div
-              className="h-full rounded-full bg-primary transition-all"
-              style={{ width: `${coverage}%` }}
-            />
-          </div>
-          <p className="text-sm text-white/40">{sourceLabel}</p>
-        </section>
+        <CoverageCard
+          covered={covered}
+          total={total}
+          sourceLabel={sourceLabel}
+          hasLive={hasLive}
+        />
       )}
 
       {/* Controls list — quiet, keeps the "what it checks" column + tooltips */}

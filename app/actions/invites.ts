@@ -16,14 +16,13 @@ const INVITE_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 // (CLAUDE.md §6a, Rule 1) — it is also unrepresentable in the invite_role enum.
 type InviteRole = "analyst" | "admin";
 
-function appBaseUrl() {
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-  return "http://localhost:3000";
+/**
+ * Base URL for every invite link. These are sent to people on other networks
+ * (and often opened later), so they must point at the public product domain,
+ * never a local/dev origin like localhost. Overridable via APP_PUBLIC_URL.
+ */
+function inviteBaseUrl() {
+  return process.env.APP_PUBLIC_URL ?? "https://app.eternalboundaries.com";
 }
 
 /**
@@ -67,7 +66,7 @@ export async function createInvite(input: {
   });
 
   revalidatePath("/admin");
-  return { inviteUrl: `${appBaseUrl()}/invite/${token}` };
+  return { inviteUrl: `${inviteBaseUrl()}/invite/${token}` };
 }
 
 /**
@@ -106,7 +105,7 @@ export async function provisionTenant(input: {
   });
 
   revalidatePath("/admin");
-  return { inviteUrl: `${appBaseUrl()}/invite/${token}`, tenantId };
+  return { inviteUrl: `${inviteBaseUrl()}/invite/${token}`, tenantId };
 }
 
 /**
