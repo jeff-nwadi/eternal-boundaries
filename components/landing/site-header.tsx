@@ -13,6 +13,7 @@ const NAV = [
   { label: "Security", href: "#security" },
   { label: "Docs", href: "#" }, // placeholder: no docs page yet
   { label: "Pricing", href: "/pricing" }, // "coming soon" page
+  // { label: "Signin", href: "/login" }, // "coming soon" page
 ];
 
 export function SiteHeader() {
