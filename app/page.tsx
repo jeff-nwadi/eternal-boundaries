@@ -1,26 +1,22 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { SiteHeader } from "@/components/landing/site-header";
 import { SiteFooter } from "@/components/landing/site-footer";
+import { SmoothScroll } from "@/components/smooth-scroll";
 import { CloudFieldBackground } from "@/components/landing/cloud-field-background";
 import { Hero } from "@/components/landing/hero";
+import { PlatformBento } from "@/components/landing/platform-bento";
+import { ComplianceShowcase } from "@/components/landing/compliance-showcase";
 import { BoundaryDiagram } from "@/components/landing/boundary-diagram";
 import { FeatureSection } from "@/components/landing/feature-section";
 import { PricingTeaser } from "@/components/landing/pricing-teaser";
 import HowItWorks from "@/components/ui/how-it-works";
 import { AsciiContourBackground } from "@/components/landing/ascii-contour-background";
 import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
-import {
-  STATS,
-  PRODUCT_VIEWS,
-  COMPLIANCE_FRAMEWORKS,
-  SECURITY_POINTS,
-  TESTIMONIALS,
-  FAQS,
-} from "@/lib/content";
+import { SECURITY_POINTS, FAQS } from "@/lib/content";
 
 function Divider() {
   return (
@@ -40,6 +36,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 export default function Home() {
   return (
+    <SmoothScroll>
     <div className="relative flex min-h-dvh flex-col bg-background">
       {/* Cloud-field WebGL background behind the nav + hero (ThreeUI cloud-field) */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[720px] overflow-hidden sm:h-[840px]">
@@ -56,7 +53,7 @@ export default function Home() {
         {/* ---------- Hero ---------- */}
         <Hero />
 
-        {/* ---------- Three-view product strip ---------- */}
+        {/* ---------- Interactive platform bento ---------- */}
         <section
           id="product"
           className="mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20"
@@ -64,42 +61,16 @@ export default function Home() {
           <Reveal className="flex max-w-2xl flex-col gap-3">
             <Eyebrow>The platform</Eyebrow>
             <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-              Three views, one clear picture.
+              Everything in one clear picture.
             </h2>
             <p className="text-pretty text-base leading-relaxed text-muted-foreground">
-              Threats, weak spots, and compliance in one place.
+              Threats, weak spots, and compliance. Hover any panel to see it move.
             </p>
           </Reveal>
 
-          <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-            {PRODUCT_VIEWS.map((view, i) => {
-              const Icon = view.icon;
-              return (
-                <Reveal
-                  key={view.name}
-                  delay={60 + i * 70}
-                  className="group flex flex-col rounded-2xl bg-card p-6 ring-1 ring-white/8 transition-colors duration-200 hover:ring-primary/30"
-                >
-                  <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="size-5" strokeWidth={1.75} />
-                  </span>
-                  <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
-                    {view.name}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {view.summary}
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                    Learn more
-                    <ArrowUpRight
-                      className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                      strokeWidth={2}
-                    />
-                  </span>
-                </Reveal>
-              );
-            })}
-          </div>
+          <Reveal delay={80} className="mt-10">
+            <PlatformBento />
+          </Reveal>
         </section>
 
         {/* ---------- Boundary diagram (anime.js) ---------- */}
@@ -138,9 +109,19 @@ export default function Home() {
         {/* ---------- Compliance frameworks ---------- */}
         <section
           id="compliance"
-          className="scroll-mt-20 border-y border-white/8 bg-card/40"
+          className="relative scroll-mt-20 overflow-hidden border-y border-white/8"
         >
-          <div className="mx-auto w-full max-w-4xl px-6 py-20">
+          {/* Subtle imagery backdrop (Unsplash) under a heavy dark wash */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80&auto=format&fit=crop"
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover opacity-[0.12]"
+          />
+          <div aria-hidden className="absolute inset-0 bg-background/85" />
+          <div className="relative z-10 mx-auto w-full max-w-4xl px-6 py-20">
             <Reveal className="flex max-w-2xl flex-col gap-3">
               <Eyebrow>Compliance mapping</Eyebrow>
               <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
@@ -151,27 +132,12 @@ export default function Home() {
               </p>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
-              {COMPLIANCE_FRAMEWORKS.map((fw, i) => (
-                <Reveal
-                  key={fw.name}
-                  delay={60 + i * 80}
-                  className="rounded-2xl bg-background p-6 ring-1 ring-white/8"
-                >
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="font-heading text-lg font-semibold text-foreground">
-                      {fw.name}
-                    </h3>
-                    <span className="text-xs font-medium text-primary">
-                      {fw.scope}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    {fw.plain}
-                  </p>
-                </Reveal>
-              ))}
-            </div>
+            <Reveal delay={80} className="mt-10">
+              <ComplianceShowcase />
+            </Reveal>
+            <p className="mt-5 text-xs text-muted-foreground">
+              Illustrative coverage. Mapped to control families, not an audit result.
+            </p>
           </div>
         </section>
 
@@ -187,21 +153,47 @@ export default function Home() {
             </h2>
           </Reveal>
 
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-            {SECURITY_POINTS.map((point, i) => (
-              <Reveal
-                key={point.title}
-                delay={40 + i * 50}
-                className="border-t border-white/10 pt-4"
-              >
-                <h3 className="font-heading text-base font-semibold text-foreground">
-                  {point.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  {point.description}
-                </p>
-              </Reveal>
-            ))}
+          <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-stretch">
+            {/* Atmospheric image (Unsplash) with a dark gradient so it reads as
+                texture on the dark canvas, not a literal stock photo. */}
+            <Reveal className="relative min-h-[320px] overflow-hidden rounded-3xl ring-1 ring-white/8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80&auto=format&fit=crop"
+                alt="Rows of servers in a dark data center"
+                loading="lazy"
+              decoding="async"
+                className="absolute inset-0 h-full w-full object-cover opacity-80"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/20"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-y-0 left-0 w-px bg-primary/60"
+              />
+              <span className="absolute bottom-6 left-6 right-6 font-heading text-lg font-semibold text-white">
+                External out. Protected in. One boundary.
+              </span>
+            </Reveal>
+
+            <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+              {SECURITY_POINTS.map((point, i) => (
+                <Reveal
+                  key={point.title}
+                  delay={40 + i * 50}
+                  className="border-t border-white/10 pt-4"
+                >
+                  <h3 className="font-heading text-base font-semibold text-foreground">
+                    {point.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {point.description}
+                  </p>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -277,5 +269,6 @@ export default function Home() {
 
       <SiteFooter />
     </div>
+    </SmoothScroll>
   );
 }

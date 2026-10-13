@@ -16,7 +16,7 @@ export function PageHeader({
   return (
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div className="flex flex-col gap-1">
-        <h1 className="font-heading text-4xl font-semibold text-white">{title}</h1>
+        <h1 className="font-heading text-2xl font-semibold text-white sm:text-4xl">{title}</h1>
         {subtitle ? <p className="text-sm text-white/55">{subtitle}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}

@@ -1,10 +1,11 @@
 "use client";
 
+import * as React from "react";
 import dynamic from "next/dynamic";
 
 // ThreeUI PortalFieldCollection (cloud-field variant) — raw-WebGL cloud field.
-// Exact configured usage from the source brief. Loaded client-only: the effect
-// touches WebGL/window and ships its own three.js runtime.
+// Loaded client-only: the effect touches WebGL/window and ships its own three.js
+// runtime (~1.7MB across chunks), so we are deliberate about WHEN it loads.
 import "@designcodeio/threeui/style.css";
 
 // Import from the component subpath, NOT the package barrel ("@designcodeio/threeui").
@@ -19,13 +20,54 @@ const PortalFieldCollection = dynamic(
   { ssr: false, loading: () => null }
 );
 
+type IdleWindow = Window & {
+  requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+  cancelIdleCallback?: (id: number) => void;
+};
+type SaveDataNavigator = Navigator & { connection?: { saveData?: boolean } };
+
 /**
- * Full-bleed cloud-field background. The parent should be positioned
- * (relative/absolute) and sized; this fills it.
+ * Full-bleed cloud-field background, loaded cost-consciously (Lighthouse):
+ *  - skipped entirely on small screens, reduced-motion, and Save-Data, so the
+ *    ~1.7MB three.js runtime is never fetched there (and the effect is barely
+ *    visible under the hero's dark overlay anyway);
+ *  - on capable desktops, deferred to browser-idle so it never blocks first
+ *    paint / LCP, then faded in.
+ * Until it mounts, the hero still has its background color + gradient overlay.
  */
 export function CloudFieldBackground({ className }: { className?: string }) {
+  const [show, setShow] = React.useState(false);
+
+  React.useEffect(() => {
+    const wide = window.matchMedia("(min-width: 768px)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saveData = (navigator as SaveDataNavigator).connection?.saveData ?? false;
+    if (!wide || reduce || saveData) return;
+
+    const w = window as IdleWindow;
+    let idleId = 0;
+    let timeoutId = 0;
+    const start = () => setShow(true);
+
+    if (typeof w.requestIdleCallback === "function") {
+      idleId = w.requestIdleCallback(start, { timeout: 2500 });
+    } else {
+      timeoutId = window.setTimeout(start, 1200);
+    }
+
+    return () => {
+      if (idleId) w.cancelIdleCallback?.(idleId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
+
+  if (!show) return null;
+
   return (
-    <div className={className} aria-hidden="true">
+    <div
+      className={`${className ?? ""} duration-1000 animate-in fade-in`}
+      aria-hidden="true"
+    >
       <PortalFieldCollection
         variant="cloud-field"
         hue={0}

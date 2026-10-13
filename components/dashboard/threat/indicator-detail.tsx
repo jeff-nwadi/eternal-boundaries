@@ -50,7 +50,7 @@ export function IndicatorDetail({
   return (
     <div className="grid gap-8 p-6 sm:grid-cols-2 sm:gap-10">
       {/* Left: identity */}
-      <div className="flex flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-5">
         <div className="flex flex-col gap-1">
           <span className="text-sm text-white/55">{meta.label}</span>
           <h2 className="font-heading text-2xl font-semibold text-white">
@@ -64,7 +64,7 @@ export function IndicatorDetail({
       </div>
 
       {/* Right: the relationship chain across the boundary (signature motif) */}
-      <div className="flex flex-col gap-1">
+      <div className="flex min-w-0 flex-col gap-1">
         <span className="text-sm text-white/55">How it connects</span>
         <div className="mt-2 flex flex-col">
           {chain.map((step, i) => {

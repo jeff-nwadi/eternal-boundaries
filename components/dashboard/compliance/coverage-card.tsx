@@ -1,3 +1,5 @@
+import { AnimatedNumber } from "@/components/dashboard/ui/animated-number";
+
 /**
  * Control-coverage summary: a radial gauge with the compliant / gaps / total
  * breakdown beside it. Figures are derived upstream from real records only
@@ -49,7 +51,7 @@ export function CoverageCard({
         </svg>
         <div className="absolute flex flex-col items-center">
           <span className="font-heading text-3xl font-semibold tabular-nums text-white">
-            {coverage}%
+            <AnimatedNumber value={coverage} />%
           </span>
           <span className="text-xs text-white/40">coverage</span>
         </div>
@@ -76,7 +78,7 @@ function Metric({ label, value, dot }: { label: string; value: number; dot?: str
         {label}
       </span>
       <span className="font-heading text-3xl font-semibold tabular-nums text-white">
-        {value}
+        <AnimatedNumber value={value} />
       </span>
     </div>
   );
