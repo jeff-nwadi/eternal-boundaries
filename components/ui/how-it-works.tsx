@@ -88,18 +88,19 @@ const DEFAULT_CARD_POSITIONS: StepPosition[] = [
 
 const DEFAULT_FEATURES: Step[] = [
   {
-    title: "Create your account",
-    description: "Sign up and log in to open your team's dashboard.",
+    title: "Get invited",
+    description:
+      "Access is invite-only. An admin provisions your account and sends a secure sign-in link.",
   },
   {
-    title: "Connect your data",
+    title: "See everything in one place",
     description:
-      "Add your threat feeds, scan results, and compliance records — all in one place.",
+      "Live threats, ranked vulnerabilities, and compliance coverage across three clean views.",
   },
   {
-    title: "Review and act",
+    title: "Understand and act",
     description:
-      "See everything in three simple views, mark issues as handled, and export a report.",
+      "Trace any attack chain, follow plain-language fixes, and see where you stand on NIST and SOC 2.",
   },
 ];
 

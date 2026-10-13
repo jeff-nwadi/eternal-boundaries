@@ -29,7 +29,7 @@ export default function OverviewPage() {
       {/* Heading + the single lime action */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="font-heading text-4xl font-semibold text-white">Overview</h1>
+          <h1 className="font-heading text-2xl font-semibold text-white sm:text-4xl">Overview</h1>
           <p className="text-sm text-white/55">
             What your security console is showing right now.
           </p>

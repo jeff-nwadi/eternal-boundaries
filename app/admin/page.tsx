@@ -57,7 +57,7 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-4xl font-semibold text-white">Team</h1>
+        <h1 className="font-heading text-2xl font-semibold text-white sm:text-4xl">Team</h1>
         <p className="text-sm text-white/55">
           Manage your team and access. Accounts are invite-only.
         </p>

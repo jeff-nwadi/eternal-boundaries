@@ -1,16 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, CheckCircle2, AlertTriangle } from "lucide-react";
 
 import { requestRemediation } from "@/app/actions/remediation";
-import { Button } from "@/components/ui/button";
-import { StatusPill } from "@/components/dashboard/status-pill";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { RemediationStatusValue } from "@/app/api/remediate/status/route";
 
 const POLL_INTERVAL_MS = 900;
@@ -31,7 +24,6 @@ export function RemediationControl({
   const [detail, setDetail] = React.useState<string | null>(initialDetail ?? null);
   const stopRef = React.useRef<() => void>(() => {});
 
-  // Clean up any in-flight poll on unmount.
   React.useEffect(() => () => stopRef.current(), []);
 
   function pollUntilResolved() {
@@ -71,58 +63,41 @@ export function RemediationControl({
       setDetail(outcome.detail);
       return;
     }
-    // Accepted — the engine will call back the signed result; poll for it.
     pollUntilResolved();
   }
 
   if (status === "verifying") {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="inline-flex cursor-help items-center gap-1.5 text-xs text-muted-foreground">
-            <Loader2 className="size-3.5 animate-spin text-primary" aria-hidden />
-            Verifying Matrix Isolation…
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          Re-testing that the fix actually blocks the attack (about 1–2 seconds).
-        </TooltipContent>
-      </Tooltip>
+      <span className="inline-flex items-center gap-2 text-sm text-white/55">
+        <Loader2 className="size-4 animate-spin text-primary" aria-hidden />
+        Verifying isolation…
+      </span>
     );
   }
 
   if (status === "covered") {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="inline-flex cursor-help">
-            <StatusPill tone="positive" label="Covered" className="gap-1" />
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>Confirmed fixed — we re-checked and the attack is blocked.</TooltipContent>
-      </Tooltip>
+      <span className="inline-flex items-center gap-2 text-sm font-medium text-low">
+        <CheckCircle2 className="size-4" strokeWidth={2} aria-hidden />
+        Covered
+      </span>
     );
   }
 
   if (status === "verification_error") {
     return (
-      <div className="flex flex-col items-start gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="inline-flex cursor-help">
-              <StatusPill tone="critical" label="Verification Error: Engine Unreachable" />
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>
-            We couldn&apos;t reach your security engine to confirm the fix, so it
-            stays open. Try again.
-          </TooltipContent>
-        </Tooltip>
-        {detail && <span className="text-[0.6875rem] text-muted-foreground">{detail}</span>}
+      <div className="flex flex-col items-start gap-1.5">
+        <span className="inline-flex items-center gap-2 text-sm font-medium text-critical">
+          <AlertTriangle className="size-4" strokeWidth={2} aria-hidden />
+          Engine unreachable
+        </span>
+        <span className="text-xs text-white/40">
+          Stays open until a fix is confirmed. {detail ?? ""}
+        </span>
         <button
           type="button"
           onClick={onMark}
-          className="text-[0.6875rem] font-medium text-primary transition-opacity hover:opacity-80"
+          className="text-xs font-medium text-primary transition-opacity hover:opacity-80"
         >
           Retry
         </button>
@@ -132,9 +107,16 @@ export function RemediationControl({
 
   // status === "open"
   return (
-    <Button variant="outline" size="sm" onClick={onMark}>
-      <ShieldCheck strokeWidth={1.75} />
-      Mark as remediated
-    </Button>
+    <div className="flex flex-col items-start gap-1.5">
+      <button
+        type="button"
+        onClick={onMark}
+        className="inline-flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-white/85 transition-colors hover:bg-white/[0.1] hover:text-white"
+      >
+        <ShieldCheck className="size-4" strokeWidth={1.75} aria-hidden />
+        Mark as remediated
+      </button>
+      <span className="text-xs text-white/40">Simulated, no live action taken</span>
+    </div>
   );
 }
