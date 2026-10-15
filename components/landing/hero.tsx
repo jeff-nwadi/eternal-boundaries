@@ -28,27 +28,24 @@ export function Hero() {
         {/* 2. Headline */}
         <h1 className="font-heading text-[clamp(2.4rem,8.5vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-white">
           <span className="block overflow-hidden pb-[0.08em]">
-            <Reveal as="span" className="block">
               Threats, explained.
-            </Reveal>
           </span>
           <span className="block overflow-hidden pb-[0.08em]">
-            <Reveal as="span" className="block font-normal italic">
+            <span className="block font-normal italic">
               Compliance, mapped.
-            </Reveal>
+            </span>
           </span>
         </h1>
 
         {/* 3. Subhead */}
-        <Reveal
-          as="p"
+        <p
           className="max-w-2xl text-pretty text-lg leading-relaxed text-white/70"
         >
           Clear threat and compliance views your whole team can read.
-        </Reveal>
+        </p>
 
         {/* 4. CTA (the only lime element besides small accents) */}
-        <Reveal>
+
           <Button
             asChild
             size="lg"
@@ -56,7 +53,6 @@ export function Hero() {
           >
             <Link href="/login">Get Started</Link>
           </Button>
-        </Reveal>
 
         {/* 5. Trust line (no "certified / compliant / verified") */}
         {/* <Reveal className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-white/50">

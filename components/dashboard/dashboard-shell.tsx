@@ -6,6 +6,8 @@ import { Menu } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/components/providers";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { BrandMark } from "@/components/landing/brand-mark";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
@@ -25,6 +27,7 @@ export function DashboardShell({
   const pathname = usePathname();
 
   return (
+    <Providers>
     <TooltipProvider delayDuration={150}>
       <SmoothScroll>
       <div className="min-h-dvh bg-background text-white">
@@ -65,6 +68,8 @@ export function DashboardShell({
       </main>
       </div>
       </SmoothScroll>
+      <Toaster theme="dark" position="bottom-right" />
     </TooltipProvider>
+    </Providers>
   );
 }

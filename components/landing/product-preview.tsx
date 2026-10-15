@@ -73,16 +73,6 @@ export function ProductPreview() {
                   )}
                 >
                   {t}
-                  {/* Auto-advance progress line under the active tab */}
-                  {i === index && !reduce && !paused ? (
-                    <motion.span
-                      key={index}
-                      className="absolute inset-x-2 bottom-1 h-px origin-left rounded-full bg-primary"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: CYCLE_MS / 1000, ease: "linear" }}
-                    />
-                  ) : null}
                 </button>
               ))}
             </div>
@@ -260,35 +250,37 @@ const FRAMEWORKS = [
 
 function ComplianceMock({ reduce }: { reduce: boolean }) {
   const avg = Math.round(FRAMEWORKS.reduce((s, f) => s + f.pct, 0) / FRAMEWORKS.length);
-  const r = 34;
+  const r = 42;
   const c = 2 * Math.PI * r;
 
   return (
     <div className="flex flex-col items-center gap-6 text-left sm:flex-row sm:gap-10">
-      {/* Ring */}
-      <div className="relative grid size-[112px] shrink-0 place-items-center">
-        <svg width="112" height="112" viewBox="0 0 112 112" aria-hidden>
-          <circle cx="56" cy="56" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="9" />
+      {/* Ring — sized so the figure sits comfortably inside the arc */}
+      <div className="relative grid size-[132px] shrink-0 place-items-center">
+        <svg width="132" height="132" viewBox="0 0 132 132" aria-hidden>
+          <circle cx="66" cy="66" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
           <motion.circle
-            cx="56"
-            cy="56"
+            cx="66"
+            cy="66"
             r={r}
             fill="none"
             stroke="var(--primary)"
-            strokeWidth="9"
+            strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={c}
-            transform="rotate(-90 56 56)"
+            transform="rotate(-90 66 66)"
             initial={reduce ? false : { strokeDashoffset: c }}
             animate={{ strokeDashoffset: c * (1 - avg / 100) }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
         </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="font-heading text-2xl font-semibold tabular-nums text-white">
+        <div className="absolute flex flex-col items-center leading-none">
+          <span className="font-heading text-[1.60rem] font-semibold tabular-nums text-white">
             {avg}%
           </span>
-          <span className="text-[10px] text-white/40">coverage</span>
+          <span className="mt-1 text-[8px] uppercase tracking-wide text-white/40">
+            coverage
+          </span>
         </div>
       </div>
 

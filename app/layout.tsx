@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Plus_Jakarta_Sans, DM_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-
-const dmSans = DM_Sans({subsets:['latin'],variable:'--font-sans'});
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -27,21 +24,18 @@ export const metadata: Metadata = {
     "Enterprise cyber threat intelligence and compliance dashboard. Turn STIX threat feeds, vulnerability scans, and control coverage into decisions your SOC and auditors can act on.",
 };
 
-import { Providers } from "@/components/providers";
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("dark", "h-full", "antialiased", bricolage.variable, plusJakarta.variable, "font-sans", dmSans.variable)}
+      className={cn("dark", "h-full", "antialiased", bricolage.variable, plusJakarta.variable, "font-sans")}
       suppressHydrationWarning
     >
       <body
         className="min-h-dvh bg-background text-foreground"
         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
-        <Toaster theme="dark" position="bottom-right" />
+        {children}
       </body>
     </html>
   );

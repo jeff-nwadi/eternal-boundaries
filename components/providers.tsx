@@ -2,8 +2,12 @@
 
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+/**
+ * TanStack Query provider for the authenticated app (dashboard + admin). Mounted
+ * inside DashboardShell — NOT in the root layout — so public/marketing routes
+ * never load react-query. Devtools are intentionally not bundled here.
+ */
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = React.useState(
     () =>
@@ -18,10 +22,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

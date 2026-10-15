@@ -38,8 +38,18 @@ export default function Home() {
   return (
     <SmoothScroll>
     <div className="relative flex min-h-dvh flex-col bg-background">
-      {/* Cloud-field WebGL background behind the nav + hero (ThreeUI cloud-field) */}
+      {/* Hero background. An instant CSS gradient paints immediately (static
+          HTML, zero JS) so the hero is never empty; the heavier WebGL cloud
+          field then fades in on top on capable desktops. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[720px] overflow-hidden sm:h-[840px]">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 55% at 50% 12%, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 68%), radial-gradient(55% 45% at 72% 8%, rgba(129,100,214,0.16) 0%, transparent 70%), radial-gradient(45% 45% at 28% 14%, rgba(56,122,180,0.12) 0%, transparent 70%)",
+          }}
+        />
         <CloudFieldBackground className="absolute inset-0" />
         <div
           aria-hidden="true"
