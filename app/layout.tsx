@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Plus_Jakarta_Sans,
+  DM_Sans,
+  Inter,
+} from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+
+// Inter drives the marketing/landing body text (--font-inter in the paper module).
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -28,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("dark", "h-full", "antialiased", bricolage.variable, plusJakarta.variable, "font-sans")}
+      className={cn("dark", "h-full", "antialiased", bricolage.variable, plusJakarta.variable, "font-sans", dmSans.variable, inter.variable)}
       suppressHydrationWarning
     >
       <body

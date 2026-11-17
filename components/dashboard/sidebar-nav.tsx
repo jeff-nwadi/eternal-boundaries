@@ -8,6 +8,7 @@ import {
   Radar,
   ShieldAlert,
   ClipboardCheck,
+  ShieldCheck,
   Shield,
   Settings,
   LogOut,
@@ -26,6 +27,10 @@ const NAV: NavItem[] = [
   { label: "Threat Intelligence", href: "/dashboard/threat", icon: Radar },
   { label: "Vulnerabilities", href: "/dashboard/vulnerabilities", icon: ShieldAlert },
   { label: "Compliance", href: "/dashboard/compliance", icon: ClipboardCheck },
+  { label: "Gate Proof", href: "/dashboard/proof", icon: ShieldCheck },
+  // Engine Lab (/dashboard/lab) is built but hidden from nav — it only shows
+  // offline benchmark data, not a live/validated capability. Re-add when there
+  // is a real proof to put behind it.
   { label: "Team", href: "/admin", icon: Shield, adminOnly: true },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];

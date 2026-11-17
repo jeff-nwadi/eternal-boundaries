@@ -1,0 +1,39 @@
+{
+  "run": "Modbus engine-off vs engine-on proof run",
+  "attack": "FC16 multi-value misaligned firmware write, values [52, 53] to register 0x4000 (value 53 to reg 0x4001 is not 4-byte aligned) - GPL750-style Modbus register manipulation, CVE-2026-4436",
+  "target": "Lab dummy Modbus target behind the live v3.1 gate on EC2 (ubuntu@ip-172-31-27-90, public IP 3.17.182.27)",
+  "date": "2026-11-14",
+  "legs": [
+    {
+      "leg": 1,
+      "name": "engine_off_attack_direct_to_target",
+      "destination": "127.0.0.1:5023 (dummy target, gate bypassed)",
+      "time_utc": null,
+      "sent_hex": "00010000000b0110400000020400340035",
+      "recv_hex": "00010000000b0110400000020400340035",
+      "verdict": "FORWARDED",
+      "note": "Attack frame echoed by the target. Ran immediately before leg 2 in the same terminal session. No gate log line: the frame bypassed the gate entirely, which is expected."
+    },
+    {
+      "leg": 2,
+      "name": "engine_on_attack_through_gate",
+      "destination": "127.0.0.1:5020 (v3.1 gate)",
+      "time_utc": "2026-11-14T09:16:13.039650+00:00",
+      "sent_hex": "00010000000b0110400000020400340035",
+      "recv_hex": "000100000003019001",
+      "verdict": "BLOCKED",
+      "note": "Modbus exception 90 01. Gate log line at the same timestamp confirms the block."
+    },
+    {
+      "leg": 3,
+      "name": "engine_on_legit_through_gate",
+      "destination": "127.0.0.1:5020 (v3.1 gate)",
+      "time_utc": "2026-11-14T09:16:33.580878+00:00",
+      "sent_hex": "00010000000b0110400000020400340034",
+      "recv_hex": "00010000000b0110400000020400340034",
+      "verdict": "FORWARDED",
+      "note": "Legit write echoed by the target. Gate log line at the same timestamp confirms allowed."
+    }
+  ],
+  "gate_log_match": "The 09:16:13 UTC log line records the leg 2 block; the 09:16:33 UTC line records the leg 3 allow. The three earlier lines in the excerpt (03:12-03:14 UTC) are prior allowed FC16 events, not part of this run."
+}

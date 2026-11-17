@@ -1,0 +1,5 @@
+{"timestamp": "2026-11-14T03:12:00.124047+00:00", "event_type": "Modbus FC 16", "details": "OK", "allowed": true, "status": "Allowed", "attack": false}
+{"timestamp": "2026-11-14T03:13:01.847531+00:00", "event_type": "Modbus FC 16", "details": "OK", "allowed": true, "status": "Allowed", "attack": false}
+{"timestamp": "2026-11-14T03:14:04.169269+00:00", "event_type": "Modbus FC 16", "details": "OK", "allowed": true, "status": "Allowed", "attack": false}
+{"timestamp": "2026-11-14T09:16:13.039650+00:00", "event_type": "Modbus FC 16", "details": "Alignment violation in multi-write: firmware write value 53 to reg 0x4001 not 4-byte aligned", "allowed": false, "status": "Blocked", "attack": true}
+{"timestamp": "2026-11-14T09:16:33.580878+00:00", "event_type": "Modbus FC 16", "details": "OK", "allowed": true, "status": "Allowed", "attack": false}
