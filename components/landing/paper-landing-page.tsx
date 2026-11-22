@@ -1,4 +1,3 @@
-import styles from "./paper-landing-page.module.css";
 import { PaperMotionEffects } from "./paper-motion-effects";
 import { SiteHeader } from "./paper/site-header";
 import { Hero } from "./paper/hero";
@@ -14,7 +13,7 @@ import { SiteFooter } from "./paper/site-footer";
 
 export function PaperLandingPage() {
   return (
-    <div className={styles.site}>
+    <div className="paper-root">
       <SiteHeader />
       <main data-paper-motion-root>
         <PaperMotionEffects />

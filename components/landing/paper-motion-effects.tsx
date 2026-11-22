@@ -217,39 +217,70 @@ export function PaperMotionEffects() {
       });
     });
 
-    // 5) PlatformSection — on card hover, the icon redraws its strokes
-    // (self-drawing line effect) and brightens.
-    page.querySelectorAll<HTMLElement>("[data-platform-card]").forEach((card) => {
-      const icon = card.querySelector<SVGElement>("[data-platform-icon]");
-      if (!icon) return;
-      const strokes = icon.querySelectorAll<SVGElement>(
-        "path, line, polyline, polygon, circle, rect, ellipse",
+    // 5) PlatformSection — the card icon draws itself in when the card is
+    // scrolled into view (self-drawing line effect), and redraws on hover.
+    const platformCards = page.querySelectorAll<HTMLElement>("[data-platform-card]");
+    if (platformCards.length) {
+      const drawMap = new Map<Element, ReturnType<typeof svg.createDrawable>>();
+
+      const iconObserver = new IntersectionObserver(
+        (entries, observer) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const icon = entry.target.querySelector<SVGElement>("[data-platform-icon]");
+            const drawables = drawMap.get(entry.target);
+            if (icon && drawables) {
+              run(icon, { opacity: [0, 0.3], duration: 380, ease: "out(3)" });
+              run(drawables, {
+                draw: ["0 0", "0 1"],
+                duration: 820,
+                delay: stagger(60),
+                ease: "inOut(3)",
+              });
+            }
+            observer.unobserve(entry.target);
+          }
+        },
+        { threshold: 0.35 },
       );
-      if (!strokes.length) return;
-      const drawables = svg.createDrawable(strokes);
 
-      const enter = () => {
-        run(icon, { opacity: 0.5, duration: 300, ease: "out(3)" });
-        run(drawables, {
-          draw: ["0 0", "0 1"],
-          duration: 760,
-          delay: stagger(70),
-          ease: "inOut(3)",
+      platformCards.forEach((card) => {
+        const icon = card.querySelector<SVGElement>("[data-platform-icon]");
+        if (!icon) return;
+        const strokes = icon.querySelectorAll<SVGElement>(
+          "path, line, polyline, polygon, circle, rect, ellipse",
+        );
+        if (!strokes.length) return;
+        const drawables = svg.createDrawable(strokes);
+        drawMap.set(card, drawables);
+        // Start undrawn + hidden so the scroll-in draw is visible.
+        icon.style.opacity = "0";
+
+        const enter = () => {
+          run(icon, { opacity: 0.4, duration: 300, ease: "out(3)" });
+          run(drawables, {
+            draw: ["0 0", "0 1"],
+            duration: 760,
+            delay: stagger(70),
+            ease: "inOut(3)",
+          });
+        };
+        const leave = () => run(icon, { opacity: 0.28, duration: 420, ease: "out(3)" });
+
+        card.addEventListener("pointerenter", enter);
+        card.addEventListener("pointerleave", leave);
+        card.addEventListener("focusin", enter);
+        card.addEventListener("focusout", leave);
+        iconObserver.observe(card);
+        cleanups.push(() => {
+          card.removeEventListener("pointerenter", enter);
+          card.removeEventListener("pointerleave", leave);
+          card.removeEventListener("focusin", enter);
+          card.removeEventListener("focusout", leave);
         });
-      };
-      const leave = () => run(icon, { opacity: 0.28, duration: 420, ease: "out(3)" });
-
-      card.addEventListener("pointerenter", enter);
-      card.addEventListener("pointerleave", leave);
-      card.addEventListener("focusin", enter);
-      card.addEventListener("focusout", leave);
-      cleanups.push(() => {
-        card.removeEventListener("pointerenter", enter);
-        card.removeEventListener("pointerleave", leave);
-        card.removeEventListener("focusin", enter);
-        card.removeEventListener("focusout", leave);
       });
-    });
+      cleanups.push(() => iconObserver.disconnect());
+    }
 
     // 6) Hero panel interactions (all anime.js):
     //   - a subtle, always-on ambient drift of the grid,
