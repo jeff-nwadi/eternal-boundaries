@@ -73,7 +73,11 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
   );
 
   return (
-    <Panel title="Findings" action={search}>
+    <Panel
+      title="Findings"
+      description="Sample data · CVE identifiers are illustrative, not verified against NVD"
+      action={search}
+    >
       {/* Severity filter pills */}
       <div className="flex flex-wrap gap-1.5">
         {SEVERITY_FILTERS.map((sev) => (
@@ -128,7 +132,14 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
                   }}
                   className="cursor-pointer focus-visible:bg-black/[0.04] focus-visible:outline-none"
                 >
-                  <TableCell className="font-mono text-sm text-black/55">{f.cve_id}</TableCell>
+                  <TableCell className="font-mono text-sm text-black/55">
+                    <span className="inline-flex items-center gap-2">
+                      {f.cve_id}
+                      <span className="rounded bg-black/[0.06] px-1.5 py-0.5 font-sans text-[10px] uppercase tracking-wide text-black/45">
+                        Sample
+                      </span>
+                    </span>
+                  </TableCell>
                   <TableCell className="font-medium text-black">
                     {f.vulnerability_name}
                   </TableCell>
@@ -173,7 +184,12 @@ function FindingDetail({
   return (
     <div className="flex flex-col gap-8 p-6">
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-sm text-black/55">{finding.cve_id}</span>
+        <span className="inline-flex items-center gap-2 font-mono text-sm text-black/55">
+          {finding.cve_id}
+          <span className="rounded bg-black/[0.06] px-1.5 py-0.5 font-sans text-[10px] uppercase tracking-wide text-black/45">
+            Sample
+          </span>
+        </span>
         <DialogTitle className="font-heading text-2xl font-semibold text-black">
           {finding.vulnerability_name}
         </DialogTitle>

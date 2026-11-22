@@ -204,10 +204,12 @@ export function GateProof({ proof }: { proof: ModbusProof | null }) {
       <Panel>
         <div className="flex flex-col gap-3">
           <p className="text-base leading-relaxed text-black/85">
-            We took <span className="font-medium text-black">one real network attack</span> on an
-            industrial controller and sent it twice — once with our gate <span className="font-medium text-black">off</span>,
-            once with it <span className="font-medium text-black">on</span> — then sent a normal
-            command too. Here is exactly what happened each time.
+            This is a <span className="font-medium text-black">single lab case</span>: one attack
+            command on an industrial controller, replayed with our gate{" "}
+            <span className="font-medium text-black">off</span> and then{" "}
+            <span className="font-medium text-black">on</span>, plus one normal command. The three
+            outcomes below are from that run — the raw packets, timestamps, and gate log are in the
+            technical detail at the bottom.
           </p>
           <p className="text-sm leading-relaxed text-black/55">
             The attack: someone sends a malformed control command over the industrial protocol

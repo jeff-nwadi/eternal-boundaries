@@ -26,7 +26,7 @@ export default function CompliancePage() {
   const covered = hasLive ? liveCompliant : mockCovered;
   const total = hasLive ? liveTotal : mockTotal;
   const sourceLabel = hasLive
-    ? `${data?.framework ?? "Engine"} v${data?.version ?? "1.0.0"} · reported by engine, not independently verified`
+    ? `${data?.framework ?? "Engine"} v${data?.version ?? "1.0.0"} (engine's self-reported label) · not independently verified`
     : "Sample data · not yet verified against live findings";
 
   return (

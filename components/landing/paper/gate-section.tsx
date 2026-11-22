@@ -42,7 +42,7 @@ export function GateSection() {
           </div>
         </div>
         <small className="mt-[13px] block text-[12px] text-[#8f8990]">
-          Conceptual demonstration · scenario controls shown as a design state
+          Illustration only · not a live engine run
         </small>
       </div>
       <div className="relative z-[1] max-w-[515px] max-[900px]:max-w-[700px]">

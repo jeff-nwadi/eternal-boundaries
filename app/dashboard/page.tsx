@@ -33,6 +33,12 @@ export default function OverviewPage() {
     (sum, f) => sum + f.summary.total_controls_tracked,
     0
   );
+  // Mapped = controls actually covered in the sample ledger. Shown as
+  // "X of Y mapped" so the Overview agrees with the Compliance view.
+  const controlsCovered = complianceFrameworks.reduce(
+    (sum, f) => sum + f.summary.covered_count,
+    0
+  );
   // Simulation-only (CLAUDE.md §5.6). No real remediation records exist yet.
   const pendingRemediation = 0;
 
@@ -96,8 +102,8 @@ export default function OverviewPage() {
         />
         <StatCard
           label="Control coverage"
-          value={controlsTracked}
-          caption="controls tracked · claimed"
+          value={`${controlsCovered} / ${controlsTracked}`}
+          caption="mapped of tracked · claimed"
           indicator={<span className={pill}>Claimed</span>}
         />
       </div>

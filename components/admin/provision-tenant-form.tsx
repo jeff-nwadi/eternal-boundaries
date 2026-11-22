@@ -77,6 +77,11 @@ export function ProvisionTenantForm() {
         </Button>
       </div>
 
+      <p className="text-xs text-muted-foreground/70">
+        &ldquo;Acme Water Utility&rdquo; is a sample placeholder — enter a real client
+        organization.
+      </p>
+
       {result && "inviteUrl" in result && (
         <div className="rounded-lg border border-primary/25 bg-primary/[0.06] p-3">
           <p className="mb-1 text-xs font-medium text-primary">
