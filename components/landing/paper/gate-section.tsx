@@ -3,6 +3,7 @@ import styles from "../paper-landing-page.module.css";
 export function GateSection() {
   return (
     <section className={styles.gateSection} id="how-it-works">
+      <div className={styles.gatePattern} aria-hidden="true" />
       <div className={styles.gateDemo} data-motion-kind="gate">
         <div className={styles.scenarioBadge}>
           <span>Scenario 01 / 03</span>

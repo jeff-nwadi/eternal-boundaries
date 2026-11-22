@@ -46,9 +46,9 @@ function DataModeChip() {
   // the mode reads "Sample data" unless the live engine actually returns data.
   const live = !isLoading && !isError && !!data?.mappings?.length;
   return (
-    <span className="inline-flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-white/55">
+    <span className="inline-flex items-center gap-2 rounded-lg bg-black/[0.04] px-3 py-2 text-sm text-black/55">
       <span
-        className={cn("size-1.5 rounded-full", live ? "bg-primary" : "bg-white/40")}
+        className={cn("size-1.5 rounded-full", live ? "bg-primary" : "bg-black/40")}
         aria-hidden
       />
       {live ? "Live" : "Sample data"}
@@ -94,7 +94,7 @@ export function SidebarNav({
 
       {/* Read-only chips: org (own tenant, not a switcher) + data mode */}
       <div className="flex flex-col gap-2">
-        <span className="truncate rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-white/70">
+        <span className="truncate rounded-lg bg-black/[0.04] px-3 py-2 text-sm text-black/70">
           {orgName}
         </span>
         <DataModeChip />
@@ -114,8 +114,8 @@ export function SidebarNav({
               className={cn(
                 "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors duration-150",
                 active
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/55 hover:bg-white/[0.04] hover:text-white"
+                  ? "bg-black/[0.08] text-black"
+                  : "text-black/55 hover:bg-black/[0.04] hover:text-black"
               )}
             >
               <Icon
@@ -132,23 +132,23 @@ export function SidebarNav({
       </nav>
 
       {/* Account card */}
-      <div className="flex flex-col gap-3 rounded-2xl bg-white/[0.04] p-3">
+      <div className="flex flex-col gap-3 rounded-2xl bg-black/[0.04] p-3">
         <div className="flex items-center gap-3">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-sm font-medium text-white">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-black/[0.08] text-sm font-medium text-black">
             {initialOf(user.name)}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-white">
+            <span className="block truncate text-sm font-medium text-black">
               {user.name}
             </span>
-            <span className="block truncate text-sm text-white/55">{user.email}</span>
+            <span className="block truncate text-sm text-black/55">{user.email}</span>
           </span>
         </div>
         <button
           type="button"
           onClick={signOut}
           disabled={signingOut}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-white/80 transition-colors duration-150 hover:bg-white/[0.1] hover:text-white disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-black/[0.06] px-3 py-2 text-sm font-medium text-black/80 transition-colors duration-150 hover:bg-black/[0.1] hover:text-black disabled:opacity-60"
         >
           <LogOut className="size-4" strokeWidth={1.75} />
           {signingOut ? "Signing out..." : "Sign out"}

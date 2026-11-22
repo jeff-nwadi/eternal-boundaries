@@ -11,65 +11,65 @@
 /*  Values come straight from CLAUDE.md §4 (Lime Frost palette).      */
 /* ------------------------------------------------------------------ */
 :root {
-  /* Frost-leaning dark neutrals (CLAUDE.md §4) */
-  --background: #0a0d10;
-  --foreground: #f0f4f8;
+  /* Light "paper" palette — matches the landing (warm cream + near-black ink). */
+  --background: #f8f7f4;
+  --foreground: #201d24;
 
-  --card: #11161b;
-  --card-foreground: #f0f4f8;
-  --popover: #151c22;
-  --popover-foreground: #f0f4f8;
+  --card: #ffffff;
+  --card-foreground: #201d24;
+  --popover: #ffffff;
+  --popover-foreground: #201d24;
 
-  /* Lime brand accent — primary actions, active states, boundary motif */
-  --primary: #aff33e;
-  --primary-foreground: #0a0d10;
+  /* Purple brand accent — primary actions, active states */
+  --primary: #5b2bd2;
+  --primary-foreground: #ffffff;
 
-  --secondary: #161e26;
-  --secondary-foreground: #f0f4f8;
+  --secondary: #f1efeb;
+  --secondary-foreground: #201d24;
 
-  --muted: #161e26;
-  --muted-foreground: #8a99a8;
+  --muted: #f1efeb;
+  --muted-foreground: #6f6a72;
 
-  --accent: #1c2630;
-  --accent-foreground: #aff33e;
+  --accent: #f1edfa;
+  --accent-foreground: #5b2bd2;
 
   /* Destructive maps to Critical severity token */
   --destructive: #f0465b;
-  --destructive-foreground: #0a0d10;
+  --destructive-foreground: #ffffff;
 
-  --border: #1c242b;
-  --border-strong: #28323b;
-  --input: #1c242b;
-  --ring: #aff33e;
+  --border: #e4e0dd;
+  --border-strong: #d7d2ce;
+  --input: #e4e0dd;
+  --ring: #5b2bd2;
 
-  /* Severity scale — fixed (CLAUDE.md §4) */
-  --severity-critical: #f0465b;
-  --severity-high: #ff8a3d;
-  --severity-medium: #f5c244;
-  --severity-low: #2dd4bf;
+  /* Severity scale — fixed (CLAUDE.md §4), readable on light */
+  --severity-critical: #d4374b;
+  --severity-high: #d9711f;
+  --severity-medium: #b9861a;
+  --severity-low: #0f9b8a;
 
-  /* Header font stack — Bricolage Grotesque. Body font — Plus Jakarta Sans. */
+  /* Header font stack — Bricolage Grotesque. Body font — Inter. */
   --font-heading: var(--font-bricolage), system-ui, sans-serif;
-  --font-sans: var(--font-plus-jakarta), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 
   --radius: 0.625rem;
 
-  /* Sidebar — Lime Frost palette */
-  --sidebar: #0d1117;
-  --sidebar-foreground: #f0f4f8;
-  --sidebar-primary: #aff33e;
-  --sidebar-primary-foreground: #0a0d10;
-  --sidebar-accent: #161e26;
-  --sidebar-accent-foreground: #aff33e;
-  --sidebar-border: #1c242b;
-  --sidebar-ring: #aff33e;
+  /* Sidebar — light */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #201d24;
+  --sidebar-primary: #5b2bd2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1edfa;
+  --sidebar-accent-foreground: #5b2bd2;
+  --sidebar-border: #e4e0dd;
+  --sidebar-ring: #5b2bd2;
 
-  /* Chart palette — matching severity & brand */
-  --chart-1: #f0465b;
-  --chart-2: #ff8a3d;
-  --chart-3: #f5c244;
-  --chart-4: #2dd4bf;
-  --chart-5: #aff33e;
+  /* Chart palette — severity + purple brand */
+  --chart-1: #d4374b;
+  --chart-2: #d9711f;
+  --chart-3: #b9861a;
+  --chart-4: #0f9b8a;
+  --chart-5: #5b2bd2;
 }
 
 /* ------------------------------------------------------------------ */

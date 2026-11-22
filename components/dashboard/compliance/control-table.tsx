@@ -26,10 +26,10 @@ function ComplianceStatus({ status }: { status: string }) {
         aria-hidden
         className={cn(
           "size-1.5 shrink-0 rounded-full",
-          needsAttention ? "bg-white" : "bg-white/30"
+          needsAttention ? "bg-white" : "bg-black/30"
         )}
       />
-      <span className={needsAttention ? "font-medium text-white" : "text-white/55"}>
+      <span className={needsAttention ? "font-medium text-black" : "text-black/55"}>
         {status}
       </span>
     </span>
@@ -45,13 +45,13 @@ const columns: ColumnDef<ControlFamily>[] = [
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="cursor-help rounded-md bg-white/[0.06] px-1.5 py-0.5 font-mono text-xs text-white underline-offset-2 decoration-dotted decoration-white/30 hover:underline">
+            <span className="cursor-help rounded-md bg-black/[0.06] px-1.5 py-0.5 font-mono text-xs text-black underline-offset-2 decoration-dotted decoration-black/30 hover:underline">
               {row.original.id}
             </span>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             <p className="font-medium">{info.name}</p>
-            <p className="mt-1 text-xs text-background/70">
+            <p className="mt-1 text-xs text-primary-foreground/70">
               Formal name of this control ({row.original.id}).
             </p>
           </TooltipContent>
@@ -65,7 +65,7 @@ const columns: ColumnDef<ControlFamily>[] = [
     enableSorting: false,
     meta: { className: "min-w-[240px] whitespace-normal" },
     cell: ({ row }) => (
-      <span className="text-pretty text-sm leading-relaxed text-white/75">
+      <span className="text-pretty text-sm leading-relaxed text-black/75">
         {controlInfo(row.original.id, row.original.name).plain}
       </span>
     ),
@@ -81,7 +81,7 @@ const columns: ColumnDef<ControlFamily>[] = [
     enableSorting: false,
     meta: { className: "min-w-[220px] whitespace-normal" },
     cell: ({ row }) => (
-      <span className="text-pretty text-sm leading-relaxed text-white/55">
+      <span className="text-pretty text-sm leading-relaxed text-black/55">
         {row.original.details}
       </span>
     ),
@@ -95,7 +95,7 @@ const liveColumns: ColumnDef<ComplianceMapping>[] = [
     accessorKey: "control_id",
     header: "Control ID",
     cell: ({ row }) => (
-      <span className="rounded-md bg-white/[0.06] px-2 py-0.5 font-mono text-xs font-medium text-white">
+      <span className="rounded-md bg-black/[0.06] px-2 py-0.5 font-mono text-xs font-medium text-black">
         {row.original.control_id}
       </span>
     ),
@@ -105,7 +105,7 @@ const liveColumns: ColumnDef<ComplianceMapping>[] = [
     header: "Framework Component",
     meta: { className: "min-w-[220px] whitespace-normal" },
     cell: ({ row }) => (
-      <span className="text-sm font-medium leading-relaxed text-white/75">
+      <span className="text-sm font-medium leading-relaxed text-black/75">
         {row.original.framework_component}
       </span>
     ),
@@ -119,7 +119,7 @@ const liveColumns: ColumnDef<ComplianceMapping>[] = [
     accessorKey: "last_assessed",
     header: "Last Assessed",
     cell: ({ row }) => (
-      <span className="font-mono text-xs text-white/55">
+      <span className="font-mono text-xs text-black/55">
         {row.original.last_assessed}
       </span>
     ),

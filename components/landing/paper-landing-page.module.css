@@ -9,6 +9,7 @@
   --paper-purple: #5b2bd2;
   --paper-purple-soft: #f1edfa;
   --paper-rose: #f6e9e9;
+  position: relative;
   min-height: 100dvh;
   overflow: clip;
   background: var(--paper-bg);
@@ -49,12 +50,15 @@
 }
 
 .header {
-  position: relative;
-  z-index: 5;
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  z-index: 20;
   display: flex;
   width: min(1248px, calc(100% - 64px));
   height: 76px;
-  margin: 0 auto;
+  margin-inline: auto;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
@@ -114,7 +118,7 @@
   justify-content: center;
   gap: 8px;
   padding: 0 15px;
-  border-radius: 7px;
+  border-radius: 100px;
   background: var(--paper-purple);
   color: white !important;
   font-size: 12px;
@@ -134,52 +138,81 @@
 
 .hero {
   position: relative;
-  padding: 48px 0 44px;
+  padding: 0 0 48px;
   isolation: isolate;
 }
+/* Cropped, rounded hero panel. The header floats over its top (.header is
+   absolute), so the panel carries top padding to clear the nav. overflow:clip
+   contains the grid + glow within the rounded corners. */
+.heroPanel {
+  position: relative;
+  margin: 18px 16px 0;
+  /* The dashboard preview sits inside this panel, so normal bottom padding. */
+  padding: 118px 24px 40px;
+  border-radius: 30px;
+  overflow: clip;
+  isolation: isolate;
+  /* A faint lavender-to-cream tint so the rounded crop stands out from the
+     cream page frame around it (the panel reads as a distinct surface). */
+  background: linear-gradient(180deg, #f1ecfb 0%, #f7f4f1 68%);
+  border: 1px solid rgba(91, 43, 210, 0.08);
+  box-shadow: 0 26px 60px -38px rgba(74, 48, 120, 0.35);
+}
+/* Fine graph-paper grid filling the panel, with a soft vignette toward the
+   rounded edges. Sleek/minimal (Linear/Vercel-style), cool-toned. */
 .heroWash {
   position: absolute;
   z-index: -1;
-  inset: -100px 0 0;
-  background: radial-gradient(
-      ellipse at 18% 38%,
-      rgba(246, 190, 207, 0.3),
-      transparent 52%
-    ),
-    radial-gradient(
-      ellipse at 83% 43%,
-      rgba(255, 207, 174, 0.28),
-      transparent 55%
-    ),
-    linear-gradient(112deg, #efb7cb 0%, #f4bfc1 52%, #f3baa3 100%);
+  /* Larger than the panel so the parallax/ambient drift never reveals an edge;
+     the panel's overflow:clip crops it to the rounded shape. */
+  inset: -60px;
+  background:
+    linear-gradient(to right, rgba(32, 29, 36, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(32, 29, 36, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px, 46px 46px;
+  -webkit-mask-image: radial-gradient(125% 110% at 50% 34%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(125% 110% at 50% 34%, #000 52%, transparent 100%);
+  will-change: transform, background-position;
 }
-.heroWash::after {
+/* Soft purple spotlight behind the headline, layered over the grid. */
+.heroWash::before {
+  content: "";
   position: absolute;
   inset: 0;
-  content: "";
-  opacity: 0.5;
-  background: repeating-radial-gradient(
-    ellipse at 12% 42%,
-    transparent 0 29px,
-    rgba(107, 69, 91, 0.2) 30px 31px,
-    transparent 32px 53px
+  background:
+    radial-gradient(52% 40% at 50% 18%, rgba(91, 43, 210, 0.18), transparent 70%),
+    radial-gradient(85% 55% at 50% 14%, rgba(91, 43, 210, 0.07), transparent 82%);
+}
+/* Cursor-following spotlight: tints the grid brighter purple where the mouse
+   is. Centered on its own origin (top-left + negative margin) so anime.js can
+   position its center with translate(x, y). Hidden until the pointer enters. */
+.heroGlow {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 440px;
+  height: 440px;
+  margin: -220px 0 0 -220px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(91, 43, 210, 0.18) 0%,
+    rgba(91, 43, 210, 0.08) 36%,
+    transparent 68%
   );
-  background-size: 140% 140%;
-  mask-image: linear-gradient(
-    90deg,
-    #000,
-    transparent 42%,
-    transparent 60%,
-    #000
-  );
-  animation: contour-drift 24s ease-in-out infinite alternate;
+  /* Both position and fade are driven by anime.js (createAnimatable), which
+     writes inline styles directly — no CSS transition to get stuck. */
+  will-change: transform, opacity;
 }
 .heroCopy {
   position: relative;
   z-index: 1;
   display: flex;
   max-width: 740px;
-  margin: 0 auto 62px;
+  margin: 0 auto;
   align-items: center;
   flex-direction: column;
   text-align: center;
@@ -239,13 +272,17 @@
 }
 
 .previewFrame {
-  width: min(1128px, calc(100% - 64px));
-  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  /* Sits inside the hero panel (gradient shows in the panel padding around it). */
+  width: 100%;
+  max-width: 1080px;
+  margin: 44px auto 0;
   padding: 18px 20px 20px;
   border: 1px solid #e4ddda;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 12px 38px rgba(84, 64, 75, 0.06);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 54px rgba(84, 64, 75, 0.12);
 }
 .previewTopbar {
   display: flex;
@@ -606,7 +643,7 @@
 .platformCard > span {
   position: relative;
   z-index: 1;
-  color: var(--paper-purple);
+  color: var(--paper-ink);
   font-size: 12px;
   text-transform: uppercase;
 }
@@ -614,6 +651,7 @@
   position: relative;
   z-index: 1;
   margin-top: 14px;
+  color: var(--paper-ink);
   font-size: 22px;
   font-weight: 640;
 }
@@ -834,6 +872,8 @@
 }
 
 .gateSection {
+  position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.94fr);
   align-items: center;
@@ -1447,7 +1487,8 @@
     gap: 13px;
   }
   .previewFrame {
-    width: calc(100% - 40px);
+    width: 100%;
+    margin: 36px auto 0;
     padding: 14px;
   }
   .previewBody {
@@ -1541,15 +1582,17 @@
     background: #f6f3f8;
     color: var(--paper-purple);
   }
-  .hero {
-    padding-top: 36px;
+  .heroPanel {
+    margin: 10px 10px 0;
+    padding: 90px 16px 104px;
+    border-radius: 22px;
   }
   .heroCopy {
-    width: calc(100% - 36px);
-    margin-bottom: 34px;
+    width: 100%;
   }
   .heroCopy h1 {
-    font-size: clamp(42px, 13vw, 58px);
+    font-size: clamp(32px, 10vw, 50px);
+    overflow-wrap: break-word;
   }
   .heroCopy > p {
     font-size: 16px;
@@ -1559,7 +1602,8 @@
     justify-content: center;
   }
   .previewFrame {
-    width: calc(100% - 24px);
+    width: 100%;
+    margin: 28px auto 0;
     padding: 11px;
     border-radius: 11px;
   }
@@ -1939,12 +1983,15 @@
 /* PlatformSection — large line-art icon sitting inside the card (watermark) */
 .platformIcon {
   position: absolute;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  width: 150px;
+  margin-inline: auto;
+  transform-origin: center bottom;
   z-index: 0;
   color: #c79a3e;
-  opacity: 0.28;
+  opacity: 0.26;
   pointer-events: none;
 }
 /* Dark pill button (higher specificity than the default .platformCard a link) */
@@ -1966,4 +2013,40 @@
 }
 .platformCard a.platformPill:hover {
   background: #332e38;
+}
+
+/* GateSection — same drifting contour-ring pattern as the hero */
+.gateSection .gateDemo,
+.gateSection .gateCopy {
+  position: relative;
+  z-index: 1;
+}
+.gatePattern {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-radial-gradient(
+    ellipse at 12% 42%,
+    transparent 0 29px,
+    rgba(107, 69, 91, 0.2) 30px 31px,
+    transparent 32px 53px
+  );
+  background-size: 140% 140%;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #000,
+    transparent 42%,
+    transparent 60%,
+    #000
+  );
+  mask-image: linear-gradient(
+    90deg,
+    #000,
+    transparent 42%,
+    transparent 60%,
+    #000
+  );
+  animation: contour-drift 24s ease-in-out infinite alternate;
 }

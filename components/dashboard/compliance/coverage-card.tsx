@@ -24,7 +24,7 @@ export function CoverageCard({
   const dashoffset = circumference * (1 - coverage / 100);
 
   return (
-    <section className="flex flex-col gap-8 rounded-2xl bg-white/[0.04] p-6 sm:flex-row sm:items-center sm:gap-10">
+    <section className="flex flex-col gap-8 rounded-2xl bg-black/[0.04] p-6 sm:flex-row sm:items-center sm:gap-10">
       {/* Radial gauge */}
       <div className="relative mx-auto grid size-[140px] shrink-0 place-items-center sm:mx-0">
         <svg width="140" height="140" viewBox="0 0 140 140" aria-hidden>
@@ -50,10 +50,10 @@ export function CoverageCard({
           />
         </svg>
         <div className="absolute flex flex-col items-center">
-          <span className="font-heading text-3xl font-semibold tabular-nums text-white">
+          <span className="font-heading text-3xl font-semibold tabular-nums text-black">
             <AnimatedNumber value={coverage} />%
           </span>
-          <span className="text-xs text-white/40">coverage</span>
+          <span className="text-xs text-black/40">coverage</span>
         </div>
       </div>
 
@@ -61,10 +61,10 @@ export function CoverageCard({
       <div className="flex flex-1 flex-col gap-5">
         <div className="flex flex-wrap gap-x-10 gap-y-4">
           <Metric label={hasLive ? "Compliant" : "Covered"} value={covered} dot="bg-primary" />
-          <Metric label="Gaps" value={gaps} dot="bg-white/30" />
+          <Metric label="Gaps" value={gaps} dot="bg-black/30" />
           <Metric label="Controls" value={total} />
         </div>
-        <p className="text-sm text-white/40">{sourceLabel}</p>
+        <p className="text-sm text-black/40">{sourceLabel}</p>
       </div>
     </section>
   );
@@ -73,11 +73,11 @@ export function CoverageCard({
 function Metric({ label, value, dot }: { label: string; value: number; dot?: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="flex items-center gap-2 text-sm text-white/55">
+      <span className="flex items-center gap-2 text-sm text-black/55">
         {dot ? <span className={`size-1.5 rounded-full ${dot}`} aria-hidden /> : null}
         {label}
       </span>
-      <span className="font-heading text-3xl font-semibold tabular-nums text-white">
+      <span className="font-heading text-3xl font-semibold tabular-nums text-black">
         <AnimatedNumber value={value} />
       </span>
     </div>

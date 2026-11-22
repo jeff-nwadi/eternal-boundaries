@@ -39,9 +39,9 @@ export default function CompliancePage() {
 
       {/* Coverage summary — the one focal point for this view */}
       {isLoading ? (
-        <section className="flex items-center gap-10 rounded-2xl bg-white/[0.04] p-6">
-          <div className="size-[140px] shrink-0 animate-pulse rounded-full bg-white/[0.06]" />
-          <div className="h-10 flex-1 animate-pulse rounded-lg bg-white/[0.06]" />
+        <section className="flex items-center gap-10 rounded-2xl bg-black/[0.04] p-6">
+          <div className="size-[140px] shrink-0 animate-pulse rounded-full bg-black/[0.06]" />
+          <div className="h-10 flex-1 animate-pulse rounded-lg bg-black/[0.06]" />
         </section>
       ) : (
         <CoverageCard
@@ -56,15 +56,15 @@ export default function CompliancePage() {
       {!isLoading && (
         <div className="flex flex-col gap-10">
           {isError ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/[0.04] p-6">
-              <p className="text-sm text-white/55">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/[0.04] p-6">
+              <p className="text-sm text-black/55">
                 Live engine unreachable, showing sample controls.{" "}
                 {error instanceof Error ? error.message : ""}
               </p>
               <button
                 type="button"
                 onClick={() => refetch()}
-                className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-white/80 hover:bg-white/[0.1] hover:text-white"
+                className="rounded-lg bg-black/[0.06] px-3 py-1.5 text-sm font-medium text-black/80 hover:bg-black/[0.1] hover:text-black"
               >
                 Retry
               </button>

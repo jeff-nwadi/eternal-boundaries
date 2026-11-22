@@ -24,7 +24,7 @@ export function SeverityDistribution({
       {/* Segmented bar */}
       <div className="flex h-2.5 w-full gap-1 overflow-hidden" aria-hidden>
         {total === 0 ? (
-          <span className="h-full flex-1 rounded-full bg-white/[0.08]" />
+          <span className="h-full flex-1 rounded-full bg-black/[0.08]" />
         ) : (
           SEVERITIES.map((s) => {
             const count = counts[s.key] ?? 0;
@@ -49,8 +49,8 @@ export function SeverityDistribution({
               style={{ backgroundColor: s.color }}
               aria-hidden
             />
-            <span className="text-sm text-white/55">{s.label}</span>
-            <span className="text-sm font-medium tabular-nums text-white">
+            <span className="text-sm text-black/55">{s.label}</span>
+            <span className="text-sm font-medium tabular-nums text-black">
               {counts[s.key] ?? 0}
             </span>
           </div>

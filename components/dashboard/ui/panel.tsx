@@ -20,13 +20,13 @@ export function Panel({
   children?: React.ReactNode;
 }) {
   return (
-    <section className={cn("flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6", className)}>
+    <section className={cn("flex flex-col gap-5 rounded-2xl bg-black/[0.04] p-6", className)}>
       {title || description || action ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex min-w-0 flex-col gap-1">
-            {title ? <h2 className="text-sm font-medium text-white">{title}</h2> : null}
+            {title ? <h2 className="text-sm font-medium text-black">{title}</h2> : null}
             {description ? (
-              <p className="text-sm text-white/55">{description}</p>
+              <p className="text-sm text-black/55">{description}</p>
             ) : null}
           </div>
           {action ? <div className="sm:shrink-0">{action}</div> : null}

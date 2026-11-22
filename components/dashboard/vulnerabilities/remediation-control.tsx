@@ -68,7 +68,7 @@ export function RemediationControl({
 
   if (status === "verifying") {
     return (
-      <span className="inline-flex items-center gap-2 text-sm text-white/55">
+      <span className="inline-flex items-center gap-2 text-sm text-black/55">
         <Loader2 className="size-4 animate-spin text-primary" aria-hidden />
         Verifying isolation…
       </span>
@@ -91,7 +91,7 @@ export function RemediationControl({
           <AlertTriangle className="size-4" strokeWidth={2} aria-hidden />
           Engine unreachable
         </span>
-        <span className="text-xs text-white/40">
+        <span className="text-xs text-black/40">
           Stays open until a fix is confirmed. {detail ?? ""}
         </span>
         <button
@@ -111,12 +111,12 @@ export function RemediationControl({
       <button
         type="button"
         onClick={onMark}
-        className="inline-flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-white/85 transition-colors hover:bg-white/[0.1] hover:text-white"
+        className="inline-flex items-center gap-2 rounded-lg bg-black/[0.06] px-3 py-2 text-sm font-medium text-black/85 transition-colors hover:bg-black/[0.1] hover:text-black"
       >
         <ShieldCheck className="size-4" strokeWidth={1.75} aria-hidden />
         Mark as remediated
       </button>
-      <span className="text-xs text-white/40">Simulated, no live action taken</span>
+      <span className="text-xs text-black/40">Simulated, no live action taken</span>
     </div>
   );
 }

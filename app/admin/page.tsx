@@ -57,8 +57,8 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-2xl font-semibold text-white sm:text-4xl">Team</h1>
-        <p className="text-sm text-white/55">
+        <h1 className="font-heading text-2xl font-semibold text-black sm:text-4xl">Team</h1>
+        <p className="text-sm text-black/55">
           Manage your team and access. Accounts are invite-only.
         </p>
       </header>
@@ -73,10 +73,10 @@ export default async function AdminPage() {
 
       {/* Provision new tenant — master tenant only (§6b point 6) */}
       {isMaster && (
-        <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
+        <section className="flex flex-col gap-5 rounded-2xl bg-black/[0.04] p-6">
           <div className="flex flex-col gap-1">
-            <h2 className="text-sm font-medium text-white">Provision client tenant</h2>
-            <p className="text-sm text-white/55">
+            <h2 className="text-sm font-medium text-black">Provision client tenant</h2>
+            <p className="text-sm text-black/55">
               Founders only. Creates a new client organization and its first admin
               invite. You will not see that tenant&apos;s users or invites afterward.
             </p>
@@ -86,10 +86,10 @@ export default async function AdminPage() {
       )}
 
       {/* Create invite */}
-      <section className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
+      <section className="flex flex-col gap-5 rounded-2xl bg-black/[0.04] p-6">
         <div className="flex flex-col gap-1">
-          <h2 className="text-sm font-medium text-white">Create invite</h2>
-          <p className="text-sm text-white/55">
+          <h2 className="text-sm font-medium text-black">Create invite</h2>
+          <p className="text-sm text-black/55">
             Sends a one-time sign-up link for your organization. To make someone an
             auditor, promote them after they join.
           </p>
@@ -100,8 +100,8 @@ export default async function AdminPage() {
       {/* Invites */}
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-sm font-medium text-white">Invites</h2>
-          <span className="text-sm tabular-nums text-white/55">
+          <h2 className="text-sm font-medium text-black">Invites</h2>
+          <span className="text-sm tabular-nums text-black/55">
             {invites.length} total
           </span>
         </div>
@@ -111,8 +111,8 @@ export default async function AdminPage() {
       {/* Users */}
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-sm font-medium text-white">Users</h2>
-          <span className="text-sm tabular-nums text-white/55">
+          <h2 className="text-sm font-medium text-black">Users</h2>
+          <span className="text-sm tabular-nums text-black/55">
             {users.length} total
           </span>
         </div>

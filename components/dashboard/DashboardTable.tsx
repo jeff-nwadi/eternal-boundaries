@@ -63,9 +63,9 @@ export function DashboardTable({ className }: { className?: string }) {
 
   const action = (
     <div className="flex items-center gap-3">
-      <span className="inline-flex items-center gap-1.5 text-sm text-white/55">
+      <span className="inline-flex items-center gap-1.5 text-sm text-black/55">
         <span
-          className={cn("size-1.5 rounded-full", isSample ? "bg-white/40" : "bg-primary")}
+          className={cn("size-1.5 rounded-full", isSample ? "bg-black/40" : "bg-primary")}
           aria-hidden
         />
         {isSample ? "Sample" : "Live"}
@@ -75,7 +75,7 @@ export function DashboardTable({ className }: { className?: string }) {
         onClick={() => refetch()}
         disabled={isFetching}
         aria-label="Refresh"
-        className="inline-flex size-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
+        className="inline-flex size-8 items-center justify-center rounded-lg text-black/60 transition-colors hover:bg-black/[0.06] hover:text-black disabled:opacity-50"
       >
         <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
       </button>
@@ -91,19 +91,19 @@ export function DashboardTable({ className }: { className?: string }) {
     >
       {isLoading ? (
         <div className="flex flex-col gap-2">
-          <div className="h-6 w-full animate-pulse rounded-lg bg-white/[0.06]" />
-          <div className="h-12 w-full animate-pulse rounded-lg bg-white/[0.04]" />
-          <div className="h-12 w-full animate-pulse rounded-lg bg-white/[0.04]" />
+          <div className="h-6 w-full animate-pulse rounded-lg bg-black/[0.06]" />
+          <div className="h-12 w-full animate-pulse rounded-lg bg-black/[0.04]" />
+          <div className="h-12 w-full animate-pulse rounded-lg bg-black/[0.04]" />
         </div>
       ) : isError ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-white/55">
+          <p className="text-sm text-black/55">
             Could not load live mappings. {error?.message ?? ""}
           </p>
           <button
             type="button"
             onClick={() => refetch()}
-            className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-white/80 hover:bg-white/[0.1] hover:text-white"
+            className="rounded-lg bg-black/[0.06] px-3 py-1.5 text-sm font-medium text-black/80 hover:bg-black/[0.1] hover:text-black"
           >
             Retry
           </button>
@@ -114,10 +114,10 @@ export function DashboardTable({ className }: { className?: string }) {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-sm font-normal text-white/55">CVE</TableHead>
-                  <TableHead className="text-sm font-normal text-white/55">Asset</TableHead>
-                  <TableHead className="text-sm font-normal text-white/55">Severity</TableHead>
-                  <TableHead className="min-w-[320px] text-sm font-normal text-white/55">
+                  <TableHead className="text-sm font-normal text-black/55">CVE</TableHead>
+                  <TableHead className="text-sm font-normal text-black/55">Asset</TableHead>
+                  <TableHead className="text-sm font-normal text-black/55">Severity</TableHead>
+                  <TableHead className="min-w-[320px] text-sm font-normal text-black/55">
                     Linked controls
                   </TableHead>
                 </TableRow>
@@ -125,10 +125,10 @@ export function DashboardTable({ className }: { className?: string }) {
               <TableBody>
                 {items.map((item, idx) => (
                   <TableRow key={item.cve_id || idx}>
-                    <TableCell className="py-5 align-top font-mono text-sm font-medium text-white">
+                    <TableCell className="py-5 align-top font-mono text-sm font-medium text-black">
                       {item.cve_id}
                     </TableCell>
-                    <TableCell className="py-5 align-top font-mono text-sm text-white/55">
+                    <TableCell className="py-5 align-top font-mono text-sm text-black/55">
                       {item.affected_asset}
                     </TableCell>
                     <TableCell className="py-5 align-top">
@@ -144,20 +144,20 @@ export function DashboardTable({ className }: { className?: string }) {
                             >
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="shrink-0 cursor-help rounded-md bg-white/[0.06] px-2 py-1 font-mono text-xs text-white underline-offset-2 decoration-dotted decoration-white/30 hover:underline">
+                                  <span className="shrink-0 cursor-help rounded-md bg-black/[0.06] px-2 py-1 font-mono text-xs text-black underline-offset-2 decoration-dotted decoration-black/30 hover:underline">
                                     {ctrl.control_id}
                                   </span>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                   <p className="font-medium">{ctrl.control_name}</p>
                                   {ctrl.framework ? (
-                                    <p className="mt-1 text-xs text-background/70">
+                                    <p className="mt-1 text-xs text-primary-foreground/70">
                                       {ctrl.framework}
                                     </p>
                                   ) : null}
                                 </TooltipContent>
                               </Tooltip>
-                              <span className="flex-1 text-sm text-white/55">
+                              <span className="flex-1 text-sm text-black/55">
                                 {ctrl.control_name}
                               </span>
                               {/* §5.4: nested control status is restricted to CLAIMED
@@ -170,7 +170,7 @@ export function DashboardTable({ className }: { className?: string }) {
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                   <p className="font-medium">CLAIMED (unverified)</p>
-                                  <p className="mt-1 text-xs text-background/70">
+                                  <p className="mt-1 text-xs text-primary-foreground/70">
                                     Status stays CLAIMED until gate-off/gate-on verification passes.
                                   </p>
                                 </TooltipContent>
@@ -178,7 +178,7 @@ export function DashboardTable({ className }: { className?: string }) {
                             </div>
                           ))
                         ) : (
-                          <span className="text-sm text-white/40">No linked controls</span>
+                          <span className="text-sm text-black/40">No linked controls</span>
                         )}
                       </div>
                     </TableCell>

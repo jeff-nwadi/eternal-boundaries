@@ -37,12 +37,12 @@ function Node({
   return (
     <div className={`flex w-16 shrink-0 flex-col items-center gap-2 ${dim ? "opacity-35" : ""}`}>
       <span
-        className="grid size-12 place-items-center rounded-xl bg-white/[0.06]"
+        className="grid size-12 place-items-center rounded-xl bg-black/[0.06]"
         style={{ color: tone }}
       >
         {icon}
       </span>
-      <span className="text-center text-[11px] leading-tight text-white/55">{label}</span>
+      <span className="text-center text-[11px] leading-tight text-black/55">{label}</span>
     </div>
   );
 }
@@ -64,8 +64,8 @@ function Link({ blocked = false }: { blocked?: boolean }) {
   }
   return (
     <div className="flex min-w-10 flex-1 items-center">
-      <span className="h-px flex-1 bg-white/20" />
-      <ChevronRight className="size-4 shrink-0 text-white/35" strokeWidth={2} />
+      <span className="h-px flex-1 bg-black/20" />
+      <ChevronRight className="size-4 shrink-0 text-black/35" strokeWidth={2} />
     </div>
   );
 }
@@ -128,9 +128,9 @@ function Scenario({ kind }: { kind: Kind }) {
   const s = SCENARIOS[kind];
   const actorTone = kind === "legit" ? "rgb(255 255 255 / 0.8)" : RED;
   return (
-    <div className="flex flex-col gap-5 rounded-2xl bg-white/[0.04] p-6">
+    <div className="flex flex-col gap-5 rounded-2xl bg-black/[0.04] p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-sm font-medium text-white">{s.title}</span>
+        <span className="text-sm font-medium text-black">{s.title}</span>
         <span
           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
           style={{ color: s.outcomeTone, backgroundColor: "color-mix(in oklab, currentColor 14%, transparent)" }}
@@ -163,7 +163,7 @@ function Scenario({ kind }: { kind: Kind }) {
         />
       </div>
 
-      <p className="text-sm leading-relaxed text-white/60">{s.sentence}</p>
+      <p className="text-sm leading-relaxed text-black/60">{s.sentence}</p>
     </div>
   );
 }
@@ -172,18 +172,18 @@ function Scenario({ kind }: { kind: Kind }) {
 
 function LegBytes({ leg }: { leg: ProofLeg }) {
   return (
-    <div className="flex flex-col gap-2 border-t border-white/[0.06] pt-4 first:border-0 first:pt-0">
+    <div className="flex flex-col gap-2 border-t border-black/[0.06] pt-4 first:border-0 first:pt-0">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-white">
+        <span className="text-sm font-medium text-black">
           Leg {leg.leg} · {leg.verdict}
         </span>
-        <span className="text-xs text-white/40">{leg.destination}</span>
+        <span className="text-xs text-black/40">{leg.destination}</span>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
-        <code className="block overflow-x-auto rounded-lg bg-black/30 px-3 py-2 font-mono text-xs text-white/70">
+        <code className="block overflow-x-auto rounded-lg bg-black/30 px-3 py-2 font-mono text-xs text-black/70">
           sent&nbsp; {groupHex(leg.sentHex)}
         </code>
-        <code className="block overflow-x-auto rounded-lg bg-black/30 px-3 py-2 font-mono text-xs text-white/70">
+        <code className="block overflow-x-auto rounded-lg bg-black/30 px-3 py-2 font-mono text-xs text-black/70">
           recv&nbsp; {groupHex(leg.recvHex)}
         </code>
       </div>
@@ -203,13 +203,13 @@ export function GateProof({ proof }: { proof: ModbusProof | null }) {
       {/* Plain-language summary */}
       <Panel>
         <div className="flex flex-col gap-3">
-          <p className="text-base leading-relaxed text-white/85">
-            We took <span className="font-medium text-white">one real network attack</span> on an
-            industrial controller and sent it twice — once with our gate <span className="font-medium text-white">off</span>,
-            once with it <span className="font-medium text-white">on</span> — then sent a normal
+          <p className="text-base leading-relaxed text-black/85">
+            We took <span className="font-medium text-black">one real network attack</span> on an
+            industrial controller and sent it twice — once with our gate <span className="font-medium text-black">off</span>,
+            once with it <span className="font-medium text-black">on</span> — then sent a normal
             command too. Here is exactly what happened each time.
           </p>
-          <p className="text-sm leading-relaxed text-white/55">
+          <p className="text-sm leading-relaxed text-black/55">
             The attack: someone sends a malformed control command over the industrial protocol
             (Modbus), trying to write data into a protected spot on the device — the kind of move
             used to tamper with industrial equipment.
@@ -231,17 +231,17 @@ export function GateProof({ proof }: { proof: ModbusProof | null }) {
             <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: GOOD }}>
               <Check className="size-4" strokeWidth={3} /> What it shows
             </span>
-            <p className="text-sm leading-relaxed text-white/65">
+            <p className="text-sm leading-relaxed text-black/65">
               The gate caught a real attack as it crossed the network and stopped it before the
               device — while still letting normal commands through. It isn&apos;t blocking everything;
               it&apos;s telling good from bad.
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-white/60">
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-black/60">
               <Info className="size-4" strokeWidth={1.75} /> What it doesn&apos;t
             </span>
-            <p className="text-sm leading-relaxed text-white/55">
+            <p className="text-sm leading-relaxed text-black/55">
               This was a controlled test against a practice device in our lab, with one attack and
               one normal command. It&apos;s a real result, not yet a guarantee for every device or
               every attack.
@@ -251,20 +251,20 @@ export function GateProof({ proof }: { proof: ModbusProof | null }) {
       </Panel>
 
       {/* Engineer detail — tucked away, kept for verification */}
-      <details className="group rounded-2xl bg-white/[0.04] p-6">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-white/80 marker:hidden">
+      <details className="group rounded-2xl bg-black/[0.04] p-6">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-black/80 marker:hidden">
           Technical detail (raw packets &amp; gate log)
-          <ChevronRight className="size-4 text-white/40 transition-transform group-open:rotate-90" strokeWidth={2} />
+          <ChevronRight className="size-4 text-black/40 transition-transform group-open:rotate-90" strokeWidth={2} />
         </summary>
 
         <div className="mt-6 flex flex-col gap-6">
           <div className="flex flex-col gap-1">
-            <span className="text-xs uppercase tracking-wide text-white/40">Attack</span>
-            <span className="text-sm leading-relaxed text-white/70">{proof.attack}</span>
+            <span className="text-xs uppercase tracking-wide text-black/40">Attack</span>
+            <span className="text-sm leading-relaxed text-black/70">{proof.attack}</span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-xs uppercase tracking-wide text-white/40">Target</span>
-            <span className="text-sm leading-relaxed text-white/70">{proof.target}</span>
+            <span className="text-xs uppercase tracking-wide text-black/40">Target</span>
+            <span className="text-sm leading-relaxed text-black/70">{proof.target}</span>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -274,22 +274,22 @@ export function GateProof({ proof }: { proof: ModbusProof | null }) {
           </div>
 
           {proof.gateLog.length > 0 ? (
-            <div className="flex flex-col gap-2 border-t border-white/[0.06] pt-4">
-              <span className="text-xs uppercase tracking-wide text-white/40">
+            <div className="flex flex-col gap-2 border-t border-black/[0.06] pt-4">
+              <span className="text-xs uppercase tracking-wide text-black/40">
                 Gate log (this run highlighted)
               </span>
               {proof.gateLog.map((l, i) => (
                 <div
                   key={i}
                   className={`flex flex-col gap-1 rounded-lg px-3 py-2 text-xs sm:flex-row sm:items-center sm:gap-4 ${
-                    l.fromRun ? "bg-white/[0.05]" : "opacity-45"
+                    l.fromRun ? "bg-black/[0.05]" : "opacity-45"
                   }`}
                 >
-                  <span className="shrink-0 font-mono text-white/50">{l.timestamp.slice(11, 19)} UTC</span>
+                  <span className="shrink-0 font-mono text-black/50">{l.timestamp.slice(11, 19)} UTC</span>
                   <span className="shrink-0 font-semibold" style={{ color: l.allowed ? "rgb(255 255 255 / 0.6)" : GOOD }}>
                     {l.status}
                   </span>
-                  <span className="min-w-0 flex-1 text-white/70">{l.details}</span>
+                  <span className="min-w-0 flex-1 text-black/70">{l.details}</span>
                 </div>
               ))}
             </div>

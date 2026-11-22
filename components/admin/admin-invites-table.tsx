@@ -184,7 +184,7 @@ function InviteRowActions({ invite }: { invite: AdminInvite }) {
                 onRevoke();
               }}
               disabled={pending}
-              className="bg-destructive text-white hover:bg-destructive/90"
+              className="bg-destructive text-black hover:bg-destructive/90"
             >
               {pending ? "Revoking…" : "Revoke invite"}
             </AlertDialogAction>

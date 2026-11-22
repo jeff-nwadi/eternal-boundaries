@@ -59,7 +59,7 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
   const search = (
     <div className="relative w-full sm:w-64">
       <Search
-        className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-white/40"
+        className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-black/40"
         aria-hidden
       />
       <Input
@@ -85,8 +85,8 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
             className={cn(
               "rounded-full px-3 py-1 text-sm font-medium capitalize transition-colors duration-150",
               filter === sev
-                ? "bg-white/[0.1] text-white"
-                : "text-white/55 hover:bg-white/[0.04] hover:text-white"
+                ? "bg-black/[0.1] text-black"
+                : "text-black/55 hover:bg-black/[0.04] hover:text-black"
             )}
           >
             {sev.toLowerCase()}
@@ -98,17 +98,17 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-sm font-normal text-white/55">CVE</TableHead>
-              <TableHead className="text-sm font-normal text-white/55">Vulnerability</TableHead>
-              <TableHead className="text-sm font-normal text-white/55">Severity</TableHead>
-              <TableHead className="text-sm font-normal text-white/55">Asset</TableHead>
-              <TableHead className="text-sm font-normal text-white/55">Patch status</TableHead>
+              <TableHead className="text-sm font-normal text-black/55">CVE</TableHead>
+              <TableHead className="text-sm font-normal text-black/55">Vulnerability</TableHead>
+              <TableHead className="text-sm font-normal text-black/55">Severity</TableHead>
+              <TableHead className="text-sm font-normal text-black/55">Asset</TableHead>
+              <TableHead className="text-sm font-normal text-black/55">Patch status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visible.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={5} className="h-20 text-center text-white/55">
+                <TableCell colSpan={5} className="h-20 text-center text-black/55">
                   No findings match your filters.
                 </TableCell>
               </TableRow>
@@ -126,16 +126,16 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
                       setSelected(f);
                     }
                   }}
-                  className="cursor-pointer focus-visible:bg-white/[0.04] focus-visible:outline-none"
+                  className="cursor-pointer focus-visible:bg-black/[0.04] focus-visible:outline-none"
                 >
-                  <TableCell className="font-mono text-sm text-white/55">{f.cve_id}</TableCell>
-                  <TableCell className="font-medium text-white">
+                  <TableCell className="font-mono text-sm text-black/55">{f.cve_id}</TableCell>
+                  <TableCell className="font-medium text-black">
                     {f.vulnerability_name}
                   </TableCell>
                   <TableCell>
                     <StatusLabel value={f.severity} />
                   </TableCell>
-                  <TableCell className="font-mono text-sm text-white/55">
+                  <TableCell className="font-mono text-sm text-black/55">
                     {f.affected_asset}
                   </TableCell>
                   <TableCell>
@@ -150,7 +150,7 @@ export function VulnTable({ findings }: { findings: VulnFinding[] }) {
 
       {/* Row detail modal */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-h-[85vh] max-w-2xl gap-0 overflow-y-auto p-0 ring-white/10">
+        <DialogContent className="max-h-[85vh] max-w-2xl gap-0 overflow-y-auto p-0 ring-black/10">
           {selected ? (
             <FindingDetail
               finding={selected}
@@ -173,35 +173,35 @@ function FindingDetail({
   return (
     <div className="flex flex-col gap-8 p-6">
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-sm text-white/55">{finding.cve_id}</span>
-        <DialogTitle className="font-heading text-2xl font-semibold text-white">
+        <span className="font-mono text-sm text-black/55">{finding.cve_id}</span>
+        <DialogTitle className="font-heading text-2xl font-semibold text-black">
           {finding.vulnerability_name}
         </DialogTitle>
         <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-2">
           <StatusLabel value={finding.severity} />
           <StatusLabel value={finding.patch_status} />
-          <span className="font-mono text-sm text-white/55">{finding.affected_asset}</span>
+          <span className="font-mono text-sm text-black/55">{finding.affected_asset}</span>
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-sm text-white/55">How to fix it</span>
+        <span className="text-sm text-black/55">How to fix it</span>
         {/*
           Rendered verbatim from mock_vuln_scan.json. UNVERIFIED per CLAUDE.md
           §5.3 ("Termux gateway", invented proper nouns) — not audited or
           actionable guidance; must not be presented as production-ready.
         */}
-        <p className="text-sm leading-relaxed text-white/75">
+        <p className="text-sm leading-relaxed text-black/75">
           {finding.remediation_guidance}
         </p>
-        <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-white/40">
+        <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-black/40">
           <Info className="size-3.5" strokeWidth={1.75} aria-hidden />
           Unverified sample guidance, not audited.
         </span>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-white/[0.06] pt-6">
-        <span className="text-sm text-white/55">Verify fix</span>
+      <div className="flex flex-col gap-2 border-t border-black/[0.06] pt-6">
+        <span className="text-sm text-black/55">Verify fix</span>
         <RemediationControl
           vulnerabilityId={finding.cve_id}
           targetAsset={finding.affected_asset}

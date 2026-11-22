@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm text-white/55">{label}</span>
+      <span className="text-sm text-black/55">{label}</span>
       {children}
     </div>
   );
@@ -21,7 +21,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function ReadOnly({ value }: { value: string }) {
   return (
-    <div className="rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-white/70">
+    <div className="rounded-lg bg-black/[0.04] px-3 py-2 text-sm text-black/70">
       {value}
     </div>
   );
@@ -91,7 +91,7 @@ export function SettingsView({
               type="button"
               onClick={save}
               disabled={!dirty || saving}
-              className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-background transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save changes"}
             </button>
@@ -114,14 +114,14 @@ export function SettingsView({
       {/* Account */}
       <Panel title="Account">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <span className="text-sm text-white/55">
-            Signed in as <span className="text-white/80">{email || "—"}</span>
+          <span className="text-sm text-black/55">
+            Signed in as <span className="text-black/80">{email || "—"}</span>
           </span>
           <button
             type="button"
             onClick={signOut}
             disabled={signingOut}
-            className="inline-flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/[0.1] hover:text-white disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-black/[0.06] px-3 py-2 text-sm font-medium text-black/80 transition-colors hover:bg-black/[0.1] hover:text-black disabled:opacity-60"
           >
             <LogOut className="size-4" strokeWidth={1.75} />
             {signingOut ? "Signing out..." : "Sign out"}

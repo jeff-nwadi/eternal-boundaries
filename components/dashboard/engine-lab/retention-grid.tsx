@@ -37,7 +37,7 @@ function ByteBar({ row, className }: { row: ConsumptionRow; className?: string }
   const seg = (v: number, c: string) =>
     v > 0 ? <span className="h-full" style={{ flexGrow: v, backgroundColor: c }} /> : null;
   return (
-    <span className={`flex h-2.5 w-full gap-px overflow-hidden rounded-full bg-white/[0.06] ${className ?? ""}`} aria-hidden>
+    <span className={`flex h-2.5 w-full gap-px overflow-hidden rounded-full bg-black/[0.06] ${className ?? ""}`} aria-hidden>
       {total > 0 ? (
         <>
           {seg(s.committed, COMMITTED)}
@@ -72,7 +72,7 @@ export function RetentionGrid({ rows }: { rows: ConsumptionRow[] }) {
 
   const search = (
     <div className="relative w-full sm:w-64">
-      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-white/40" aria-hidden />
+      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-black/40" aria-hidden />
       <Input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -94,7 +94,7 @@ export function RetentionGrid({ rows }: { rows: ConsumptionRow[] }) {
 
       <Panel title="Boundary retention" action={search}>
         {/* Legend */}
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/55">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-black/55">
           <Legend color={COMMITTED} label="Committed" />
           <Legend color={SUFFIX} label="Isolated suffix" />
           <Legend color={OUTSIDE} label="Outside window" />
@@ -104,19 +104,19 @@ export function RetentionGrid({ rows }: { rows: ConsumptionRow[] }) {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-sm font-normal text-white/55">Specimen</TableHead>
-                <TableHead className="text-sm font-normal text-white/55">Policy</TableHead>
-                <TableHead className="text-sm font-normal text-white/55">Outcome</TableHead>
-                <TableHead className="min-w-[220px] text-sm font-normal text-white/55">
+                <TableHead className="text-sm font-normal text-black/55">Specimen</TableHead>
+                <TableHead className="text-sm font-normal text-black/55">Policy</TableHead>
+                <TableHead className="text-sm font-normal text-black/55">Outcome</TableHead>
+                <TableHead className="min-w-[220px] text-sm font-normal text-black/55">
                   Byte retention
                 </TableHead>
-                <TableHead className="text-right text-sm font-normal text-white/55">Bytes</TableHead>
+                <TableHead className="text-right text-sm font-normal text-black/55">Bytes</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {visible.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={5} className="h-20 text-center text-white/55">
+                  <TableCell colSpan={5} className="h-20 text-center text-black/55">
                     No specimens match “{query}”.
                   </TableCell>
                 </TableRow>
@@ -134,15 +134,15 @@ export function RetentionGrid({ rows }: { rows: ConsumptionRow[] }) {
                         setSelected(r);
                       }
                     }}
-                    className="cursor-pointer focus-visible:bg-white/[0.04] focus-visible:outline-none"
+                    className="cursor-pointer focus-visible:bg-black/[0.04] focus-visible:outline-none"
                   >
-                    <TableCell className="font-mono text-sm text-white">{r.specimenId}</TableCell>
-                    <TableCell className="font-mono text-sm text-white/55">{r.policyId}</TableCell>
-                    <TableCell className="text-sm text-white/75">{r.outcome}</TableCell>
+                    <TableCell className="font-mono text-sm text-black">{r.specimenId}</TableCell>
+                    <TableCell className="font-mono text-sm text-black/55">{r.policyId}</TableCell>
+                    <TableCell className="text-sm text-black/75">{r.outcome}</TableCell>
                     <TableCell className="min-w-[220px]">
                       <ByteBar row={r} />
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm text-white/55">
+                    <TableCell className="text-right font-mono text-sm text-black/55">
                       {r.committedBytes}/{r.N}
                     </TableCell>
                   </TableRow>
@@ -152,14 +152,14 @@ export function RetentionGrid({ rows }: { rows: ConsumptionRow[] }) {
           </Table>
         </div>
 
-        <p className="inline-flex items-center gap-1.5 text-xs text-white/40">
+        <p className="inline-flex items-center gap-1.5 text-xs text-black/40">
           <Info className="size-3.5" strokeWidth={1.75} aria-hidden />
           Offline fixtures — analyst-defined contracts, not live parser or vendor behavior.
         </p>
       </Panel>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-h-[88vh] w-[calc(100%-1.5rem)] gap-0 overflow-y-auto p-0 ring-white/10 sm:max-w-3xl">
+        <DialogContent className="max-h-[88vh] w-[calc(100%-1.5rem)] gap-0 overflow-y-auto p-0 ring-black/10 sm:max-w-3xl">
           {selected ? <SpecimenDetail row={selected} /> : null}
         </DialogContent>
       </Dialog>
@@ -179,8 +179,8 @@ function Legend({ color, label }: { color: string; label: string }) {
 function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-sm text-white/55">{label}</span>
-      <span className={`text-sm text-white/80 ${mono ? "font-mono break-all" : ""}`}>
+      <span className="text-sm text-black/55">{label}</span>
+      <span className={`text-sm text-black/80 ${mono ? "font-mono break-all" : ""}`}>
         {value || "—"}
       </span>
     </div>
@@ -192,16 +192,16 @@ function SpecimenDetail({ row }: { row: ConsumptionRow }) {
   return (
     <div className="flex flex-col gap-8 p-6 sm:p-8">
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-sm text-white/55">{row.policyId}</span>
-        <DialogTitle className="font-heading text-2xl font-semibold text-white sm:text-3xl">
+        <span className="font-mono text-sm text-black/55">{row.policyId}</span>
+        <DialogTitle className="font-heading text-2xl font-semibold text-black sm:text-3xl">
           {row.specimenId}
         </DialogTitle>
-        <span className="text-sm text-white/75">{row.outcome}</span>
+        <span className="text-sm text-black/75">{row.outcome}</span>
       </div>
 
       {/* Byte retention — full width */}
       <div className="flex flex-col gap-3">
-        <span className="text-sm text-white/55">Byte retention · {row.N} bytes</span>
+        <span className="text-sm text-black/55">Byte retention · {row.N} bytes</span>
         <ByteBar row={row} className="h-4" />
         <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm font-medium">
           <span style={{ color: COMMITTED }}>Committed · {s.committed}</span>
@@ -211,7 +211,7 @@ function SpecimenDetail({ row }: { row: ConsumptionRow }) {
       </div>
 
       {/* Parameters — wide grid, reads as a panel not a sidebar */}
-      <div className="grid grid-cols-2 gap-x-10 gap-y-6 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-x-10 gap-y-6 border-t border-black/[0.06] pt-6 sm:grid-cols-3">
         <Field label="Window" value={row.window} mono />
         <Field label="Committed range" value={row.committedRange} mono />
         <Field label="Span kind" value={row.spanKind} />
@@ -220,12 +220,12 @@ function SpecimenDetail({ row }: { row: ConsumptionRow }) {
         <Field label="Approval coverage" value={row.approvalCoverage} />
       </div>
 
-      <div className="flex flex-col gap-5 border-t border-white/[0.06] pt-6">
+      <div className="flex flex-col gap-5 border-t border-black/[0.06] pt-6">
         <Field label="Specimen SHA-256" value={row.sha256} mono />
         {row.provenance ? (
           <div className="flex flex-col gap-1">
-            <span className="text-sm text-white/55">Provenance</span>
-            <p className="text-sm leading-relaxed text-white/70">{row.provenance}</p>
+            <span className="text-sm text-black/55">Provenance</span>
+            <p className="text-sm leading-relaxed text-black/70">{row.provenance}</p>
           </div>
         ) : null}
       </div>

@@ -17,14 +17,14 @@ export function EngineStatus() {
       : "Engine: connected";
 
   return (
-    <div className="flex items-center gap-2 text-sm text-white/55">
+    <div className="flex items-center gap-2 text-sm text-black/55">
       <span
-        className={cn("size-1.5 rounded-full", isError ? "bg-white/40" : "bg-primary")}
+        className={cn("size-1.5 rounded-full", isError ? "bg-black/40" : "bg-primary")}
         aria-hidden
       />
       <span>{label}</span>
       {/* Placeholder: no docs page exists yet. */}
-      <a href="#" className="ml-2 text-white/70 transition-colors hover:text-white">
+      <a href="#" className="ml-2 text-black/70 transition-colors hover:text-black">
         Docs
       </a>
     </div>

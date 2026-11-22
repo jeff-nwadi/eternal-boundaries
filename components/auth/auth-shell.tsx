@@ -7,9 +7,9 @@ import { useReducedMotion } from "motion/react";
 import { CanvasRevealEffect } from "@/components/ui/sign-in-flow-1";
 import { BrandMark } from "@/components/landing/brand-mark";
 
-const LIME_RGB: [number, number, number] = [175, 243, 62];
+const BRAND_RGB: [number, number, number] = [91, 43, 210];
 
-/** Shared full-screen auth layout: lime dot-matrix background + centered slot. */
+/** Shared full-screen auth layout: purple dot-matrix background + centered slot. */
 export function AuthShell({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const prefersReducedMotion = useReducedMotion();
@@ -27,14 +27,16 @@ export function AuthShell({ children }: { children: ReactNode }) {
             <CanvasRevealEffect
               animationSpeed={3}
               containerClassName="bg-background"
-              colors={[LIME_RGB, LIME_RGB]}
+              colors={[BRAND_RGB, BRAND_RGB]}
               dotSize={6}
               reverse={false}
             />
           </div>
         )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(10,13,16,0.85)_0%,_transparent_100%)]" />
+        {/* Soft cream fades at top and bottom so the dot-matrix reads as a
+            subtle texture against the light background, with no dark center. */}
         <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-background to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
       </div>
 
       <div className="relative z-10 p-6">
@@ -48,11 +50,13 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="relative z-10 flex flex-1 items-center justify-center px-6 pb-16">
-        <div className="w-full max-w-sm">{children}</div>
+        <div className="w-full max-w-sm rounded-2xl border border-black/10 bg-card/90 p-8 shadow-xl shadow-black/5 backdrop-blur-sm">
+          {children}
+        </div>
       </div>
     </div>
   );
 }
 
 export const authInputClass =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-60";
+  "w-full rounded-lg border border-black/10 bg-black/[0.03] px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-60";

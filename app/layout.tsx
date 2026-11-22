@@ -1,27 +1,23 @@
 import type { Metadata } from "next";
-import {
-  Bricolage_Grotesque,
-  Plus_Jakarta_Sans,
-  DM_Sans,
-  Inter,
-} from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-
-// Inter drives the marketing/landing body text (--font-inter in the paper module).
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
+// Self-hosted local fonts (no web fetch) — the variable files cover every weight.
+// Inter drives all body/UI text; Bricolage Grotesque drives headings.
+const inter = localFont({
+  src: [
+    { path: "./fonts/Inter-Variable.ttf", style: "normal", weight: "100 900" },
+    { path: "./fonts/Inter-Italic-Variable.ttf", style: "italic", weight: "100 900" },
+  ],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
+const bricolage = localFont({
+  src: "./fonts/BricolageGrotesque-Variable.ttf",
+  variable: "--font-bricolage",
+  weight: "200 800",
   display: "swap",
 });
 
@@ -38,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("dark", "h-full", "antialiased", bricolage.variable, plusJakarta.variable, "font-sans", dmSans.variable, inter.variable)}
+      className={cn("h-full", "antialiased", bricolage.variable, inter.variable, "font-sans")}
       suppressHydrationWarning
     >
       <body

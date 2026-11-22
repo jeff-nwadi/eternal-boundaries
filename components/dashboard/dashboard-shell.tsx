@@ -30,7 +30,7 @@ export function DashboardShell({
     <Providers>
     <TooltipProvider delayDuration={150}>
       <SmoothScroll>
-      <div className="min-h-dvh bg-background text-white">
+      <div className="min-h-dvh bg-background text-black">
         {/* Desktop sidebar (>= lg) */}
       <aside className="fixed inset-y-0 left-0 hidden w-60 lg:block">
         <SidebarNav user={user} orgName={orgName} />
@@ -42,7 +42,7 @@ export function DashboardShell({
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             aria-label="Open menu"
-            className="inline-flex size-9 items-center justify-center rounded-lg text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="inline-flex size-9 items-center justify-center rounded-lg text-black/80 transition-colors hover:bg-black/[0.06] hover:text-black"
           >
             <Menu className="size-5" />
           </SheetTrigger>

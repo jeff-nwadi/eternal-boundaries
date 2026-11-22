@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/landing/brand-mark";
 
-// Lime brand accent (#AFF33E) as RGB, for the dot-matrix shader.
-const LIME_RGB: [number, number, number] = [175, 243, 62];
+// Purple brand accent (#5B2BD2) as RGB, for the dot-matrix shader.
+const BRAND_RGB: [number, number, number] = [91, 43, 210];
 
 type Uniforms = {
   [key: string]: {
@@ -33,7 +33,7 @@ interface SignInPageProps {
 export const CanvasRevealEffect = ({
   animationSpeed = 10,
   opacities = [0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1],
-  colors = [LIME_RGB],
+  colors = [BRAND_RGB],
   containerClassName,
   dotSize,
   showGradient = true,
@@ -51,7 +51,7 @@ export const CanvasRevealEffect = ({
     <div className={cn("relative h-full w-full", containerClassName)}>
       <div className="h-full w-full">
         <DotMatrix
-          colors={colors ?? [LIME_RGB]}
+          colors={colors ?? [BRAND_RGB]}
           dotSize={dotSize ?? 3}
           opacities={opacities ?? [0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1]}
           shader={`
@@ -104,6 +104,10 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         value: shader.includes("u_reverse_active") ? 1 : 0,
         type: "uniform1i",
       },
+      // Pointer position in shader pixel space; starts off-screen so there is
+      // no ripple until the cursor actually moves. Updated per-frame (lerped)
+      // in ShaderMaterial for a smooth wave that trails the cursor.
+      u_mouse: { value: [-1000, -1000], type: "uniform2f" },
     };
   }, [colors, opacities, totalSize, dotSize, shader]);
 
@@ -120,6 +124,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         uniform float u_dot_size;
         uniform vec2 u_resolution;
         uniform int u_reverse;
+        uniform vec2 u_mouse;
 
         out vec4 fragColor;
 
@@ -135,6 +140,19 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
             vec2 st = fragCoord.xy;
             ${center.includes("x") ? "st.x -= abs(floor((mod(u_resolution.x, u_total_size) - u_dot_size) * 0.5));" : ""}
             ${center.includes("y") ? "st.y -= abs(floor((mod(u_resolution.y, u_total_size) - u_dot_size) * 0.5));" : ""}
+
+            // --- Cursor wave -------------------------------------------------
+            // Displace the dot grid along a ripple radiating from the cursor so
+            // the dots appear to swell outward like a wave as it passes. The
+            // effect falls off smoothly with distance, so only dots near the
+            // pointer move, and fades to nothing far away.
+            vec2 to_mouse = fragCoord.xy - u_mouse;
+            float mouse_dist = length(to_mouse);
+            float mouse_falloff = exp(-mouse_dist / 240.0);
+            float ripple = sin(mouse_dist * 0.05 - u_time * 3.2);
+            vec2 mouse_dir = mouse_dist > 0.001 ? to_mouse / mouse_dist : vec2(0.0);
+            st += mouse_dir * ripple * mouse_falloff * 9.0;
+            // ----------------------------------------------------------------
 
             float opacity = step(0.0, st.x);
             opacity *= step(0.0, st.y);
@@ -170,6 +188,9 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
                 opacity *= clamp((1.0 - step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
             }
 
+            // Dots nearest the cursor glow a little brighter.
+            opacity *= 1.0 + mouse_falloff * 0.7;
+
             fragColor = vec4(color, opacity);
             fragColor.rgb *= fragColor.a;
         }`}
@@ -186,13 +207,40 @@ const ShaderMaterial = ({
   source: string;
   uniforms: Uniforms;
 }) => {
-  const { size } = useThree();
+  const { size, gl } = useThree();
   const ref = useRef<THREE.Mesh>(null);
+  // Target cursor position (shader pixel space). The uniform lerps toward this
+  // each frame so the wave trails the cursor smoothly instead of snapping.
+  const mouseTarget = useRef(new THREE.Vector2(-1000, -1000));
+
+  useEffect(() => {
+    const el = gl.domElement;
+    const handleMove = (e: PointerEvent) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      // Match the shader's fragCoord space (u_resolution = size * 2, top-left).
+      const x = ((e.clientX - rect.left) / rect.width) * size.width * 2;
+      const y = ((e.clientY - rect.top) / rect.height) * size.height * 2;
+      mouseTarget.current.set(x, y);
+    };
+    const handleLeave = () => mouseTarget.current.set(-1000, -1000);
+    // Listen on the window so the wave keeps tracking even while the cursor is
+    // over the sign-in card that sits above the canvas.
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerleave", handleLeave);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerleave", handleLeave);
+    };
+  }, [gl, size.width, size.height]);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const material = ref.current.material as THREE.ShaderMaterial;
     material.uniforms.u_time.value = clock.getElapsedTime();
+    const mouse = material.uniforms.u_mouse.value as THREE.Vector2;
+    // Low lerp factor = slow, smooth follow ("moves like a wave very smoothly").
+    mouse.lerp(mouseTarget.current, 0.08);
   });
 
   const getUniforms = () => {
@@ -293,7 +341,7 @@ const GoogleIcon = () => (
 );
 
 const inputClass =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30";
+  "w-full rounded-lg border border-black/10 bg-black/[0.03] px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30";
 
 export const SignInPage = ({ className }: SignInPageProps) => {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -330,13 +378,12 @@ export const SignInPage = ({ className }: SignInPageProps) => {
             <CanvasRevealEffect
               animationSpeed={3}
               containerClassName="bg-background"
-              colors={[LIME_RGB, LIME_RGB]}
+              colors={[BRAND_RGB, BRAND_RGB]}
               dotSize={6}
               reverse={false}
             />
           </div>
         )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(10,13,16,0.85)_0%,_transparent_100%)]" />
         <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-background to-transparent" />
       </div>
 
@@ -377,16 +424,16 @@ export const SignInPage = ({ className }: SignInPageProps) => {
 
                 <button
                   type="button"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out hover:bg-white/10"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-black/10 bg-black/[0.03] py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out hover:bg-black/[0.06]"
                 >
                   <GoogleIcon />
                   Continue with Google
                 </button>
 
                 <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-white/10" />
+                  <div className="h-px flex-1 bg-black/10" />
                   <span className="text-xs text-muted-foreground">or</span>
-                  <div className="h-px flex-1 bg-white/10" />
+                  <div className="h-px flex-1 bg-black/10" />
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-3 text-left">

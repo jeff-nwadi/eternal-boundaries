@@ -52,20 +52,20 @@ export function IndicatorDetail({
       {/* Left: identity */}
       <div className="flex min-w-0 flex-col gap-5">
         <div className="flex flex-col gap-1">
-          <span className="text-sm text-white/55">{meta.label}</span>
-          <h2 className="font-heading text-2xl font-semibold text-white">
+          <span className="text-sm text-black/55">{meta.label}</span>
+          <h2 className="font-heading text-2xl font-semibold text-black">
             {selected.name ?? selected.id}
           </h2>
         </div>
         {selected.description ? (
-          <p className="text-sm leading-relaxed text-white/75">{selected.description}</p>
+          <p className="text-sm leading-relaxed text-black/75">{selected.description}</p>
         ) : null}
-        <p className="mt-auto font-mono text-xs break-all text-white/35">{selected.id}</p>
+        <p className="mt-auto font-mono text-xs break-all text-black/35">{selected.id}</p>
       </div>
 
       {/* Right: the relationship chain across the boundary (signature motif) */}
       <div className="flex min-w-0 flex-col gap-1">
-        <span className="text-sm text-white/55">How it connects</span>
+        <span className="text-sm text-black/55">How it connects</span>
         <div className="mt-2 flex flex-col">
           {chain.map((step, i) => {
             const stepMeta = typeMeta(step.node.type);
@@ -74,7 +74,7 @@ export function IndicatorDetail({
             return (
               <React.Fragment key={step.node.id}>
                 {i > 0 ? (
-                  <span className="ml-[0.6875rem] flex items-center gap-2 py-1 text-xs text-white/40">
+                  <span className="ml-[0.6875rem] flex items-center gap-2 py-1 text-xs text-black/40">
                     <span className="h-5 w-px bg-primary/60" aria-hidden />
                     {step.edgeType}
                   </span>
@@ -82,15 +82,15 @@ export function IndicatorDetail({
                 <div
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5",
-                    isSelected ? "bg-white/[0.06]" : "bg-white/[0.02]"
+                    isSelected ? "bg-black/[0.06]" : "bg-black/[0.02]"
                   )}
                 >
-                  <Icon className="size-4 shrink-0 text-white/70" strokeWidth={1.75} />
+                  <Icon className="size-4 shrink-0 text-black/70" strokeWidth={1.75} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-white">
+                    <span className="block truncate text-sm font-medium text-black">
                       {step.node.name ?? step.node.id}
                     </span>
-                    <span className="text-xs text-white/40">{stepMeta.label}</span>
+                    <span className="text-xs text-black/40">{stepMeta.label}</span>
                   </span>
                 </div>
               </React.Fragment>
@@ -98,15 +98,15 @@ export function IndicatorDetail({
           })}
 
           {/* The boundary line, then the protected side (no asset in the sample) */}
-          <span className="ml-[0.6875rem] flex items-center gap-2 py-1 text-xs text-white/40">
+          <span className="ml-[0.6875rem] flex items-center gap-2 py-1 text-xs text-black/40">
             <span className="h-5 w-px bg-primary/60" aria-hidden />
             targets
           </span>
-          <div className="relative flex items-center gap-3 rounded-xl border-l-2 border-primary bg-white/[0.02] px-3 py-2.5">
+          <div className="relative flex items-center gap-3 rounded-xl border-l-2 border-primary bg-black/[0.02] px-3 py-2.5">
             <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
               Boundary
             </span>
-            <span className="text-sm text-white/55">Your systems (not in sample)</span>
+            <span className="text-sm text-black/55">Your systems (not in sample)</span>
           </div>
         </div>
       </div>

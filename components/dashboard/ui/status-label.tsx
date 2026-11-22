@@ -49,10 +49,10 @@ export function StatusLabel({
         meta.tone
           ? cn("font-medium", meta.tone)
           : meta.strong
-            ? "font-medium text-white"
+            ? "font-medium text-black"
             : meta.quiet
-              ? "text-white/55"
-              : "text-white/75",
+              ? "text-black/55"
+              : "text-black/75",
         className
       )}
     >

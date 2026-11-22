@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({
           {searchable ? (
             <div className="relative w-full max-w-xs">
               <Search
-                className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-white/40"
+                className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-black/40"
                 aria-hidden
               />
               <Input
@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl bg-white/[0.04]">
+      <div className="overflow-hidden rounded-2xl bg-black/[0.04]">
         <Table>
           <TableHeader className="bg-transparent">
             {table.getHeaderGroups().map((group) => (
@@ -104,19 +104,19 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-sm font-normal text-white/55"
+                      className="text-sm font-normal text-black/55"
                     >
                       {header.isPlaceholder ? null : sortable ? (
                         <button
                           type="button"
                           onClick={header.column.getToggleSortingHandler()}
-                          className="group inline-flex items-center gap-1 transition-colors hover:text-white"
+                          className="group inline-flex items-center gap-1 transition-colors hover:text-black"
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           {sorted === "asc" ? (
-                            <ArrowUp className="size-3 text-white/70" />
+                            <ArrowUp className="size-3 text-black/70" />
                           ) : sorted === "desc" ? (
-                            <ArrowDown className="size-3 text-white/70" />
+                            <ArrowDown className="size-3 text-black/70" />
                           ) : (
                             <ChevronsUpDown className="size-3 opacity-40 transition-opacity group-hover:opacity-100" />
                           )}
@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
               <TableRow className="hover:bg-transparent">
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center whitespace-normal text-white/55"
+                  className="h-24 text-center whitespace-normal text-black/55"
                 >
                   {emptyMessage}
                 </TableCell>

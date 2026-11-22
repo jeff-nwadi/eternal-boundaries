@@ -56,15 +56,17 @@ export function PlatformSection() {
           <article
             className={styles.platformCard}
             data-motion-kind="architecture"
+            data-platform-card
             key={card.id}
           >
             <Icon
               className={styles.platformIcon}
-              size={220}
+              data-platform-icon
+              size={150}
               strokeWidth={1}
               aria-hidden="true"
             />
-            <span>{card.id}</span>
+            <span className="text-black">{card.id}</span>
             <h3 data-motion-cue>{card.title}</h3>
             <p>{card.text}</p>
             <a

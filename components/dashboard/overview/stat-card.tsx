@@ -19,18 +19,18 @@ export function StatCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="flex flex-col rounded-2xl bg-white/[0.04] p-6">
-      <span className="text-sm text-white/55">{label}</span>
+    <div className="flex flex-col rounded-2xl bg-black/[0.04] p-6">
+      <span className="text-sm text-black/55">{label}</span>
       <span
         className={cn(
-          "mt-4 text-5xl font-semibold tabular-nums leading-none text-white",
+          "mt-4 text-5xl font-semibold tabular-nums leading-none text-black",
           valueClassName
         )}
       >
         {typeof value === "number" ? <AnimatedNumber value={value} /> : value}
       </span>
       {caption ? (
-        <span className="mt-3 text-sm text-white/55">{caption}</span>
+        <span className="mt-3 text-sm text-black/55">{caption}</span>
       ) : null}
     </div>
   );

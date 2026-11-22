@@ -22,11 +22,11 @@ export function EmptyState({
       {dashed ? (
         <div className="flex items-center gap-1.5" aria-hidden>
           {Array.from({ length: bars }).map((_, i) => (
-            <span key={i} className="h-1.5 flex-1 rounded-full bg-white/[0.08]" />
+            <span key={i} className="h-1.5 flex-1 rounded-full bg-black/[0.08]" />
           ))}
         </div>
       ) : null}
-      <p className="text-sm text-white/55">{message}</p>
+      <p className="text-sm text-black/55">{message}</p>
     </div>
   );
 }
