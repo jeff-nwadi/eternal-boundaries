@@ -43,12 +43,12 @@ export function ExplorerSection() {
         <span className="mb-3 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
           A clearer way to work security
         </span>
-        <h2 className="text-[clamp(30px,3.1vw,40px)] max-[640px]:text-[30px]">
+        <h2 className="text-[clamp(30px,3.1vw,40px)] max-[640px]:text-[30px] pb-2">
           Eternal Boundaries helps your team
           <br />
           see the whole security picture.
         </h2>
-        <p className="mx-auto mt-[15px] max-w-[650px] text-[16px] leading-[1.6] text-[var(--paper-muted)]">
+        <p className="m-auto max-w-[640px] text-[16px] leading-[1.6] text-[var(--paper-muted)]">
           Start with a question your team actually asks. Follow the evidence
           across threats, vulnerabilities, network boundaries, and the controls
           you need to review.

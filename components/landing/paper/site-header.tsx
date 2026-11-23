@@ -17,7 +17,7 @@ export function SiteHeader() {
       </Link>
       <nav
         aria-label="Main navigation"
-        className="flex items-center gap-8 text-[13px] text-[#4d4850] max-[900px]:gap-[18px] max-[640px]:hidden"
+        className="hidden lg:flex items-center gap-8 text-[13px] text-[#4d4850] max-[900px]:gap-[18px] "
       >
         <a href="#platform" className={navLink}>
           Platform
@@ -32,7 +32,7 @@ export function SiteHeader() {
           Pricing
         </a>
       </nav>
-      <div className="flex items-center gap-[22px] text-[13px] max-[900px]:gap-[13px] max-[640px]:hidden">
+      <div className="hidden lg:flex items-center gap-[22px] text-[13px] max-[900px]:gap-[13px] max-[640px]:hidden">
         <Link href="/login" className={navLink}>
           Sign in
         </Link>
@@ -43,7 +43,7 @@ export function SiteHeader() {
           Talk to our team <ArrowUpRight size={14} />
         </a>
       </div>
-      <details className="relative hidden max-[640px]:block">
+      <details className="relative flex lg:hidden">
         <summary
           aria-label="Open navigation"
           className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-[7px] border border-[var(--paper-line)] [&::-webkit-details-marker]:hidden"

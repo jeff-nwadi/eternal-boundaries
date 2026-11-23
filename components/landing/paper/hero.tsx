@@ -51,7 +51,9 @@ export function Hero() {
             Built for security teams · IT + industrial OT
           </span>
         </div>
-        <DashboardPreview />
+        <div className="">
+          <DashboardPreview />
+        </div>
       </div>
     </section>
   );

@@ -23,8 +23,8 @@ export function ArchitectureSection() {
       <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
         Built around the boundary
       </span>
-      <h2 className="mb-[33px] text-[34px] max-[640px]:text-[30px]">
-        A clear line through a complex stack.
+      <h2 className="pb-4 text-[34px] max-[640px]:text-[30px]">
+        A clear line through <br /> a complex stack.
       </h2>
       <div className="grid grid-cols-4 border-t border-[var(--paper-line)] max-[640px]:grid-cols-2">
         {items.map(([title, text]) => (

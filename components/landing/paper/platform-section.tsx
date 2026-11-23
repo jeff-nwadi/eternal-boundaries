@@ -57,7 +57,7 @@ export function PlatformSection() {
           const Icon = card.icon;
           return (
             <article
-              className="relative flex min-h-[360px] flex-col overflow-hidden rounded-[20px] border border-[#efe6d4] p-[26px] [background:linear-gradient(165deg,#fbf6ea_0%,#f6ecd4_100%)] max-[900px]:min-h-[230px] max-[900px]:p-[18px] max-[900px]:last:col-[1/-1] max-[900px]:last:w-[min(100%,320px)] max-[900px]:last:justify-self-center max-[640px]:min-h-[230px] max-[640px]:p-[18px]"
+              className="relative flex min-h-[360px] flex-col overflow-hidden rounded-[20px] border border-[#efe6d4] p-[26px] [background:linear-gradient(165deg,#fbf6ea_0%,#f6ecd4_100%)] max-[900px]:min-h-[230px] max-[900px]:p-[18px] max-[900px]:last:col-[1/-1] max-[900px]:last:w-[min(100%,320px)] max-[900px]:last:justify-self-center max-[640px]:min-h-[330px] max-[640px]:p-[18px]"
               data-motion-kind="architecture"
               data-platform-card
               key={card.id}
@@ -69,10 +69,10 @@ export function PlatformSection() {
                 strokeWidth={1}
                 aria-hidden="true"
               />
-              <span className="relative z-[1] text-[12px] uppercase text-[var(--paper-ink)]">
+              <span className="relative z-[1] text-[12px] uppercase text-[var(--paper-ink)] pb-2">
                 {card.id}
               </span>
-              <h3 className="relative z-[1] mt-[14px] text-[22px] font-[640] text-[var(--paper-ink)] max-[640px]:mt-[10px]" data-motion-cue>
+              <h3 className="relative z-[1] mt-[14px] text-[22px] font-[640] text-[var(--paper-ink)] pb-2 max-[640px]:mt-[10px]" data-motion-cue>
                 {card.title}
               </h3>
               <p className="relative z-[1] mt-[11px] max-w-[380px] text-[16px] leading-[1.55] text-[var(--paper-muted)] [text-wrap:pretty]">
