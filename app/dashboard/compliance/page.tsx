@@ -6,6 +6,7 @@ import { Panel } from "@/components/dashboard/ui/panel";
 import { LiveControlTable, ControlTable } from "@/components/dashboard/compliance/control-table";
 import { CoverageCard } from "@/components/dashboard/compliance/coverage-card";
 import { ComplianceCaveat } from "@/components/dashboard/compliance/compliance-caveat";
+import { ExportReportButton } from "@/components/dashboard/compliance/export-report-button";
 import { DashboardTable } from "@/components/dashboard/DashboardTable";
 import { complianceFrameworks } from "@/lib/mock-data";
 
@@ -36,6 +37,18 @@ export default function CompliancePage() {
         subtitle="Findings rolled up against NIST SP 800-53 and SOC 2 controls."
         action={<ComplianceCaveat />}
       />
+
+      <div className="flex justify-end">
+        <ExportReportButton
+          frameworks={complianceFrameworks}
+          mappings={mappings}
+          isLive={hasLive}
+          covered={covered}
+          total={total}
+          sourceLabel={sourceLabel}
+          disabled={isLoading}
+        />
+      </div>
 
       {/* Coverage summary — the one focal point for this view */}
       {isLoading ? (

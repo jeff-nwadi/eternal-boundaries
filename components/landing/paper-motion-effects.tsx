@@ -8,6 +8,38 @@ import { animate, createAnimatable, stagger, svg } from "animejs";
  * section reveals (IntersectionObserver → anime), and hover/focus micro-
  * interactions on the diagrams. No CSS keyframes. Respects prefers-reduced-motion.
  */
+/**
+ * Split a heading's text into inline-block word spans, preserving <br> and the
+ * whitespace between words, and return the word spans for a per-word stagger.
+ */
+function splitWords(el: HTMLElement): HTMLElement[] {
+  const spans: HTMLElement[] = [];
+  const out: Node[] = [];
+  el.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      for (const token of (node.textContent ?? "").split(/(\s+)/)) {
+        if (token.length === 0) continue;
+        if (token.trim() === "") {
+          out.push(document.createTextNode(token));
+          continue;
+        }
+        const span = document.createElement("span");
+        span.textContent = token;
+        span.style.display = "inline-block";
+        span.style.willChange = "transform, opacity";
+        out.push(span);
+        spans.push(span);
+      }
+    } else {
+      out.push(node.cloneNode(true));
+    }
+  });
+  el.textContent = "";
+  for (const n of out) el.appendChild(n);
+  el.dataset.split = "true";
+  return spans;
+}
+
 export function PaperMotionEffects() {
   React.useEffect(() => {
     const page = document.querySelector<HTMLElement>("[data-paper-motion-root]");
@@ -29,10 +61,14 @@ export function PaperMotionEffects() {
 
     const cleanups: (() => void)[] = [];
 
-    // 1) Hero entrance on load (copy, then the preview).
+    // 1) Hero entrance on load. The headline (motion.dev StaggerText) and the
+    // subhead (anime.js per-word, below) animate their own text, so the generic
+    // block entrance skips them and only handles the actions + note.
     const heroCopy = page.querySelector<HTMLElement>("[data-hero-copy]");
     if (heroCopy) {
-      const items = heroCopy.querySelectorAll<HTMLElement>(":scope > *");
+      const items = heroCopy.querySelectorAll<HTMLElement>(
+        ":scope > *:not([data-stagger-text]):not([data-hero-subhead])",
+      );
       run(items, {
         opacity: [0, 1],
         translateY: [18, 0],
@@ -40,6 +76,33 @@ export function PaperMotionEffects() {
         delay: stagger(90),
         ease: "out(3)",
       });
+
+      // Hero subhead — anime.js per-word staggered reveal. Split once, then
+      // (re)animate the word spans on each run so it survives a dev re-mount.
+      const subhead = heroCopy.querySelector<HTMLElement>("[data-hero-subhead]");
+      if (subhead) {
+        if (!subhead.dataset.split) {
+          subhead.dataset.split = "true";
+          const words = (subhead.textContent ?? "").split(/\s+/).filter(Boolean);
+          subhead.textContent = "";
+          words.forEach((w, i) => {
+            const span = document.createElement("span");
+            span.textContent = w;
+            span.style.display = "inline-block";
+            span.style.willChange = "transform, opacity";
+            subhead.appendChild(span);
+            if (i < words.length - 1) subhead.appendChild(document.createTextNode(" "));
+          });
+        }
+        const wordEls = subhead.querySelectorAll<HTMLElement>(":scope > span");
+        run(wordEls, {
+          opacity: [0, 1],
+          translateY: [12, 0],
+          duration: 520,
+          delay: stagger(18, { start: 160 }),
+          ease: "out(3)",
+        });
+      }
     }
     const preview = page.querySelector<HTMLElement>('[data-motion-kind="preview"]');
     if (preview) {
@@ -60,27 +123,61 @@ export function PaperMotionEffects() {
       page.querySelectorAll<HTMLElement>(":scope > section"),
     ).slice(1);
     const sectionTargets = new Map<Element, HTMLElement[]>();
+    // Per-section heading word spans — h2s get a per-word staggered reveal.
+    const headingWords = new Map<Element, HTMLElement[]>();
     const allHidden: HTMLElement[] = [];
 
     for (const section of sections) {
-      // Top-level blocks only: a card/panel animates as one unit, and its inner
-      // text is not double-animated.
-      const targets = Array.from(
-        section.querySelectorAll<HTMLElement>(`h2, h3, p, small, ${UNITS}`),
+      // Section headings (h2): split into words for a per-word stagger.
+      const headings = Array.from(
+        section.querySelectorAll<HTMLElement>("h2"),
       ).filter((el) => !el.parentElement?.closest(UNITS));
-      if (!targets.length) continue;
+      const words: HTMLElement[] = [];
+      for (const h of headings) {
+        const spans = h.dataset.split
+          ? Array.from(h.querySelectorAll<HTMLElement>(":scope > span"))
+          : splitWords(h);
+        for (const s of spans) {
+          s.style.opacity = "0";
+          s.style.transform = "translateY(16px)";
+          allHidden.push(s);
+        }
+        words.push(...spans);
+      }
+      if (words.length) headingWords.set(section, words);
+
+      // Top-level blocks (minus the h2 handled above): each animates as one unit.
+      const targets = Array.from(
+        section.querySelectorAll<HTMLElement>(`h3, p, small, ${UNITS}`),
+      ).filter((el) => !el.parentElement?.closest(UNITS));
       for (const el of targets) {
         el.style.opacity = "0";
         el.style.transform = "translateY(20px)";
         allHidden.push(el);
       }
-      sectionTargets.set(section, targets);
+      if (targets.length) sectionTargets.set(section, targets);
     }
 
     const revealObserver = new IntersectionObserver(
       (entries, observer) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
+          const headWords = headingWords.get(entry.target);
+          if (headWords && headWords.length) {
+            run(headWords, {
+              opacity: [0, 1],
+              translateY: [16, 0],
+              duration: 560,
+              delay: stagger(26),
+              ease: "out(3)",
+              onComplete: () => {
+                for (const el of headWords) {
+                  el.style.removeProperty("opacity");
+                  el.style.removeProperty("transform");
+                }
+              },
+            });
+          }
           const targets = sectionTargets.get(entry.target);
           if (targets && targets.length) {
             run(targets, {

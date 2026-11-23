@@ -1,6 +1,6 @@
 export function BoundarySection() {
   return (
-    <section className="mx-auto grid min-h-[420px] w-[min(1248px,calc(100%-64px))] grid-cols-[minmax(0,0.9fr)_minmax(0,1.08fr)] items-center gap-[72px] py-[70px] max-[900px]:grid-cols-2 max-[900px]:gap-8 max-[640px]:w-[calc(100%-40px)] max-[640px]:grid-cols-1 max-[640px]:gap-[27px] max-[640px]:py-[52px]">
+    <section className="mx-auto grid min-h-[420px] w-[min(1248px,calc(100%-64px))] grid-cols-[minmax(0,0.9fr)_minmax(0,1.08fr)] items-center gap-[72px] py-[70px] max-[900px]:grid-cols-2 max-[900px]:gap-8 max-[640px]:w-[calc(100%-40px)] max-[640px]:grid-cols-1 max-[640px]:gap-[27px] max-[640px]:py-[52px] ">
       <div
         className="relative flex min-h-[250px] w-[min(100%,500px)] flex-col justify-between justify-self-center rounded-[9px] border border-[#e1ddda] bg-[#fdfcfb] p-5 max-[640px]:min-h-[230px] max-[640px]:px-3 max-[640px]:py-[15px]"
         data-motion-kind="boundary"

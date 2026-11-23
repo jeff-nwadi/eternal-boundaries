@@ -43,7 +43,7 @@ export function PlatformSection() {
           </span>
           <h2 className="text-[clamp(30px,3.25vw,42px)] font-[620] max-[640px]:text-[32px]">
             Three views.
-            <br />
+            <br /> 
             One clear picture.
           </h2>
         </div>

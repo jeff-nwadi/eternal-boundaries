@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
 import { DashboardPreview } from "./dashboard-preview";
+import { StaggerText } from "./stagger-text";
 
 export function Hero() {
   return (
@@ -29,12 +30,14 @@ export function Hero() {
           data-hero-copy
           className="relative z-[1] mx-auto flex max-w-[740px] flex-col items-center text-center"
         >
-          <h1 className="text-[clamp(42px,5.1vw,68px)] font-[670] leading-[1.08] !tracking-[-0.065em] text-[color:var(--paper-ink)] max-[640px]:text-[clamp(32px,10vw,50px)] max-[640px]:[overflow-wrap:break-word]">
-            Your security boundary,
-            <br />
-            under your control.
-          </h1>
-          <p className="mt-[18px] max-w-[630px] text-[16px] leading-[1.6] text-[color:var(--paper-muted)] [text-wrap:pretty]">
+          <StaggerText
+            lines={["Your security boundary,", "under your control."]}
+            className="text-[clamp(42px,5.1vw,68px)] font-[670] leading-[1.08] !tracking-[-0.065em] text-[color:var(--paper-ink)] max-[640px]:text-[clamp(32px,10vw,50px)] max-[640px]:[overflow-wrap:break-word]"
+          />
+          <p
+            data-hero-subhead
+            className="mt-[18px] max-w-[630px] text-[16px] leading-[1.6] text-[color:var(--paper-muted)] [text-wrap:pretty]"
+          >
             Eternal Boundaries helps you understand your threats, secure your
             systems, and prove your compliance — giving you the confidence to
             protect every boundary.
