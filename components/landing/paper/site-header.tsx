@@ -7,7 +7,7 @@ const mobileLink =
 
 export function SiteHeader() {
   return (
-    <header className="absolute left-0 right-0 top-[18px] z-20 mx-auto flex h-[76px] w-[min(1248px,calc(100%-64px))] items-center justify-between gap-6 max-[900px]:w-[min(100%-40px,700px)] max-[640px]:h-[66px] max-[640px]:w-[calc(100%-36px)]">
+    <header className="absolute left-0 right-0 top-[18px] z-20 mx-auto flex h-[66px] w-[calc(100%-36px)] items-center justify-between gap-6 sm:h-[76px] sm:w-[min(100%-40px,700px)] lg:w-[min(1248px,calc(100%-64px))]">
       <Link
         href="/"
         aria-label="Eternal Boundaries home"
@@ -17,7 +17,7 @@ export function SiteHeader() {
       </Link>
       <nav
         aria-label="Main navigation"
-        className="hidden lg:flex items-center gap-8 text-[13px] text-[#4d4850] max-[900px]:gap-[18px] "
+        className="hidden items-center gap-8 text-[13px] text-[#4d4850] lg:flex"
       >
         <a href="#platform" className={navLink}>
           Platform
@@ -32,7 +32,7 @@ export function SiteHeader() {
           Pricing
         </a>
       </nav>
-      <div className="hidden lg:flex items-center gap-[22px] text-[13px] max-[900px]:gap-[13px] max-[640px]:hidden">
+      <div className="hidden items-center gap-[22px] text-[13px] lg:flex">
         <Link href="/login" className={navLink}>
           Sign in
         </Link>

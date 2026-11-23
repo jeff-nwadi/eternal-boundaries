@@ -2,14 +2,14 @@ export function GateSection() {
   return (
     <section
       id="how-it-works"
-      className="relative grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.94fr)] items-center gap-[52px] overflow-hidden px-[max(32px,calc((100%-1248px)/2))] py-[54px] [background:linear-gradient(105deg,#fff0d3_0%,#f9e8e5_48%,#f5e3ed_100%)] max-[900px]:grid-cols-1 max-[900px]:gap-[27px] max-[900px]:px-8 max-[640px]:px-5 max-[640px]:py-[35px]"
+      className="relative grid grid-cols-1 items-center gap-[27px] overflow-hidden px-5 py-[35px] [background:linear-gradient(105deg,#fff0d3_0%,#f9e8e5_48%,#f5e3ed_100%)] sm:px-8 sm:py-[54px] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.94fr)] lg:gap-[52px] lg:px-[max(32px,calc((100%-1248px)/2))]"
     >
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-50 [background:repeating-radial-gradient(ellipse_at_12%_42%,transparent_0_29px,rgba(107,69,91,0.2)_30px_31px,transparent_32px_53px)] [background-size:140%_140%] [-webkit-mask-image:linear-gradient(90deg,#000,transparent_42%,transparent_60%,#000)] [mask-image:linear-gradient(90deg,#000,transparent_42%,transparent_60%,#000)] [animation:contour-drift_24s_ease-in-out_infinite_alternate] motion-reduce:[animation:none]"
         aria-hidden="true"
       />
       <div
-        className="relative z-[1] rounded-[10px] border border-[rgba(117,86,118,0.12)] bg-white/90 p-[22px] shadow-[0_8px_28px_rgba(83,60,73,0.06)] max-[640px]:p-[15px]"
+        className="relative z-[1] rounded-[10px] border border-[rgba(117,86,118,0.12)] bg-white/90 p-[15px] shadow-[0_8px_28px_rgba(83,60,73,0.06)] sm:p-[22px]"
         data-motion-kind="gate"
       >
         <div className="flex w-fit items-center gap-[10px] rounded-full border border-[#ece5e8] px-2 py-[5px] text-[12px] text-[#68616a]">
@@ -23,19 +23,19 @@ export function GateSection() {
         <p className="mt-[5px] text-[12px] text-[var(--paper-muted)]">
           A control command approaches a protected system.
         </p>
-        <div className="mt-[18px] grid grid-cols-2 gap-3 max-[640px]:gap-[7px]">
-          <div className="grid gap-2 rounded-[6px] border border-[#e7e2e2] bg-white p-[14px] max-[640px]:p-[9px]">
+        <div className="mt-[18px] grid grid-cols-2 gap-[7px] sm:gap-3">
+          <div className="grid gap-2 rounded-[6px] border border-[#e7e2e2] bg-white p-[9px] sm:p-[14px]">
             <small className="text-[12px] uppercase text-[#8a858b]">Gate off</small>
             <strong className="text-[12px]">Request passes</strong>
-            <span className="text-[12px] text-[#77717a] max-[640px]:leading-[1.5]">
+            <span className="text-[12px] leading-[1.5] text-[#77717a] sm:leading-normal">
               External source <b className="font-normal text-[#aaa3ac]">→</b> Write command{" "}
               <b className="font-normal text-[#aaa3ac]">→</b> Controller
             </span>
           </div>
-          <div className="grid gap-2 rounded-[6px] border border-[#e6d6f3] bg-[#f8f4fc] p-[14px] max-[640px]:p-[9px]">
+          <div className="grid gap-2 rounded-[6px] border border-[#e6d6f3] bg-[#f8f4fc] p-[9px] sm:p-[14px]">
             <small className="text-[12px] uppercase text-[#8a858b]">Gate on</small>
             <strong className="text-[12px] text-[var(--paper-purple)]">Policy blocks</strong>
-            <span className="text-[12px] text-[#77717a] max-[640px]:leading-[1.5]">
+            <span className="text-[12px] leading-[1.5] text-[#77717a] sm:leading-normal">
               External source <b className="font-normal text-[#aaa3ac]">→</b> Write command{" "}
               <b className="font-normal text-[#aaa3ac]">→</b> Stopped at gate
             </span>
@@ -45,11 +45,11 @@ export function GateSection() {
           Illustration only · not a live engine run
         </small>
       </div>
-      <div className="relative z-[1] max-w-[515px] max-[900px]:max-w-[700px]">
+      <div className="relative z-[1] max-w-[700px] lg:max-w-[515px]">
         <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
           Gate proof
         </span>
-        <h2 className="mb-4 text-[clamp(30px,3.25vw,42px)] font-[620] max-[640px]:text-[32px]">
+        <h2 className="mb-4 text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">
           One scenario.
           <br />
           Two clear outcomes.

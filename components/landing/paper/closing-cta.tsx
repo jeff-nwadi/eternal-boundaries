@@ -4,10 +4,10 @@ export function ClosingCta() {
   return (
     <section
       id="contact"
-      className="mx-auto mb-[38px] mt-[52px] w-[min(1248px,calc(100%-64px))] max-[900px]:w-[min(100%-40px,700px)] max-[640px]:mt-8 max-[640px]:w-[calc(100%-40px)]"
+      className="mx-auto mb-[38px] mt-8 w-[calc(100%-40px)] sm:mt-[52px] sm:w-[min(100%-40px,700px)] lg:w-[min(1248px,calc(100%-64px))]"
     >
       <div
-        className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-[56px] rounded-[28px] border border-[rgba(91,43,210,0.08)] px-[56px] py-[52px] [background:linear-gradient(120deg,#f3eefb_0%,#f7f3f0_55%,#f3ecf6_100%)] max-[900px]:grid-cols-1 max-[900px]:gap-9 max-[640px]:rounded-[20px] max-[640px]:px-6 max-[640px]:py-8"
+        className="grid grid-cols-1 items-center gap-9 rounded-[20px] border border-[rgba(91,43,210,0.08)] px-6 py-8 [background:linear-gradient(120deg,#f3eefb_0%,#f7f3f0_55%,#f3ecf6_100%)] sm:rounded-[28px] sm:px-[56px] sm:py-[52px] lg:grid-cols-2 lg:gap-[56px]"
         data-motion-kind="cta"
       >
         {/* Left — copy + email capture */}
@@ -28,7 +28,7 @@ export function ClosingCta() {
             >
               Work email <span className="text-[var(--paper-purple)]">*</span>
             </label>
-            <div className="flex gap-3 max-[420px]:flex-col">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <input
                 id="cta-email"
                 name="email"
@@ -52,7 +52,7 @@ export function ClosingCta() {
         </div>
 
         {/* Right — on-brand product glimpse (drop a real image here later) */}
-        <div className="rounded-[20px] border border-white/70 bg-white/80 p-6 shadow-[0_18px_48px_rgba(74,48,120,0.12)] backdrop-blur-sm max-[900px]:order-first">
+        <div className="order-first rounded-[20px] border border-white/70 bg-white/80 p-6 shadow-[0_18px_48px_rgba(74,48,120,0.12)] backdrop-blur-sm lg:order-none">
           <div className="flex items-center justify-between">
             <span className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--paper-faint)]">
               Boundary decision

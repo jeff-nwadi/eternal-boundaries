@@ -6,15 +6,13 @@ import { StaggerText } from "./stagger-text";
 export function Hero() {
   return (
     <section className="relative isolate pb-12">
-      {/* Cropped, rounded hero panel — the grid + glow live inside it so the
-          background is contained within the rounded shape. The header floats
-          over its top, so the panel carries top padding to clear the nav. */}
+      {/* Full-bleed on mobile; cropped rounded panel from tablet up (sm+). The
+          header floats over the top, so top padding clears the nav. */}
       <div
         data-hero-panel
-        className="relative isolate mx-4 mt-[18px] overflow-clip rounded-[30px] border border-[rgba(91,43,210,0.08)] px-6 pb-10 pt-[118px] [background:linear-gradient(180deg,#f1ecfb_0%,#f7f4f1_68%)] max-[640px]:mx-2.5 max-[640px]:mt-2.5 max-[640px]:rounded-[22px] max-[640px]:px-4 max-[640px]:pb-7 max-[640px]:pt-[90px]"
+        className="relative isolate overflow-clip px-4 pb-7 pt-[90px] [background:linear-gradient(180deg,#f1ecfb_0%,#f7f4f1_68%)] sm:mx-4 sm:mt-[18px] sm:rounded-[30px] sm:border sm:border-[rgba(91,43,210,0.08)] sm:px-6 sm:pb-10 sm:pt-[118px]"
       >
-        {/* Fine graph-paper grid filling the panel, soft vignette toward the
-            rounded edges. Ambient drift + parallax are driven by anime.js. */}
+        {/* Fine graph-paper grid. Ambient drift + parallax driven by anime.js. */}
         <div
           data-hero-grid
           aria-hidden="true"
@@ -32,7 +30,7 @@ export function Hero() {
         >
           <StaggerText
             lines={["Your security boundary,", "under your control."]}
-            className="text-[clamp(42px,5.1vw,68px)] font-[670] leading-[1.08] !tracking-[-0.065em] text-[color:var(--paper-ink)] max-[640px]:text-[clamp(32px,10vw,50px)] max-[640px]:[overflow-wrap:break-word]"
+            className="w-full text-[clamp(32px,10vw,50px)] font-[670] leading-[1.08] !tracking-[-0.065em] text-[color:var(--paper-ink)] [overflow-wrap:break-word] sm:text-[clamp(42px,5.1vw,68px)]"
           />
           <p
             data-hero-subhead
@@ -42,7 +40,7 @@ export function Hero() {
             systems, and prove your compliance — giving you the confidence to
             protect every boundary.
           </p>
-          <div className="mt-[26px] flex items-center gap-3 max-[640px]:flex-wrap max-[640px]:justify-center">
+          <div className="mt-[26px] flex flex-wrap items-center justify-center gap-3">
             <a
               href="#platform"
               className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full bg-[var(--paper-purple)] px-[18px] text-[13px] font-[650] !text-white transition-[background,transform] duration-150 hover:-translate-y-px hover:bg-[#4820b3]"
@@ -54,9 +52,7 @@ export function Hero() {
             Built for security teams · IT + industrial OT
           </span>
         </div>
-        <div className="">
-          <DashboardPreview />
-        </div>
+        <DashboardPreview />
       </div>
     </section>
   );

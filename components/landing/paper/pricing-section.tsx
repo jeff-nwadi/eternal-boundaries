@@ -19,28 +19,28 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="mx-auto w-[min(1248px,calc(100%-64px))] pb-[76px] pt-[52px] max-[900px]:w-[min(100%-40px,700px)] max-[640px]:w-[calc(100%-40px)] max-[640px]:pb-[55px] max-[640px]:pt-[39px]"
+      className="mx-auto w-[calc(100%-40px)] pb-[55px] pt-[39px] sm:w-[min(100%-40px,700px)] sm:pb-[76px] sm:pt-[52px] lg:w-[min(1248px,calc(100%-64px))]"
     >
-      <div className="mb-[26px] flex items-end justify-between gap-[30px] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-[9px]">
+      <div className="mb-[26px] flex flex-col items-start justify-between gap-[9px] sm:flex-row sm:items-end sm:gap-[30px]">
         <div>
           <span className="mb-3 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
             Pricing
           </span>
-          <h2 className="text-[34px] font-[620] max-[640px]:text-[30px]">
+          <h2 className="text-[30px] font-[620] sm:text-[34px]">
             A plan shaped around your boundary.
           </h2>
         </div>
         <p className="text-[12px] text-[#8b858d]">Early product · pricing scoped to your environment</p>
       </div>
-      <div className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {options.map(([name, text]) => (
           <article
             data-motion-kind="pricing"
             key={name}
-            className="min-h-[158px] rounded-[8px] border border-[#e3dfdc] bg-[#f3f1ed] p-[18px] [&:nth-child(2)]:border-[#ded5e9] [&:nth-child(2)]:bg-[#f3eff8] max-[640px]:min-h-0"
+            className="rounded-[8px] border border-[#e3dfdc] bg-[#f3f1ed] p-[18px] [&:nth-child(2)]:border-[#ded5e9] [&:nth-child(2)]:bg-[#f3eff8] sm:min-h-[158px]"
           >
             <h3 className="text-[13px] font-[650] tracking-[-0.01em] [font-family:var(--font-inter)]">{name}</h3>
-            <p className="mt-2 min-h-[52px] text-[16px] leading-[1.5] text-[var(--paper-muted)] max-[640px]:min-h-0">
+            <p className="mt-2 text-[16px] leading-[1.5] text-[var(--paper-muted)] sm:min-h-[52px]">
               {text}
             </p>
             <a

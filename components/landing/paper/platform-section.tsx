@@ -34,16 +34,16 @@ export function PlatformSection() {
   return (
     <section
       id="platform"
-      className="mx-auto w-[min(1248px,calc(100%-64px))] pb-[72px] pt-[82px] max-[900px]:w-[min(100%-40px,700px)] max-[640px]:w-[calc(100%-40px)] max-[640px]:pb-[52px] max-[640px]:pt-[60px]"
+      className="mx-auto w-[calc(100%-40px)] pb-[52px] pt-[60px] sm:w-[min(100%-40px,700px)] sm:pb-[72px] sm:pt-[82px] lg:w-[min(1248px,calc(100%-64px))]"
     >
-      <div className="mb-[42px] grid grid-cols-[1fr_0.8fr] items-end gap-[42px] max-[640px]:mb-[26px] max-[640px]:grid-cols-1 max-[640px]:gap-[17px]">
+      <div className="mb-[26px] grid grid-cols-1 items-end gap-[17px] sm:mb-[42px] sm:grid-cols-[1fr_0.8fr] sm:gap-[42px]">
         <div>
           <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
             One signal. Shared context.
           </span>
-          <h2 className="text-[clamp(30px,3.25vw,42px)] font-[620] max-[640px]:text-[32px]">
+          <h2 className="text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">
             Three views.
-            <br /> 
+            <br />
             One clear picture.
           </h2>
         </div>
@@ -52,12 +52,12 @@ export function PlatformSection() {
           with the evidence in one readable place.
         </p>
       </div>
-      <div className="grid grid-cols-[repeat(3,minmax(0,320px))] justify-between gap-[18px] max-[900px]:grid-cols-[repeat(2,minmax(0,320px))] max-[900px]:justify-center max-[640px]:grid-cols-[minmax(0,340px)] max-[640px]:justify-center max-[640px]:gap-4">
+      <div className="grid grid-cols-[minmax(0,340px)] justify-center gap-4 sm:grid-cols-[repeat(2,minmax(0,320px))] sm:gap-[18px] lg:grid-cols-[repeat(3,minmax(0,320px))] lg:justify-between">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
             <article
-              className="relative flex min-h-[360px] flex-col overflow-hidden rounded-[20px] border border-[#efe6d4] p-[26px] [background:linear-gradient(165deg,#fbf6ea_0%,#f6ecd4_100%)] max-[900px]:min-h-[230px] max-[900px]:p-[18px] max-[900px]:last:col-[1/-1] max-[900px]:last:w-[min(100%,320px)] max-[900px]:last:justify-self-center max-[640px]:min-h-[330px] max-[640px]:p-[18px]"
+              className="relative flex min-h-[330px] flex-col overflow-hidden rounded-[20px] border border-[#efe6d4] p-[18px] [background:linear-gradient(165deg,#fbf6ea_0%,#f6ecd4_100%)] sm:min-h-[230px] sm:last:col-[1/-1] sm:last:w-[min(100%,320px)] sm:last:justify-self-center lg:min-h-[360px] lg:p-[26px] lg:last:col-auto lg:last:w-auto lg:last:justify-self-auto"
               data-motion-kind="architecture"
               data-platform-card
               key={card.id}
@@ -69,10 +69,10 @@ export function PlatformSection() {
                 strokeWidth={1}
                 aria-hidden="true"
               />
-              <span className="relative z-[1] text-[12px] uppercase text-[var(--paper-ink)] pb-2">
+              <span className="relative z-[1] pb-2 text-[12px] uppercase text-[var(--paper-ink)]">
                 {card.id}
               </span>
-              <h3 className="relative z-[1] mt-[14px] text-[22px] font-[640] text-[var(--paper-ink)] pb-2 max-[640px]:mt-[10px]" data-motion-cue>
+              <h3 className="relative z-[1] mt-[10px] pb-2 text-[22px] font-[640] text-[var(--paper-ink)] sm:mt-[14px]" data-motion-cue>
                 {card.title}
               </h3>
               <p className="relative z-[1] mt-[11px] max-w-[380px] text-[16px] leading-[1.55] text-[var(--paper-muted)] [text-wrap:pretty]">

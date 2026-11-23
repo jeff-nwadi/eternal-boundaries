@@ -36,8 +36,8 @@ const footerLink = "w-fit text-[12px] text-[#ddd8e0] transition-colors hover:tex
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#26232a] px-[max(32px,calc((100%-1248px)/2))] pb-5 pt-[26px] text-[#f5f2f6] max-[900px]:px-8 max-[640px]:px-5 max-[640px]:pb-[17px] max-[640px]:pt-[23px]">
-      <div className="flex items-start justify-between gap-[34px] border-b border-white/[0.14] pb-[25px] pt-[17px] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-[18px]">
+    <footer className="bg-[#26232a] px-5 pb-[17px] pt-[23px] text-[#f5f2f6] sm:px-8 sm:pb-5 sm:pt-[26px] lg:px-[max(32px,calc((100%-1248px)/2))]">
+      <div className="flex flex-col items-start gap-[18px] border-b border-white/[0.14] pb-[25px] pt-[17px] sm:flex-row sm:justify-between sm:gap-[34px]">
         <div>
           <Link
             href="/"
@@ -56,7 +56,7 @@ export function SiteFooter() {
             IT networks · Industrial OT · Control mapping
           </small>
         </div>
-        <div className="flex items-center gap-5 text-[12px] text-[#d0cbd2] max-[640px]:w-full max-[640px]:justify-between">
+        <div className="flex w-full items-center justify-between gap-5 text-[12px] text-[#d0cbd2] sm:w-auto sm:justify-start">
           <span>Planning a security review?</span>
           <a
             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--paper-purple)] px-[15px] text-[12px] font-[650] !text-white transition-[background,transform] duration-150 hover:-translate-y-px hover:bg-[#4820b3]"
@@ -66,7 +66,7 @@ export function SiteFooter() {
           </a>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-7 border-b border-white/[0.14] pb-[23px] pt-[25px] max-[640px]:grid-cols-2 max-[640px]:gap-y-[23px]">
+      <div className="grid grid-cols-2 gap-7 gap-y-[23px] border-b border-white/[0.14] pb-[23px] pt-[25px] sm:grid-cols-4 sm:gap-y-7">
         {columns.map(([title, links]) => (
           <div key={title as string} className="grid content-start gap-2">
             <strong className="mb-[3px] text-[12px] uppercase tracking-[0.1em] text-[#aaa4ad]">
@@ -94,11 +94,11 @@ export function SiteFooter() {
           </div>
         ))}
       </div>
-      <div className="flex justify-between gap-5 pt-[15px] text-[12px] text-[#aaa4ad] max-[640px]:flex-col max-[640px]:items-start">
+      <div className="flex flex-col items-start justify-between gap-5 pt-[15px] text-[12px] text-[#aaa4ad] sm:flex-row sm:items-center">
         <span>
           © 2026 Eternal Boundaries. Early product; capabilities are evolving.
         </span>
-        <div className="flex gap-[18px] max-[640px]:flex-wrap max-[640px]:gap-[14px]">
+        <div className="flex flex-wrap gap-[14px] sm:flex-nowrap sm:gap-[18px]">
           <a href="#contact" className={footerLink}>
             Privacy
           </a>

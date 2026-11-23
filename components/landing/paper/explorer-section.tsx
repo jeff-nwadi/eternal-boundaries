@@ -35,15 +35,19 @@ const cardBadge =
   "shrink-0 rounded-full border border-[#ebe3ee] px-2 py-1 text-[12px] text-[var(--paper-purple)]";
 const explorerCard =
   "min-w-0 rounded-[11px] border border-white/[0.92] bg-white/[0.78] px-[17px] py-[15px] shadow-[0_1px_3px_rgba(91,59,72,0.04)]";
+const gradientShell =
+  "rounded-[17px] p-[10px] [background:repeating-radial-gradient(ellipse_at_0%_0%,transparent_0_29px,rgba(130,76,104,0.11)_30px_31px,transparent_32px_54px),linear-gradient(112deg,#edb3c5_0%,#f4c8cc_49%,#efb49e_100%)] [background-size:112%_112%,100%_100%] [animation:contour-drift_28s_ease-in-out_infinite_alternate] motion-reduce:[animation:none] sm:rounded-[22px] sm:p-[17px]";
+const gradientGlass =
+  "grid gap-[10px] rounded-[13px] border border-white/[0.82] bg-[rgba(255,250,249,0.56)] p-[9px] sm:gap-3 sm:rounded-2xl sm:p-[13px]";
 
 export function ExplorerSection() {
   return (
-    <section className="bg-[#fbf7f5] py-[72px] pb-[70px] max-[640px]:py-[53px]">
-      <div className="mx-auto mb-[38px] w-[min(780px,calc(100%-48px))] text-center max-[640px]:mb-[25px] max-[640px]:w-[calc(100%-40px)]">
+    <section className="bg-[#fbf7f5] py-[53px] sm:pb-[70px] sm:pt-[72px]">
+      <div className="mx-auto mb-[25px] w-[calc(100%-40px)] text-center sm:mb-[38px] sm:w-[min(780px,calc(100%-48px))]">
         <span className="mb-3 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
           A clearer way to work security
         </span>
-        <h2 className="text-[clamp(30px,3.1vw,40px)] max-[640px]:text-[30px] pb-2">
+        <h2 className="pb-2 text-[30px] sm:text-[clamp(30px,3.1vw,40px)]">
           Eternal Boundaries helps your team
           <br />
           see the whole security picture.
@@ -54,7 +58,7 @@ export function ExplorerSection() {
           you need to review.
         </p>
       </div>
-      <div className="mx-auto grid w-[min(1248px,calc(100%-64px))] grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)] items-start gap-[42px] max-[900px]:w-[min(100%-40px,700px)] max-[900px]:grid-cols-[minmax(230px,0.7fr)_minmax(0,1.3fr)] max-[900px]:gap-6 max-[640px]:w-[calc(100%-40px)] max-[640px]:grid-cols-1 max-[640px]:gap-[23px]">
+      <div className="mx-auto grid w-[calc(100%-40px)] grid-cols-1 items-start gap-[23px] sm:w-[min(100%-40px,700px)] sm:grid-cols-[minmax(230px,0.7fr)_minmax(0,1.3fr)] sm:gap-6 lg:w-[min(1248px,calc(100%-64px))] lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)] lg:gap-[42px]">
         <div className="pt-[2px]">
           {questions.map((item, i) => (
             <details
@@ -63,7 +67,7 @@ export function ExplorerSection() {
               key={item.question}
               open={i === 0}
             >
-              <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold [&::-webkit-details-marker]:hidden max-[640px]:min-h-[45px]">
+              <summary className="flex min-h-[45px] cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold [&::-webkit-details-marker]:hidden sm:min-h-[48px]">
                 {item.question}
                 <span
                   data-motion-cue
@@ -84,13 +88,13 @@ export function ExplorerSection() {
           ))}
         </div>
         <div className="grid gap-6">
-          <div className="rounded-[22px] p-[17px] [background:repeating-radial-gradient(ellipse_at_0%_0%,transparent_0_29px,rgba(130,76,104,0.11)_30px_31px,transparent_32px_54px),linear-gradient(112deg,#edb3c5_0%,#f4c8cc_49%,#efb49e_100%)] [background-size:112%_112%,100%_100%] [animation:contour-drift_28s_ease-in-out_infinite_alternate] motion-reduce:[animation:none] max-[640px]:rounded-[17px] max-[640px]:p-[10px]">
-            <div className="grid gap-3 rounded-2xl border border-white/[0.82] bg-[rgba(255,250,249,0.56)] p-[13px] max-[640px]:gap-[10px] max-[640px]:rounded-[13px] max-[640px]:p-[9px]">
+          <div className={gradientShell}>
+            <div className={gradientGlass}>
               <ThreatPathCard />
             </div>
           </div>
-          <div className="rounded-[22px] p-[17px] [background:repeating-radial-gradient(ellipse_at_0%_0%,transparent_0_29px,rgba(130,76,104,0.11)_30px_31px,transparent_32px_54px),linear-gradient(112deg,#edb3c5_0%,#f4c8cc_49%,#efb49e_100%)] [background-size:112%_112%,100%_100%] [animation:contour-drift_28s_ease-in-out_infinite_alternate] motion-reduce:[animation:none] max-[640px]:rounded-[17px] max-[640px]:p-[10px]">
-            <div className="grid gap-3 rounded-2xl border border-white/[0.82] bg-[rgba(255,250,249,0.56)] p-[13px] max-[640px]:gap-[10px] max-[640px]:rounded-[13px] max-[640px]:p-[9px]">
+          <div className={gradientShell}>
+            <div className={gradientGlass}>
               <VulnerabilityCard />
               <ComplianceCard />
             </div>
@@ -115,14 +119,14 @@ function ThreatPathCard() {
         </div>
         <span className={cardBadge}>Threat intelligence</span>
       </div>
-      <div className="mt-[13px] grid grid-cols-2 gap-[9px] max-[640px]:gap-[6px]">
+      <div className="mt-[13px] grid grid-cols-2 gap-[6px] sm:gap-[9px]">
         {[
           ["External / untrusted · signal", "Suspicious write request", "Observed at the network edge"],
           ["Weakness", "Exposed service", "Suggested fix available"],
           ["Internal / protected · boundary decision", "Policy blocks the command", "Decision linked to the event"],
           ["Affected system", "Industrial controller", "Protected system · OT network"],
         ].map(([s, t, d]) => (
-          <div key={t} data-motion-cue className="grid gap-[3px] rounded-[4px] border-l-2 border-[#c8b6dd] bg-[#f7f4fa] p-[10px] max-[640px]:p-2">
+          <div key={t} data-motion-cue className="grid gap-[3px] rounded-[4px] border-l-2 border-[#c8b6dd] bg-[#f7f4fa] p-2 sm:p-[10px]">
             <small className="text-[12px] uppercase text-[#8a788f]">{s}</small>
             <strong className="text-[12px]">{t}</strong>
             <span className="text-[12px] text-[#827d85]">{d}</span>
@@ -148,15 +152,15 @@ function VulnerabilityCard() {
         </div>
         <span className={cardBadge}>Critical first</span>
       </div>
-      <div className="mt-[11px] grid grid-cols-2 gap-[9px] max-[640px]:gap-[6px]">
-        <div data-motion-cue className="grid gap-1 rounded-[5px] border border-[#eee9e6] p-[9px] max-[640px]:p-[7px]">
+      <div className="mt-[11px] grid grid-cols-2 gap-[6px] sm:gap-[9px]">
+        <div data-motion-cue className="grid gap-1 rounded-[5px] border border-[#eee9e6] p-[7px] sm:p-[9px]">
           <small className="text-[12px] uppercase text-[#af5866]">Critical</small>
           <strong className="text-[12px]">Remote service exposed</strong>
           <p className="text-[12px] leading-[1.45] text-[var(--paper-muted)]">
             Restrict access, apply the fix, then check the boundary rule.
           </p>
         </div>
-        <div data-motion-cue className="grid gap-1 rounded-[5px] border border-[#eee9e6] p-[9px] max-[640px]:p-[7px]">
+        <div data-motion-cue className="grid gap-1 rounded-[5px] border border-[#eee9e6] p-[7px] sm:p-[9px]">
           <small className="text-[12px] uppercase text-[#a97964]">High</small>
           <strong className="text-[12px]">Gateway firmware behind</strong>
           <p className="text-[12px] leading-[1.45] text-[var(--paper-muted)]">
