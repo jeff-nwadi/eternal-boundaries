@@ -17,10 +17,12 @@ type ShellUser = { name: string; email: string; role: string };
 export function DashboardShell({
   user,
   orgName,
+  isMaster = false,
   children,
 }: {
   user: ShellUser;
   orgName: string;
+  isMaster?: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -33,7 +35,7 @@ export function DashboardShell({
       <div className="min-h-dvh bg-background text-black">
         {/* Desktop sidebar (>= lg) */}
       <aside className="fixed inset-y-0 left-0 hidden w-60 lg:block">
-        <SidebarNav user={user} orgName={orgName} />
+        <SidebarNav user={user} orgName={orgName} isMaster={isMaster} />
       </aside>
 
       {/* Mobile top bar + drawer (< lg) */}
@@ -51,6 +53,7 @@ export function DashboardShell({
             <SidebarNav
               user={user}
               orgName={orgName}
+              isMaster={isMaster}
               onNavigate={() => setOpen(false)}
             />
           </SheetContent>

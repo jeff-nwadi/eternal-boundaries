@@ -35,6 +35,13 @@ const NAV: NavItem[] = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
+// Founders' master tenant gets an account-control experience only — no SOC
+// pages (§6b: no standing access to client data). Account management lives in
+// the control panel at /admin.
+const MASTER_NAV: NavItem[] = [
+  { label: "Control panel", href: "/admin", icon: Shield },
+];
+
 function initialOf(name: string) {
   return (name.trim()[0] ?? "U").toUpperCase();
 }
@@ -59,10 +66,12 @@ function DataModeChip() {
 export function SidebarNav({
   user,
   orgName,
+  isMaster = false,
   onNavigate,
 }: {
   user: { name: string; email: string; role: string };
   orgName: string;
+  isMaster?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -78,7 +87,9 @@ export function SidebarNav({
     router.push("/login");
   }
 
-  const items = NAV.filter((i) => !i.adminOnly || user.role === "admin");
+  const items = isMaster
+    ? MASTER_NAV
+    : NAV.filter((i) => !i.adminOnly || user.role === "admin");
 
   return (
     <div className="flex h-full flex-col gap-10 p-4">
@@ -97,7 +108,7 @@ export function SidebarNav({
         <span className="truncate rounded-lg bg-black/[0.04] px-3 py-2 text-sm text-black/70">
           {orgName}
         </span>
-        <DataModeChip />
+        {!isMaster && <DataModeChip />}
       </div>
 
       {/* Nav */}

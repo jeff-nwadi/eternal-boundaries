@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { requireAdmin } from "@/lib/auth-guards";
+import { isMasterTenant } from "@/lib/tenancy";
 import { db } from "@/lib/db";
 import { tenant } from "@/lib/db/schema";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
@@ -34,7 +35,11 @@ export default async function AdminLayout({
   }
 
   return (
-    <DashboardShell user={{ name, email, role }} orgName={orgName}>
+    <DashboardShell
+      user={{ name, email, role }}
+      orgName={orgName}
+      isMaster={isMasterTenant(tenantId)}
+    >
       {children}
     </DashboardShell>
   );

@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 import { requireAuth } from "@/lib/auth-guards";
+import { isMasterTenant } from "@/lib/tenancy";
 import { db } from "@/lib/db";
 import { tenant } from "@/lib/db/schema";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
@@ -16,6 +18,10 @@ export default async function DashboardLayout({
   const { name, email } = session.user;
   const role = session.user.role ?? "analyst";
   const tenantId = (session.user as { tenantId?: string }).tenantId;
+
+  // Founders (master tenant) have no standing access to the SOC dashboard (§6b):
+  // send them to the account-control panel instead.
+  if (isMasterTenant(tenantId)) redirect("/admin");
 
   // Read-only org name (the acting user's own tenant). Falls back if no DB.
   let orgName = "Your organization";

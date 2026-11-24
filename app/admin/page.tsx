@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ne } from "drizzle-orm";
 
 import { requireAdmin, tenantScopeOf } from "@/lib/auth-guards";
 import { isMasterTenant } from "@/lib/tenancy";
 import { db } from "@/lib/db";
-import { invite, user, type Invite, type User } from "@/lib/db/schema";
+import { invite, user, tenant, type Invite, type User, type Tenant } from "@/lib/db/schema";
 import { StatCard } from "@/components/dashboard/overview/stat-card";
 import { CreateInviteForm } from "@/components/admin/create-invite-form";
 import { ProvisionTenantForm } from "@/components/admin/provision-tenant-form";
@@ -50,6 +50,23 @@ export default async function AdminPage() {
     // No database configured yet — render the console with empty tables.
   }
 
+  // Client tenants the founders have provisioned (master tenant only). This lists
+  // the tenant *entities* (name/id) for account management — NOT their users or
+  // data, which stay isolated per §6b.
+  let tenants: Tenant[] = [];
+  if (isMaster) {
+    try {
+      tenants = await db
+        .select()
+        .from(tenant)
+        .where(ne(tenant.isMaster, true))
+        .orderBy(tenant.name)
+        .limit(200);
+    } catch {
+      // No DB — empty list.
+    }
+  }
+
   const pendingInvites = countPendingInvites(invites);
   const auditors = users.filter((u) => u.role === "auditor").length;
   const admins = users.filter((u) => u.role === "admin").length;
@@ -57,9 +74,13 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-2xl font-semibold text-black sm:text-4xl">Team</h1>
+        <h1 className="font-heading text-2xl font-semibold text-black sm:text-4xl">
+          {isMaster ? "Control panel" : "Team"}
+        </h1>
         <p className="text-sm text-black/55">
-          Manage your team and access. Accounts are invite-only.
+          {isMaster
+            ? "Create and manage client accounts. Founders have no standing access to a client tenant’s SOC data or users (§6b)."
+            : "Manage your team and access. Accounts are invite-only."}
         </p>
       </header>
 
@@ -82,6 +103,40 @@ export default async function AdminPage() {
             </p>
           </div>
           <ProvisionTenantForm />
+        </section>
+      )}
+
+      {/* Client tenants — master only. The tenant entities, not their users. */}
+      {isMaster && (
+        <section className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-sm font-medium text-black">Client tenants</h2>
+            <span className="text-sm tabular-nums text-black/55">{tenants.length} total</span>
+          </div>
+          {tenants.length === 0 ? (
+            <div className="rounded-2xl bg-black/[0.04] p-6 text-sm text-black/55">
+              No client tenants provisioned yet.
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl bg-black/[0.04]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-black/55">
+                    <th className="px-6 py-3 font-normal">Organization</th>
+                    <th className="px-6 py-3 font-normal">Tenant ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tenants.map((t) => (
+                    <tr key={t.id} className="border-t border-black/[0.06]">
+                      <td className="px-6 py-3 font-medium text-black">{t.name}</td>
+                      <td className="px-6 py-3 font-mono text-black/55">{t.id}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 
