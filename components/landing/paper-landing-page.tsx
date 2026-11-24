@@ -17,8 +17,11 @@ export function PaperLandingPage() {
         <PaperMotionEffects />
         <Hero />
         <PlatformSection />
-        <BoundarySection />
-        <ComplianceSection />
+        {/* Boundary + Compliance are hidden on mobile only (shown from sm: up). */}
+        <div className="hidden sm:block">
+          <BoundarySection />
+          <ComplianceSection />
+        </div>
         <GateSection />
         <ArchitectureSection />
         <ExplorerSection />

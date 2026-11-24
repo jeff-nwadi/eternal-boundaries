@@ -53,7 +53,7 @@ export function PilotCarousel() {
           setFocusWithin(false);
         }
       }}
-      className="relative flex min-h-[310px] flex-col rounded-3xl border border-foreground/10 bg-foreground/[0.06] p-5 outline-none focus-visible:outline-2 focus-visible:outline-accent-foreground sm:min-h-[360px] sm:p-8"
+      className="relative flex min-h-[310px] flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-white p-5 shadow-[0_2px_12px_rgba(90,68,20,0.08)] outline-none focus-visible:outline-2 focus-visible:outline-accent-foreground sm:min-h-[360px] sm:p-8"
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="text-sm font-medium text-foreground/60">{copy.carouselTitle}</h3>

@@ -42,11 +42,18 @@
   --input: #e4e0dd;
   --ring: #5b2bd2;
 
-  /* Severity scale — fixed (CLAUDE.md §4), readable on light */
-  --severity-critical: #d4374b;
-  --severity-high: #d9711f;
-  --severity-medium: #b9861a;
-  --severity-low: #0f9b8a;
+  /* Severity scale (CLAUDE.md §4). Base tokens are the fixed brand palette,
+     used for SOLID FILLS (chart bars, distribution, legend/badge dots). The
+     *-ink variants are the same hues deepened so severity rendered as TEXT on
+     the light UI (stat values, table labels, pills) stays legible. */
+  --severity-critical: #f0465b;
+  --severity-high: #ff8a3d;
+  --severity-medium: #f5c244;
+  --severity-low: #2dd4bf;
+  --severity-critical-ink: #d4374b;
+  --severity-high-ink: #d9711f;
+  --severity-medium-ink: #b9861a;
+  --severity-low-ink: #0f9b8a;
 
   /* Header font stack — Bricolage Grotesque. Body font — Inter. */
   --font-heading: var(--font-bricolage), system-ui, sans-serif;
@@ -65,10 +72,10 @@
   --sidebar-ring: #5b2bd2;
 
   /* Chart palette — severity + purple brand */
-  --chart-1: #d4374b;
-  --chart-2: #d9711f;
-  --chart-3: #b9861a;
-  --chart-4: #0f9b8a;
+  --chart-1: #f0465b;
+  --chart-2: #ff8a3d;
+  --chart-3: #f5c244;
+  --chart-4: #2dd4bf;
   --chart-5: #5b2bd2;
 }
 
@@ -97,10 +104,12 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-critical: var(--severity-critical);
-  --color-high: var(--severity-high);
-  --color-medium: var(--severity-medium);
-  --color-low: var(--severity-low);
+  /* Text/pill utilities use the deepened *-ink hues for legibility on light;
+     solid fills reference var(--severity-*) directly for the vivid brand color. */
+  --color-critical: var(--severity-critical-ink);
+  --color-high: var(--severity-high-ink);
+  --color-medium: var(--severity-medium-ink);
+  --color-low: var(--severity-low-ink);
 
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
@@ -129,12 +138,8 @@
 
 /* Static token-derived glow for the closing CTA panel. */
 .closing-cta-glow {
-  background-color: var(--background);
-  background-image: radial-gradient(
-    ellipse at 16% 12%,
-    color-mix(in srgb, var(--accent) 72%, transparent) 0%,
-    transparent 82%
-  );
+  background-color: #eed59a;
+  background-image: linear-gradient(135deg, #f8edbd 0%, #f1dca0 50%, #e7c686 100%);
 }
 
 /* ------------------------------------------------------------------ */
