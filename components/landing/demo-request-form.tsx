@@ -54,7 +54,7 @@ export function DemoRequestForm() {
         <button
           type="submit"
           disabled={pending}
-          className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border border-accent-foreground/20 bg-accent px-5 font-medium text-accent-foreground transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-accent-foreground disabled:cursor-wait disabled:opacity-70"
+          className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 font-medium text-primary-foreground transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-accent-foreground disabled:cursor-wait disabled:opacity-70"
         >
           {pending ? CLOSING_CTA_CONTENT.pendingLabel : CLOSING_CTA_CONTENT.submitLabel}
           <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />

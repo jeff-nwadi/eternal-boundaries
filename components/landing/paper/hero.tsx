@@ -1,6 +1,6 @@
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
-import { DashboardPreview } from "./dashboard-preview";
 import { StaggerText } from "./stagger-text";
 
 export function Hero() {
@@ -52,7 +52,18 @@ export function Hero() {
             Built for security teams · IT + industrial OT
           </span>
         </div>
-        <DashboardPreview />
+        {/* Product screenshot of the live security dashboard (illustrative,
+            sample data). */}
+        <div className="relative z-[2] mx-auto mt-7 w-full max-w-[1080px] overflow-hidden rounded-[11px] border border-[#e4ddda] bg-white shadow-[0_22px_54px_rgba(84,64,75,0.12)] sm:mt-9 sm:rounded-2xl lg:mt-[44px]">
+          <Image
+            src="/hero-dashboard.png"
+            alt="Eternal Boundaries security dashboard — overview with open findings, severity breakdown, top findings and activity"
+            width={1900}
+            height={1000}
+            priority
+            className="block h-auto w-full"
+          />
+        </div>
       </div>
     </section>
   );
