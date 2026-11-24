@@ -6,10 +6,8 @@ import { BoundarySection } from "./paper/boundary-section";
 import { ComplianceSection } from "./paper/compliance-section";
 import { GateSection } from "./paper/gate-section";
 import { ArchitectureSection } from "./paper/architecture-section";
-import { PricingSection } from "./paper/pricing-section";
 import { ExplorerSection } from "./paper/explorer-section";
-import { ClosingCta } from "./paper/closing-cta";
-import { SiteFooter } from "./paper/site-footer";
+import { ClosingCTA } from "./closing-cta";
 
 export function PaperLandingPage() {
   return (
@@ -24,9 +22,8 @@ export function PaperLandingPage() {
         <GateSection />
         <ArchitectureSection />
         <ExplorerSection />
-        <ClosingCta />
+        <ClosingCTA />
       </main>
-      <SiteFooter />
     </div>
   );
 }

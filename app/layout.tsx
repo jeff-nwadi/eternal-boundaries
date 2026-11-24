@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Footer } from "@/components/landing/footer";
 
 // Self-hosted local fonts (no web fetch) — the variable files cover every weight.
 // Inter drives all body/UI text; Bricolage Grotesque drives headings.
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
       >
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -232,6 +232,95 @@ export type Testimonial = {
 /** Intentionally empty. Do not add quotes until real, attributable ones exist. */
 export const TESTIMONIALS: Testimonial[] = [];
 
+/** Closing CTA content. Pilot-step wording is placeholder copy for review. */
+export const CLOSING_CTA_CONTENT = {
+  headline: "See your security, explained.",
+  subhead:
+    "Sandbox pilots run under a written agreement with a clear end date.",
+  emailLabel: "Work email",
+  emailPlaceholder: "you@company.com",
+  submitLabel: "Request a demo",
+  pendingLabel: "Sending",
+  consent: "We will only use your email to reply about a demo.",
+  notConfigured: "Demo requests open soon.",
+  invalidEmail: "Enter a valid work email.",
+  honeypotLabel: "Leave this field empty",
+  carouselTitle: "How a pilot works",
+  carouselLabel: "Pilot steps",
+  pauseLabel: "Pause slides",
+  playLabel: "Play slides",
+  previousLabel: "Previous step",
+  nextLabel: "Next step",
+  slideLabel: "Show step",
+  slides: [
+    {
+      lead: "We set up a",
+      highlight: "workspace",
+      rest: "for your team.",
+      caption: "Scope and end date are agreed in writing.",
+    },
+    {
+      lead: "You review threats, findings and how they map to",
+      highlight: "NIST SP 800-53 and SOC 2",
+      rest: "criteria.",
+      caption: "We review the data available in the sandbox.",
+    },
+    {
+      lead: "Together we decide",
+      highlight: "what is useful",
+      rest: "and what comes next.",
+      caption: "Next steps depend on your team’s review.",
+    },
+  ],
+} as const;
+
+/** Footer link targets marked placeholder do not have a dedicated page yet. */
+export const FOOTER_CONTENT = {
+  mapping: "Maps findings to NIST SP 800-53 and SOC 2 criteria,",
+  mappingCaption: "Framework mapping, not a certification or audit.",
+  logoMark: "E",
+  logoPlaceholder: true,
+  copyright: "© 2026 Eternal Boundaries. All rights reserved.",
+  columns: [
+    {
+      title: "Product",
+      links: [
+        { label: "Overview", href: "/dashboard", placeholder: false },
+        { label: "Threat Intelligence", href: "/dashboard/threat", placeholder: false },
+        { label: "Vulnerabilities", href: "/dashboard/vulnerabilities", placeholder: false },
+        { label: "Compliance Mapping", href: "/dashboard/compliance", placeholder: false },
+      ],
+    },
+    {
+      title: "Resources",
+      links: [
+        { label: "Docs", href: "/contact", placeholder: true },
+        { label: "Security", href: "/contact", placeholder: true },
+        { label: "Pricing", href: "/pricing", comingSoon: true, placeholder: false },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About", href: "/contact", placeholder: true },
+        { label: "Contact", href: "/contact", placeholder: false },
+        { label: "Sign in", href: "/login", placeholder: false },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Privacy", href: "/contact", placeholder: true },
+        { label: "Terms", href: "/contact", placeholder: true },
+      ],
+    },
+  ],
+  legalLinks: [
+    { label: "Privacy", href: "/contact", placeholder: true },
+    { label: "Terms", href: "/contact", placeholder: true },
+  ],
+} as const;
+
 export const FAQS: { id: number; question: string; answer: string }[] = [
   {
     id: 1,

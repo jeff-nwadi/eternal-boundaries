@@ -53,8 +53,7 @@ export default async function AccountsPage() {
       <header className="flex flex-col gap-1">
         <h1 className="font-heading text-2xl font-semibold text-black sm:text-4xl">Accounts</h1>
         <p className="text-sm text-black/55">
-          Provision and manage client tenants, and your founders&apos; team. You have no
-          standing access to a client tenant&apos;s users or SOC data (§6b).
+          Provision and manage client tenants, and your founders&apos; team.
         </p>
       </header>
 

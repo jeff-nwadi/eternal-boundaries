@@ -70,8 +70,7 @@ export default async function AdminPage() {
         <header className="flex flex-col gap-1">
           <h1 className="font-heading text-2xl font-semibold text-black sm:text-4xl">Overview</h1>
           <p className="text-sm text-black/55">
-            Your founders&apos; control panel. Account-level analytics only — no standing
-            access to any client tenant&apos;s SOC data or users (§6b).
+            Your founders&apos; control panel. Account-level analytics only.
           </p>
         </header>
 

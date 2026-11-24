@@ -23,20 +23,27 @@ export default async function DashboardLayout({
   // send them to the account-control panel instead.
   if (isMasterTenant(tenantId)) redirect("/admin");
 
-  // Read-only org name (the acting user's own tenant). Falls back if no DB.
+  // Read-only org name + status (the acting user's own tenant). Falls back if no
+  // DB. Status is captured here and acted on below — redirect() must run outside
+  // the try/catch so its control-flow signal isn't swallowed.
   let orgName = "Your organization";
+  let status: string | null = null;
   if (tenantId) {
     try {
       const [row] = await db
-        .select({ name: tenant.name })
+        .select({ name: tenant.name, status: tenant.status })
         .from(tenant)
         .where(eq(tenant.id, tenantId))
         .limit(1);
       if (row?.name) orgName = row.name;
+      status = row?.status ?? null;
     } catch {
       // No DB configured — keep the fallback.
     }
   }
+
+  // A suspended tenant locks every user out of the product (§6b founders' panel).
+  if (status === "suspended") redirect("/suspended");
 
   return (
     <DashboardShell user={{ name, email, role }} orgName={orgName}>

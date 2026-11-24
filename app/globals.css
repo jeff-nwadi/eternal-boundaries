@@ -127,6 +127,16 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Static token-derived glow for the closing CTA panel. */
+.closing-cta-glow {
+  background-color: var(--background);
+  background-image: radial-gradient(
+    ellipse at 16% 12%,
+    color-mix(in srgb, var(--accent) 72%, transparent) 0%,
+    transparent 82%
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Base layer                                                         */
 /* ------------------------------------------------------------------ */

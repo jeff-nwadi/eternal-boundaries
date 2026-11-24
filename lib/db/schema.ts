@@ -20,6 +20,14 @@ export const userRole = pgEnum("user_role", ["analyst", "auditor", "admin"]);
  */
 export const inviteRole = pgEnum("invite_role", ["analyst", "admin"]);
 
+/**
+ * Lifecycle status of a tenant. `active` is the default; `suspended` locks every
+ * user in that tenant out of the product (enforced in the dashboard/admin
+ * layouts) until a founder reactivates it. The master tenant can never be
+ * suspended (guarded in the server action).
+ */
+export const tenantStatus = pgEnum("tenant_status", ["active", "suspended"]);
+
 // ---------------------------------------------------------------------------
 // Tenants (CLAUDE.md §6b) — every user/invite belongs to exactly one tenant.
 // ---------------------------------------------------------------------------
@@ -32,6 +40,9 @@ export const tenant = pgTable("tenant", {
   // Exactly one row is the master tenant (the founders). It may provision new
   // tenants but has no standing access to their users/invites (§6b).
   isMaster: boolean("is_master").notNull().default(false),
+  // Suspend/deactivate control for the founders' panel. Existing rows backfill
+  // to `active` via the column default.
+  status: tenantStatus("status").notNull().default("active"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
@@ -192,10 +203,49 @@ export const remediation = pgTable("remediation", {
     .$onUpdate(() => new Date()),
 });
 
+// ---------------------------------------------------------------------------
+// Audit log — account-control actions for the founders' panel
+// ---------------------------------------------------------------------------
+
+/**
+ * Append-only record of account-control actions (tenant provisioning/suspension,
+ * invites, promotions). This is a straightforward audit trail — NOT the
+ * cryptographically-verifiable log reserved for the (out-of-scope) infrastructure
+ * action plane in §5.6; don't present it as that.
+ *
+ * Actor identity is snapshotted (`actorEmail`, `actorTenantId`) so the entry stays
+ * meaningful even if the acting user is later deleted (`actorUserId` → null).
+ * Rows are written server-side only; there is no update/delete path.
+ */
+export const auditLog = pgTable("audit_log", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  // Who performed the action. FK set null on user delete; the email/tenant
+  // snapshot below preserves attribution regardless.
+  actorUserId: text("actor_user_id").references(() => user.id, {
+    onDelete: "set null",
+  }),
+  actorEmail: text("actor_email").notNull(),
+  // The actor's tenant at the time — the column the founders' view scopes by,
+  // so the master tenant only ever sees its own actions (§6b).
+  actorTenantId: text("actor_tenant_id").notNull(),
+  // Machine-readable action key, e.g. "tenant.provisioned", "tenant.suspended".
+  action: text("action").notNull(),
+  // The tenant acted upon, when applicable (provision/suspend/reactivate).
+  targetTenantId: text("target_tenant_id"),
+  // Human-readable label for the target (tenant name, invited email, user id).
+  targetLabel: text("target_label"),
+  // Optional extra context (e.g. the invited role).
+  detail: text("detail"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Tenant = typeof tenant.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Invite = typeof invite.$inferSelect;
 export type Remediation = typeof remediation.$inferSelect;
+export type AuditLog = typeof auditLog.$inferSelect;
 
 // Re-exported so the BetterAuth drizzle adapter receives the full schema.
 export const schema = {
@@ -206,4 +256,5 @@ export const schema = {
   verification,
   invite,
   remediation,
+  auditLog,
 };

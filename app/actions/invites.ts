@@ -1,11 +1,12 @@
 "use server";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
 import { requireAdmin, requireMasterAdmin, tenantScopeOf } from "@/lib/auth-guards";
+import { recordAudit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { invite, tenant, user } from "@/lib/db/schema";
 import { generateInviteToken, hashInviteToken } from "@/lib/invite-token";
@@ -52,6 +53,7 @@ export async function createInvite(input: {
   }
 
   const { token, tokenHash } = generateInviteToken();
+  const scope = tenantScopeOf(session);
 
   await db.insert(invite).values({
     email,
@@ -59,10 +61,20 @@ export async function createInvite(input: {
     tokenHash,
     // §6b point 4: the invite inherits the issuing admin's own tenant. The
     // tenant is taken from the server session, never from client input.
-    tenantId: tenantScopeOf(session),
+    tenantId: scope,
     // Rule 2: attribution to the issuing admin (schema-enforced not-null FK).
     invitedByAdminId: session.user.id,
     expiresAt: new Date(Date.now() + INVITE_TTL_MS),
+  });
+
+  await recordAudit({
+    action: "invite.created",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: scope,
+    targetTenantId: scope,
+    targetLabel: email,
+    detail: `role: ${role}`,
   });
 
   revalidatePath("/admin");
@@ -104,8 +116,78 @@ export async function provisionTenant(input: {
     expiresAt: new Date(Date.now() + INVITE_TTL_MS),
   });
 
+  await recordAudit({
+    action: "tenant.provisioned",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: tenantScopeOf(session),
+    targetTenantId: tenantId,
+    targetLabel: name,
+    detail: `first admin invite: ${email}`,
+  });
+
   revalidatePath("/admin");
   return { inviteUrl: `${inviteBaseUrl()}/invite/${token}`, tenantId };
+}
+
+/**
+ * Master-tenant-only. Flips a client tenant between active and suspended. A
+ * suspended tenant's users are locked out of the whole product on their next
+ * request (enforced in the dashboard/admin layouts). The master tenant itself
+ * can never be suspended — the `isMaster = false` predicate makes a master id
+ * match zero rows, so the founders can't lock themselves out.
+ */
+async function setTenantStatus(
+  tenantId: string,
+  status: "active" | "suspended"
+): Promise<{ success: true } | { error: string }> {
+  const session = await requireMasterAdmin();
+  if (!tenantId) return { error: "Missing tenant." };
+
+  // `ne(status)` means we only match (and only log) on a real transition.
+  const updated = await db
+    .update(tenant)
+    .set({ status })
+    .where(
+      and(
+        eq(tenant.id, tenantId),
+        eq(tenant.isMaster, false),
+        ne(tenant.status, status)
+      )
+    )
+    .returning({ id: tenant.id, name: tenant.name });
+
+  if (updated.length === 0) {
+    return { error: "Tenant not found, or it is already in that state." };
+  }
+
+  await recordAudit({
+    action: status === "suspended" ? "tenant.suspended" : "tenant.reactivated",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: tenantScopeOf(session),
+    targetTenantId: updated[0].id,
+    targetLabel: updated[0].name,
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/accounts");
+  revalidatePath("/admin/audit");
+  return { success: true };
+}
+
+/** Master-tenant-only. Suspends a client tenant (locks its users out). */
+export async function suspendTenant(
+  tenantId: string
+): Promise<{ success: true } | { error: string }> {
+  return setTenantStatus(tenantId, "suspended");
+}
+
+/** Master-tenant-only. Reactivates a suspended client tenant. */
+export async function reactivateTenant(
+  tenantId: string
+): Promise<{ success: true } | { error: string }> {
+  return setTenantStatus(tenantId, "active");
 }
 
 /**
@@ -169,6 +251,18 @@ export async function redeemInvite(input: {
     .set({ redeemedAt: new Date(), redeemedByUserId: newUserId })
     .where(and(eq(invite.id, row.id), isNull(invite.redeemedAt)));
 
+  // The actor is the newly-created account itself, recorded against the invite's
+  // tenant (so it surfaces in that tenant's — not the founders' — scope).
+  await recordAudit({
+    action: "invite.redeemed",
+    actorUserId: newUserId,
+    actorEmail: row.email,
+    actorTenantId: row.tenantId,
+    targetTenantId: row.tenantId,
+    targetLabel: row.email,
+    detail: `role: ${grantedRole}`,
+  });
+
   return { success: true };
 }
 
@@ -186,15 +280,25 @@ export async function promoteToAuditor(
   // §6b point 5: promotion is tenant-scoped. The tenant predicate is part of
   // the UPDATE's WHERE clause, so a userId from another tenant matches zero
   // rows and nothing is changed — enforced at the data layer, not the UI.
+  const scope = tenantScopeOf(session);
   const updated = await db
     .update(user)
     .set({ role: "auditor" })
-    .where(and(eq(user.id, userId), eq(user.tenantId, tenantScopeOf(session))))
-    .returning({ id: user.id });
+    .where(and(eq(user.id, userId), eq(user.tenantId, scope)))
+    .returning({ id: user.id, email: user.email });
 
   if (updated.length === 0) {
     return { error: "User not found in your organization." };
   }
+
+  await recordAudit({
+    action: "user.promoted_auditor",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: scope,
+    targetTenantId: scope,
+    targetLabel: updated[0].email,
+  });
 
   revalidatePath("/admin");
   return { success: true };
@@ -214,20 +318,30 @@ export async function revokeInvite(
 
   // §6b: revocation is tenant-scoped — an admin can only revoke invites that
   // belong to their own tenant.
+  const scope = tenantScopeOf(session);
   const deleted = await db
     .delete(invite)
     .where(
       and(
         eq(invite.id, inviteId),
-        eq(invite.tenantId, tenantScopeOf(session)),
+        eq(invite.tenantId, scope),
         isNull(invite.redeemedAt)
       )
     )
-    .returning({ id: invite.id });
+    .returning({ id: invite.id, email: invite.email });
 
   if (deleted.length === 0) {
     return { error: "Invite not found, or it has already been redeemed." };
   }
+
+  await recordAudit({
+    action: "invite.revoked",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: scope,
+    targetTenantId: scope,
+    targetLabel: deleted[0].email,
+  });
 
   revalidatePath("/admin");
   return { success: true };
