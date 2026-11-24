@@ -11,8 +11,8 @@ export function Footer() {
       </div>
       <div className="h-px w-full bg-background/[0.14]" />
 
-      <div className="grid grid-cols-1 gap-x-8 gap-y-9 py-8 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1.4fr)_repeat(4,minmax(0,1fr))]">
-        <div className="sm:col-span-2 xl:col-span-1">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-9 py-8 sm:grid-cols-2 lg:grid-cols-[minmax(180px,1.2fr)_repeat(4,minmax(0,1fr))]">
+        <div className="sm:col-span-2 lg:col-span-1" data-placeholder={copy.logoPlaceholder || undefined}>
           <Link href="/" aria-label={SITE.name} className="group inline-flex items-center gap-3 rounded-md font-heading text-lg font-semibold focus-visible:outline-2 focus-visible:outline-accent-foreground">
             <span aria-hidden="true" className="grid size-9 place-items-center rounded-xl bg-background/[0.1] text-base transition-transform duration-200 group-hover:rotate-3">
               {copy.logoMark}
