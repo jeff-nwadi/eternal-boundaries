@@ -39,7 +39,8 @@ const NAV: NavItem[] = [
 // pages (§6b: no standing access to client data). Account management lives in
 // the control panel at /admin.
 const MASTER_NAV: NavItem[] = [
-  { label: "Control panel", href: "/admin", icon: Shield },
+  { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "Accounts", href: "/admin/accounts", icon: Shield },
 ];
 
 function initialOf(name: string) {
@@ -79,7 +80,9 @@ export function SidebarNav({
   const [signingOut, setSigningOut] = React.useState(false);
 
   const isActive = (href: string) =>
-    href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+    href === "/dashboard" || href === "/admin"
+      ? pathname === href
+      : pathname.startsWith(href);
 
   async function signOut() {
     setSigningOut(true);
