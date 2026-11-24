@@ -71,8 +71,9 @@ export default function CompliancePage() {
           {isError ? (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/[0.04] p-6">
               <p className="text-sm text-black/55">
-                Live engine unreachable, showing sample controls.{" "}
-                {error instanceof Error ? error.message : ""}
+                {error instanceof Error && error.message.includes("404")
+                  ? "Live compliance feed isn’t available on this engine yet — showing sample controls."
+                  : "Live engine unreachable — showing sample controls."}
               </p>
               <button
                 type="button"
