@@ -8,6 +8,7 @@ import { isMasterTenant } from "@/lib/tenancy";
 import { db } from "@/lib/db";
 import { invite, user, tenant, type Invite, type User, type Tenant } from "@/lib/db/schema";
 import { StatCard } from "@/components/dashboard/overview/stat-card";
+import { StatusPill } from "@/components/dashboard/status-pill";
 import { CreateInviteForm } from "@/components/admin/create-invite-form";
 import { AdminUsersTable } from "@/components/admin/admin-users-table";
 import { AdminInvitesTable } from "@/components/admin/admin-invites-table";
@@ -65,6 +66,7 @@ export default async function AdminPage() {
   // ---- Founders' control-panel overview (master tenant) ----
   if (isMaster) {
     const recent = tenants.slice(0, 6);
+    const suspendedTenants = tenants.filter((t) => t.status === "suspended").length;
     return (
       <div className="flex flex-col gap-10">
         <header className="flex flex-col gap-1">
@@ -74,8 +76,13 @@ export default async function AdminPage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Client tenants" value={tenants.length} caption="provisioned" />
+          <StatCard
+            label="Suspended"
+            value={suspendedTenants}
+            caption={suspendedTenants === 0 ? "none suspended" : "locked out"}
+          />
           <StatCard
             label="Founders’ team"
             value={users.length}
@@ -131,6 +138,7 @@ export default async function AdminPage() {
                   <tr className="text-left text-black/55">
                     <th className="px-6 py-3 font-normal">Organization</th>
                     <th className="px-6 py-3 font-normal">Tenant ID</th>
+                    <th className="px-6 py-3 font-normal">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -138,6 +146,12 @@ export default async function AdminPage() {
                     <tr key={t.id} className="border-t border-black/[0.06]">
                       <td className="px-6 py-3 font-medium text-black">{t.name}</td>
                       <td className="px-6 py-3 font-mono text-black/55">{t.id}</td>
+                      <td className="px-6 py-3">
+                        <StatusPill
+                          label={t.status === "suspended" ? "Suspended" : "Active"}
+                          tone={t.status === "suspended" ? "critical" : "positive"}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

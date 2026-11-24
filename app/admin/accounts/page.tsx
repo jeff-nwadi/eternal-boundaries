@@ -8,6 +8,7 @@ import { CreateInviteForm } from "@/components/admin/create-invite-form";
 import { ProvisionTenantForm } from "@/components/admin/provision-tenant-form";
 import { AdminUsersTable } from "@/components/admin/admin-users-table";
 import { AdminInvitesTable } from "@/components/admin/admin-invites-table";
+import { ClientTenantsTable } from "@/components/admin/client-tenants-table";
 
 export const metadata: Metadata = { title: "Accounts" };
 
@@ -69,36 +70,16 @@ export default async function AccountsPage() {
         <ProvisionTenantForm />
       </section>
 
-      {/* Client tenants — entities only, not their users. */}
+      {/* Client tenants — entities only, not their users (§6b). Suspend or
+          reactivate a tenant here; suspension locks out all its users. */}
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm font-medium text-black">Client tenants</h2>
           <span className="text-sm tabular-nums text-black/55">{tenants.length} total</span>
         </div>
-        {tenants.length === 0 ? (
-          <div className="rounded-2xl bg-black/[0.04] p-6 text-sm text-black/55">
-            No client tenants provisioned yet.
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-2xl bg-black/[0.04]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-black/55">
-                  <th className="px-6 py-3 font-normal">Organization</th>
-                  <th className="px-6 py-3 font-normal">Tenant ID</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants.map((t) => (
-                  <tr key={t.id} className="border-t border-black/[0.06]">
-                    <td className="px-6 py-3 font-medium text-black">{t.name}</td>
-                    <td className="px-6 py-3 font-mono text-black/55">{t.id}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ClientTenantsTable
+          tenants={tenants.map((t) => ({ id: t.id, name: t.name, status: t.status }))}
+        />
       </section>
 
       {/* Founders' own team */}

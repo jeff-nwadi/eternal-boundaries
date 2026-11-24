@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   ShieldCheck,
   Shield,
+  ScrollText,
   Settings,
   LogOut,
   type LucideIcon,
@@ -41,6 +42,7 @@ const NAV: NavItem[] = [
 const MASTER_NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Accounts", href: "/admin/accounts", icon: Shield },
+  { label: "Audit log", href: "/admin/audit", icon: ScrollText },
 ];
 
 function initialOf(name: string) {
