@@ -15,10 +15,12 @@ const ACTION_META: Record<string, { label: string; tone: Tone }> = {
   "tenant.provisioned": { label: "Tenant provisioned", tone: "positive" },
   "tenant.suspended": { label: "Tenant suspended", tone: "critical" },
   "tenant.reactivated": { label: "Tenant reactivated", tone: "positive" },
+  "tenant.deleted": { label: "Tenant deleted", tone: "critical" },
   "invite.created": { label: "Invite created", tone: "neutral" },
   "invite.revoked": { label: "Invite revoked", tone: "high" },
   "invite.redeemed": { label: "Invite redeemed", tone: "neutral" },
   "user.promoted_auditor": { label: "Promoted to auditor", tone: "medium" },
+  "demo_request.deleted": { label: "Demo request deleted", tone: "high" },
 };
 
 function actionMeta(action: string) {

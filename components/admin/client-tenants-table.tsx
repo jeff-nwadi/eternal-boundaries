@@ -3,15 +3,16 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { MoreHorizontal, PauseCircle, PlayCircle } from "lucide-react";
+import { MoreHorizontal, PauseCircle, PlayCircle, Trash2 } from "lucide-react";
 
-import { suspendTenant, reactivateTenant } from "@/app/actions/invites";
+import { suspendTenant, reactivateTenant, deleteTenant } from "@/app/actions/invites";
 import { Button } from "@/components/ui/button";
 import { StatusPill, type Tone } from "@/components/dashboard/status-pill";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -81,6 +82,7 @@ export function ClientTenantsTable({ tenants }: { tenants: ClientTenant[] }) {
 function TenantRowActions({ tenant }: { tenant: ClientTenant }) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
   const isSuspended = tenant.status === "suspended";
 
@@ -99,6 +101,19 @@ function TenantRowActions({ tenant }: { tenant: ClientTenant }) {
           : `${tenant.name} suspended.`
       );
       setConfirmOpen(false);
+      router.refresh();
+    });
+  }
+
+  function onDelete() {
+    startTransition(async () => {
+      const res = await deleteTenant(tenant.id);
+      if ("error" in res) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(`${tenant.name} deleted.`);
+      setDeleteOpen(false);
       router.refresh();
     });
   }
@@ -134,6 +149,17 @@ function TenantRowActions({ tenant }: { tenant: ClientTenant }) {
               Suspend tenant
             </DropdownMenuItem>
           )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={(e) => {
+              e.preventDefault();
+              setDeleteOpen(true);
+            }}
+          >
+            <Trash2 strokeWidth={1.75} />
+            Delete tenant
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -183,6 +209,36 @@ function TenantRowActions({ tenant }: { tenant: ClientTenant }) {
                 : isSuspended
                   ? "Reactivate tenant"
                   : "Suspend tenant"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {tenant.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes{" "}
+              <span className="text-foreground">{tenant.name}</span> and{" "}
+              <span className="text-foreground">
+                all of its users, invites and sessions
+              </span>
+              . It can&apos;t be undone — suspend instead if you only need to block
+              access.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                onDelete();
+              }}
+              disabled={pending}
+              className="bg-destructive text-black hover:bg-destructive/90"
+            >
+              {pending ? "Deleting…" : "Delete tenant"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

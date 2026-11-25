@@ -191,6 +191,47 @@ export async function reactivateTenant(
 }
 
 /**
+ * Master-tenant-only. PERMANENTLY deletes a client tenant and everything scoped
+ * to it — its users (and their sessions/accounts) and invites. Irreversible. The
+ * master tenant itself can never be deleted (isMaster = false predicate).
+ */
+export async function deleteTenant(
+  tenantId: string
+): Promise<{ success: true } | { error: string }> {
+  const session = await requireMasterAdmin();
+  if (!tenantId) return { error: "Missing tenant." };
+
+  const [row] = await db
+    .select({ id: tenant.id, name: tenant.name })
+    .from(tenant)
+    .where(and(eq(tenant.id, tenantId), eq(tenant.isMaster, false)))
+    .limit(1);
+  if (!row) return { error: "Tenant not found, or it can't be deleted." };
+
+  // FKs are onDelete: restrict, so cascade by hand in dependency order:
+  // invites → users (sessions/accounts cascade from user) → the tenant.
+  await db.delete(invite).where(eq(invite.tenantId, tenantId));
+  await db.delete(user).where(eq(user.tenantId, tenantId));
+  await db
+    .delete(tenant)
+    .where(and(eq(tenant.id, tenantId), eq(tenant.isMaster, false)));
+
+  await recordAudit({
+    action: "tenant.deleted",
+    actorUserId: session.user.id,
+    actorEmail: session.user.email,
+    actorTenantId: tenantScopeOf(session),
+    targetTenantId: tenantId,
+    targetLabel: row.name,
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/accounts");
+  revalidatePath("/admin/audit");
+  return { success: true };
+}
+
+/**
  * Public (unauthenticated) redemption. Validates the invite, creates the
  * account in-process, then records the redemption. The granted role can only
  * ever be analyst or admin — never auditor (Rule 1), clamped here as

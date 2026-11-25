@@ -5,23 +5,11 @@ import { requireMasterAdmin } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { demoRequest, type DemoRequest } from "@/lib/db/schema";
 import { StatCard } from "@/components/dashboard/overview/stat-card";
+import { DemoRequestsTable } from "@/components/admin/demo-requests-table";
 
 export const metadata: Metadata = { title: "Demo requests" };
 
 export const dynamic = "force-dynamic";
-
-function fmt(date: Date) {
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
-
-const statusPill: Record<string, string> = {
-  new: "bg-primary/15 text-primary",
-  reviewed: "bg-black/[0.06] text-black/60",
-  archived: "bg-black/[0.04] text-black/45",
-};
 
 /**
  * Founders-only (master tenant) list of demo requests captured from the public
@@ -64,40 +52,14 @@ export default async function DemoRequestsPage() {
           <h2 className="text-sm font-medium text-black">Requests</h2>
           <span className="text-sm tabular-nums text-black/55">{requests.length} total</span>
         </div>
-        {requests.length === 0 ? (
-          <div className="rounded-2xl bg-black/[0.04] p-6 text-sm text-black/55">
-            No demo requests yet.
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-2xl bg-black/[0.04]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-black/55">
-                  <th className="px-6 py-3 font-normal">Email</th>
-                  <th className="px-6 py-3 font-normal">Status</th>
-                  <th className="px-6 py-3 font-normal">Received</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.map((r) => (
-                  <tr key={r.id} className="border-t border-black/[0.06]">
-                    <td className="px-6 py-3 font-medium text-black">{r.email}</td>
-                    <td className="px-6 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                          statusPill[r.status] ?? "bg-black/[0.06] text-black/60"
-                        }`}
-                      >
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 tabular-nums text-black/55">{fmt(r.createdAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <DemoRequestsTable
+          requests={requests.map((r) => ({
+            id: r.id,
+            email: r.email,
+            status: r.status,
+            createdAt: r.createdAt,
+          }))}
+        />
       </section>
     </div>
   );

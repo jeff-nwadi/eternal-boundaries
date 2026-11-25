@@ -12,10 +12,12 @@ export type AuditAction =
   | "tenant.provisioned"
   | "tenant.suspended"
   | "tenant.reactivated"
+  | "tenant.deleted"
   | "invite.created"
   | "invite.revoked"
   | "invite.redeemed"
-  | "user.promoted_auditor";
+  | "user.promoted_auditor"
+  | "demo_request.deleted";
 
 export type AuditEntry = {
   action: AuditAction;
