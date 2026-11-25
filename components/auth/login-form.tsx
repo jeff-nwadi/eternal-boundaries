@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { authInputClass } from "@/components/auth/auth-shell";
+import { PasswordInput } from "@/components/auth/password-input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -59,15 +60,13 @@ export function LoginForm() {
           <label htmlFor="password" className="text-xs font-medium text-muted-foreground">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
             placeholder="••••••••"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={authInputClass}
           />
         </div>
 

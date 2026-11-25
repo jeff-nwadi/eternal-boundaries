@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { redeemInvite } from "@/app/actions/invites";
 import { Button } from "@/components/ui/button";
 import { authInputClass } from "@/components/auth/auth-shell";
+import { PasswordInput } from "@/components/auth/password-input";
 
 export function RedeemForm({ token, email }: { token: string; email: string }) {
   const router = useRouter();
@@ -66,16 +67,14 @@ export function RedeemForm({ token, email }: { token: string; email: string }) {
           <label htmlFor="password" className="text-xs font-medium text-muted-foreground">
             Choose a password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             placeholder="At least 8 characters"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={authInputClass}
           />
         </div>
 

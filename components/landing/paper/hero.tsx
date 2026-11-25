@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
 
+import { GetStartedButton } from "@/components/ui/get-started-button";
 import { StaggerText } from "./stagger-text";
 
 export function Hero() {
@@ -41,12 +41,9 @@ export function Hero() {
             protect every boundary.
           </p>
           <div className="mt-[26px] flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="#platform"
-              className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full bg-[var(--paper-purple)] px-[18px] text-[13px] font-[650] !text-white transition-[background,transform] duration-150 hover:-translate-y-px hover:bg-[#4820b3]"
-            >
-              Talk to our team <ArrowUpRight size={16} />
-            </a>
+            <GetStartedButton href="#platform" className="h-[46px] px-[18px] text-[13px]">
+              Talk to our team
+            </GetStartedButton>
           </div>
           <span className="mt-3 text-[12px] uppercase text-[color:var(--paper-faint)]">
             Built for security teams · IT + industrial OT

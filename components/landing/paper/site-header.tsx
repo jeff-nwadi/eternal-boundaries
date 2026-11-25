@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+
+import { GetStartedButton } from "@/components/ui/get-started-button";
 
 const navLink = "transition-colors duration-150 hover:text-[var(--paper-purple)]";
 const mobileLink =
@@ -36,12 +38,9 @@ export function SiteHeader() {
         <Link href="/login" className={navLink}>
           Sign in
         </Link>
-        <a
-          href="#contact"
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--paper-purple)] px-[15px] text-[12px] font-[650] !text-white transition-[background,transform] duration-150 hover:-translate-y-px hover:bg-[#4820b3]"
-        >
-          Talk to our team <ArrowUpRight size={14} />
-        </a>
+        <GetStartedButton href="#contact" className="h-10 px-[15px] text-[12px]">
+          Talk to our team
+        </GetStartedButton>
       </div>
       <details className="relative flex lg:hidden">
         <summary

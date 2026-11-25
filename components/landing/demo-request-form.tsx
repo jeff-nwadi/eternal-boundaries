@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { ArrowRight } from "lucide-react";
 import { requestDemo } from "@/app/actions/demo-request";
+import { GetStartedButton } from "@/components/ui/get-started-button";
 import { CLOSING_CTA_CONTENT } from "@/lib/content";
 import { demoRequestSchema, type DemoRequestState } from "@/lib/schemas/demo-request";
 
@@ -51,14 +51,13 @@ export function DemoRequestForm() {
           onChange={() => setEmailError(false)}
           className="h-12 w-full min-w-0 rounded-xl border border-foreground/15 bg-background px-4 text-base placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-accent-foreground sm:w-auto sm:flex-1"
         />
-        <button
+        <GetStartedButton
           type="submit"
           disabled={pending}
-          className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 font-medium text-primary-foreground transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-accent-foreground disabled:cursor-wait disabled:opacity-70"
+          className="h-12 w-full shrink-0 rounded-xl px-5 text-base font-medium disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {pending ? CLOSING_CTA_CONTENT.pendingLabel : CLOSING_CTA_CONTENT.submitLabel}
-          <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-        </button>
+        </GetStartedButton>
       </div>
       <p id="demo-consent" className="mt-3 text-sm leading-5 text-foreground/65">
         {CLOSING_CTA_CONTENT.consent}

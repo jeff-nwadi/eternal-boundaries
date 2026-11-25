@@ -212,17 +212,11 @@ export function ExplorerSection() {
                   }}
                   className="flex min-h-[78vh] items-center"
                 >
-                  <motion.div
-                    className="w-full"
-                    initial={reduced ? false : { opacity: 0, y: 28 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ margin: "-25% 0px -25% 0px" }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  >
+                  <div className="w-full">
                     <GradientFrame grad={item.grad}>
                       <Illus />
                     </GradientFrame>
-                  </motion.div>
+                  </div>
                 </div>
               );
             })}
@@ -235,12 +229,8 @@ export function ExplorerSection() {
           {ITEMS.map((item, i) => {
             const Illus = item.Illustration;
             return (
-              <motion.div
+              <div
                 key={item.question}
-                initial={reduced ? false : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 className="overflow-hidden rounded-[24px] border border-white/60 p-5 sm:p-7"
                 style={{
                   backgroundImage: `${PATTERN}, ${item.grad}`,
@@ -269,7 +259,7 @@ export function ExplorerSection() {
                     {item.link} ↗
                   </a>
                 )}
-              </motion.div>
+              </div>
             );
           })}
         </div>
