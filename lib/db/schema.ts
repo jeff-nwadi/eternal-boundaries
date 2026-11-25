@@ -241,11 +241,34 @@ export const auditLog = pgTable("audit_log", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ---------------------------------------------------------------------------
+// Demo requests — leads from the public landing CTA (not tenant-scoped; the
+// founders review them from their control panel).
+// ---------------------------------------------------------------------------
+
+export const demoRequestStatus = pgEnum("demo_request_status", [
+  "new",
+  "reviewed",
+  "archived",
+]);
+
+export const demoRequest = pgTable("demo_request", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  email: text("email").notNull(),
+  status: demoRequestStatus("status").notNull().default("new"),
+  // Where the request came from, e.g. "landing-cta".
+  source: text("source"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Tenant = typeof tenant.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Invite = typeof invite.$inferSelect;
 export type Remediation = typeof remediation.$inferSelect;
 export type AuditLog = typeof auditLog.$inferSelect;
+export type DemoRequest = typeof demoRequest.$inferSelect;
 
 // Re-exported so the BetterAuth drizzle adapter receives the full schema.
 export const schema = {
@@ -257,4 +280,5 @@ export const schema = {
   invite,
   remediation,
   auditLog,
+  demoRequest,
 };

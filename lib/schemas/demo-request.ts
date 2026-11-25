@@ -5,5 +5,5 @@ export const demoRequestSchema = z.object({
 });
 
 export type DemoRequestState = {
-  status: "idle" | "invalid" | "not_configured";
+  status: "idle" | "success" | "invalid" | "rate_limited" | "error";
 };

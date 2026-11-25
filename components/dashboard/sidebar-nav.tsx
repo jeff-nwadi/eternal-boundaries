@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Shield,
   ScrollText,
+  Inbox,
   Settings,
   LogOut,
   type LucideIcon,
@@ -42,6 +43,7 @@ const NAV: NavItem[] = [
 const MASTER_NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Accounts", href: "/admin/accounts", icon: Shield },
+  { label: "Demo requests", href: "/admin/demo-requests", icon: Inbox },
   { label: "Audit log", href: "/admin/audit", icon: ScrollText },
 ];
 
