@@ -45,6 +45,7 @@ const MASTER_NAV: NavItem[] = [
   { label: "Accounts", href: "/admin/accounts", icon: Shield },
   { label: "Demo requests", href: "/admin/demo-requests", icon: Inbox },
   { label: "Audit log", href: "/admin/audit", icon: ScrollText },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 function initialOf(name: string) {
