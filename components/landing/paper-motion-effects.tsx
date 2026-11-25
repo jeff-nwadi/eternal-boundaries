@@ -1,44 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { animate, createAnimatable, stagger, svg } from "animejs";
+import { animate, createAnimatable, stagger } from "animejs";
 
 /**
  * All landing motion is anime.js: an on-load hero entrance, scroll-tracked
  * section reveals (IntersectionObserver → anime), and hover/focus micro-
  * interactions on the diagrams. No CSS keyframes. Respects prefers-reduced-motion.
  */
-/**
- * Split a heading's text into inline-block word spans, preserving <br> and the
- * whitespace between words, and return the word spans for a per-word stagger.
- */
-function splitWords(el: HTMLElement): HTMLElement[] {
-  const spans: HTMLElement[] = [];
-  const out: Node[] = [];
-  el.childNodes.forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      for (const token of (node.textContent ?? "").split(/(\s+)/)) {
-        if (token.length === 0) continue;
-        if (token.trim() === "") {
-          out.push(document.createTextNode(token));
-          continue;
-        }
-        const span = document.createElement("span");
-        span.textContent = token;
-        span.style.display = "inline-block";
-        span.style.willChange = "transform, opacity";
-        out.push(span);
-        spans.push(span);
-      }
-    } else {
-      out.push(node.cloneNode(true));
-    }
-  });
-  el.textContent = "";
-  for (const n of out) el.appendChild(n);
-  el.dataset.split = "true";
-  return spans;
-}
 
 export function PaperMotionEffects() {
   React.useEffect(() => {
@@ -61,49 +30,8 @@ export function PaperMotionEffects() {
 
     const cleanups: (() => void)[] = [];
 
-    // 1) Hero entrance on load. The headline (motion.dev StaggerText) and the
-    // subhead (anime.js per-word, below) animate their own text, so the generic
-    // block entrance skips them and only handles the actions + note.
-    const heroCopy = page.querySelector<HTMLElement>("[data-hero-copy]");
-    if (heroCopy) {
-      const items = heroCopy.querySelectorAll<HTMLElement>(
-        ":scope > *:not([data-stagger-text]):not([data-hero-subhead])",
-      );
-      run(items, {
-        opacity: [0, 1],
-        translateY: [18, 0],
-        duration: 640,
-        delay: stagger(90),
-        ease: "out(3)",
-      });
-
-      // Hero subhead — anime.js per-word staggered reveal. Split once, then
-      // (re)animate the word spans on each run so it survives a dev re-mount.
-      const subhead = heroCopy.querySelector<HTMLElement>("[data-hero-subhead]");
-      if (subhead) {
-        if (!subhead.dataset.split) {
-          subhead.dataset.split = "true";
-          const words = (subhead.textContent ?? "").split(/\s+/).filter(Boolean);
-          subhead.textContent = "";
-          words.forEach((w, i) => {
-            const span = document.createElement("span");
-            span.textContent = w;
-            span.style.display = "inline-block";
-            span.style.willChange = "transform, opacity";
-            subhead.appendChild(span);
-            if (i < words.length - 1) subhead.appendChild(document.createTextNode(" "));
-          });
-        }
-        const wordEls = subhead.querySelectorAll<HTMLElement>(":scope > span");
-        run(wordEls, {
-          opacity: [0, 1],
-          translateY: [12, 0],
-          duration: 520,
-          delay: stagger(18, { start: 160 }),
-          ease: "out(3)",
-        });
-      }
-    }
+    // 1) Hero entrance. Text (headline, subhead, actions, note) renders static —
+    // per request, no text animations. Only the non-text preview reveals.
     const preview = page.querySelector<HTMLElement>('[data-motion-kind="preview"]');
     if (preview) {
       run(preview, {
@@ -115,94 +43,8 @@ export function PaperMotionEffects() {
       });
     }
 
-    // 2) Scroll-tracked reveals — INDIVIDUAL elements, not whole sections. Each
-    // section triggers a staggered rise-in of its own blocks (headings, cards,
-    // rows, panels), so items animate one by one rather than as one chunk.
-    const UNITS = "article, details, [data-motion-kind]";
-    const sections = Array.from(
-      page.querySelectorAll<HTMLElement>(":scope > section"),
-    ).slice(1);
-    const sectionTargets = new Map<Element, HTMLElement[]>();
-    // Per-section heading word spans — h2s get a per-word staggered reveal.
-    const headingWords = new Map<Element, HTMLElement[]>();
-    const allHidden: HTMLElement[] = [];
-
-    for (const section of sections) {
-      // Section headings (h2): split into words for a per-word stagger.
-      const headings = Array.from(
-        section.querySelectorAll<HTMLElement>("h2"),
-      ).filter((el) => !el.parentElement?.closest(UNITS));
-      const words: HTMLElement[] = [];
-      for (const h of headings) {
-        const spans = h.dataset.split
-          ? Array.from(h.querySelectorAll<HTMLElement>(":scope > span"))
-          : splitWords(h);
-        for (const s of spans) {
-          s.style.opacity = "0";
-          s.style.transform = "translateY(16px)";
-          allHidden.push(s);
-        }
-        words.push(...spans);
-      }
-      if (words.length) headingWords.set(section, words);
-
-      // Top-level blocks (minus the h2 handled above): each animates as one unit.
-      const targets = Array.from(
-        section.querySelectorAll<HTMLElement>(`h3, p, small, ${UNITS}`),
-      ).filter((el) => !el.parentElement?.closest(UNITS));
-      for (const el of targets) {
-        el.style.opacity = "0";
-        el.style.transform = "translateY(20px)";
-        allHidden.push(el);
-      }
-      if (targets.length) sectionTargets.set(section, targets);
-    }
-
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const headWords = headingWords.get(entry.target);
-          if (headWords && headWords.length) {
-            run(headWords, {
-              opacity: [0, 1],
-              translateY: [16, 0],
-              duration: 500,
-              delay: stagger(30),
-              ease: "out(3)",
-              onComplete: () => {
-                for (const el of headWords) {
-                  el.style.removeProperty("opacity");
-                  el.style.removeProperty("transform");
-                }
-              },
-            });
-          }
-          const targets = sectionTargets.get(entry.target);
-          if (targets && targets.length) {
-            run(targets, {
-              opacity: [0, 1],
-              translateY: [20, 0],
-              duration: 560,
-              // Begin after the heading has started so the section's content
-              // cascades in (heading → subheading → blocks) instead of all at once.
-              delay: stagger(90, { start: 340 }),
-              ease: "out(3)",
-              onComplete: () => {
-                for (const el of targets) {
-                  el.style.removeProperty("opacity");
-                  el.style.removeProperty("transform");
-                }
-              },
-            });
-          }
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -10% 0px" },
-    );
-    for (const section of sections) revealObserver.observe(section);
-    cleanups.push(() => revealObserver.disconnect());
+    // 2) Scroll-reveal animations for cards/sections removed per request — cards
+    // render static (no rise-in). Hover micro-interactions below remain.
 
     // 3) Hover/focus micro-interactions on diagrams and their signals.
     page.querySelectorAll<HTMLElement>("[data-motion-kind]").forEach((item) => {
@@ -316,70 +158,7 @@ export function PaperMotionEffects() {
       });
     });
 
-    // 5) PlatformSection — the card icon draws itself in when the card is
-    // scrolled into view (self-drawing line effect), and redraws on hover.
-    const platformCards = page.querySelectorAll<HTMLElement>("[data-platform-card]");
-    if (platformCards.length) {
-      const drawMap = new Map<Element, ReturnType<typeof svg.createDrawable>>();
-
-      const iconObserver = new IntersectionObserver(
-        (entries, observer) => {
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const icon = entry.target.querySelector<SVGElement>("[data-platform-icon]");
-            const drawables = drawMap.get(entry.target);
-            if (icon && drawables) {
-              run(icon, { opacity: [0, 0.3], duration: 380, ease: "out(3)" });
-              run(drawables, {
-                draw: ["0 0", "0 1"],
-                duration: 820,
-                delay: stagger(60),
-                ease: "inOut(3)",
-              });
-            }
-            observer.unobserve(entry.target);
-          }
-        },
-        { threshold: 0.35 },
-      );
-
-      platformCards.forEach((card) => {
-        const icon = card.querySelector<SVGElement>("[data-platform-icon]");
-        if (!icon) return;
-        const strokes = icon.querySelectorAll<SVGElement>(
-          "path, line, polyline, polygon, circle, rect, ellipse",
-        );
-        if (!strokes.length) return;
-        const drawables = svg.createDrawable(strokes);
-        drawMap.set(card, drawables);
-        // Start undrawn + hidden so the scroll-in draw is visible.
-        icon.style.opacity = "0";
-
-        const enter = () => {
-          run(icon, { opacity: 0.4, duration: 300, ease: "out(3)" });
-          run(drawables, {
-            draw: ["0 0", "0 1"],
-            duration: 760,
-            delay: stagger(70),
-            ease: "inOut(3)",
-          });
-        };
-        const leave = () => run(icon, { opacity: 0.28, duration: 420, ease: "out(3)" });
-
-        card.addEventListener("pointerenter", enter);
-        card.addEventListener("pointerleave", leave);
-        card.addEventListener("focusin", enter);
-        card.addEventListener("focusout", leave);
-        iconObserver.observe(card);
-        cleanups.push(() => {
-          card.removeEventListener("pointerenter", enter);
-          card.removeEventListener("pointerleave", leave);
-          card.removeEventListener("focusin", enter);
-          card.removeEventListener("focusout", leave);
-        });
-      });
-      cleanups.push(() => iconObserver.disconnect());
-    }
+    // 5) PlatformSection card-icon draw animation removed per request.
 
     // 6) Hero panel interactions (all anime.js):
     //   - a subtle, always-on ambient drift of the grid,
@@ -448,15 +227,10 @@ export function PaperMotionEffects() {
       });
     }
 
-    // If the user turns on reduced-motion mid-session, finish everything and
-    // make sure any hidden sections are shown.
+    // If the user turns on reduced-motion mid-session, finish everything.
     const finishForReducedMotion = (event: MediaQueryListEvent) => {
       if (!event.matches) return;
       active.forEach((animation) => animation.complete(true));
-      for (const el of allHidden) {
-        el.style.removeProperty("opacity");
-        el.style.removeProperty("transform");
-      }
     };
     reducedMotion.addEventListener("change", finishForReducedMotion);
 
