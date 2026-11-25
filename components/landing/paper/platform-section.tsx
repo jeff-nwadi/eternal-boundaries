@@ -1,5 +1,7 @@
 import { Waypoints, ShieldAlert, ClipboardCheck, type LucideIcon } from "lucide-react";
 
+import { SectionHeading } from "./section-heading";
+
 const cards: {
   id: string;
   title: string;
@@ -36,23 +38,16 @@ export function PlatformSection() {
       id="platform"
       className="mx-auto w-[calc(100%-40px)] pb-[52px] pt-[60px] sm:w-[min(100%-40px,700px)] sm:pb-[72px] sm:pt-[82px] lg:w-[min(1248px,calc(100%-64px))]"
     >
-      <div className="mb-[26px] grid grid-cols-1 items-end gap-[17px] sm:mb-[42px] sm:grid-cols-[1fr_0.8fr] sm:gap-[42px]">
-        <div>
-          <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
-            One signal. Shared context.
-          </span>
-          <h2 className="text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">
+      <SectionHeading
+        title={
+          <>
             Three views.
-            <br />
-            One clear picture.
-          </h2>
-        </div>
-        <p className="max-w-[470px] text-[16px] leading-[1.6] text-[var(--paper-muted)] [text-wrap:pretty]">
-          Move from what happened to what matters, then to what to do next —
-          with the evidence in one readable place.
-        </p>
-      </div>
-      <div className="grid grid-cols-[minmax(0,340px)] justify-center gap-4 sm:grid-cols-[repeat(2,minmax(0,320px))] sm:gap-[18px] lg:grid-cols-[repeat(3,minmax(0,320px))] lg:justify-between">
+            <br className="hidden sm:block" /> One clear picture.
+          </>
+        }
+        subtitle="Move from what happened to what matters, then to what to do next — with the evidence in one readable place."
+      />
+      <div className="grid grid-cols-[minmax(0,340px)] justify-start gap-4 sm:grid-cols-[repeat(2,minmax(0,320px))] sm:justify-center sm:gap-[18px] lg:grid-cols-[repeat(3,minmax(0,320px))] lg:justify-between">
         {cards.map((card) => {
           const Icon = card.icon;
           return (

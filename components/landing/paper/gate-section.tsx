@@ -46,9 +46,6 @@ export function GateSection() {
         </small>
       </div>
       <div className="relative z-[1] max-w-[700px] lg:max-w-[515px]">
-        <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
-          Gate proof
-        </span>
         <h2 className="mb-4 text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">
           One scenario.
           <br />

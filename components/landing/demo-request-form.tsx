@@ -49,7 +49,7 @@ export function DemoRequestForm() {
           aria-invalid={emailError || state.status === "invalid"}
           aria-describedby="demo-consent demo-status"
           onChange={() => setEmailError(false)}
-          className="h-12 min-w-0 flex-1 rounded-xl border border-foreground/15 bg-background px-4 text-base placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-accent-foreground"
+          className="h-12 w-full min-w-0 rounded-xl border border-foreground/15 bg-background px-4 text-base placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-accent-foreground sm:w-auto sm:flex-1"
         />
         <button
           type="submit"

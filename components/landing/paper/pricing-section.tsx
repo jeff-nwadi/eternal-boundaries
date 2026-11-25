@@ -1,5 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
+import { SectionHeading } from "./section-heading";
+
 const options = [
   [
     "Security team",
@@ -21,17 +23,10 @@ export function PricingSection() {
       id="pricing"
       className="mx-auto w-[calc(100%-40px)] pb-[55px] pt-[39px] sm:w-[min(100%-40px,700px)] sm:pb-[76px] sm:pt-[52px] lg:w-[min(1248px,calc(100%-64px))]"
     >
-      <div className="mb-[26px] flex flex-col items-start justify-between gap-[9px] sm:flex-row sm:items-end sm:gap-[30px]">
-        <div>
-          <span className="mb-3 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
-            Pricing
-          </span>
-          <h2 className="text-[30px] font-[620] sm:text-[34px]">
-            A plan shaped around your boundary.
-          </h2>
-        </div>
-        <p className="text-[12px] text-[#8b858d]">Early product · pricing scoped to your environment</p>
-      </div>
+      <SectionHeading
+        title="A plan shaped around your boundary."
+        subtitle="Early product · pricing scoped to your environment"
+      />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {options.map(([name, text]) => (
           <article
@@ -57,7 +52,7 @@ export function PricingSection() {
           </article>
         ))}
       </div>
-      <small className="mt-[17px] block text-center text-[12px] text-[#8d878e]">
+      <small className="mt-[17px] block text-left text-[12px] text-[#8d878e] sm:text-center">
         No public list price yet. We’ll discuss scope and fit before proposing a
         plan.
       </small>

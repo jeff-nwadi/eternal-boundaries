@@ -39,9 +39,6 @@ export function BoundarySection() {
       </div>
 
       <div className="max-w-[575px]">
-        <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
-          The boundary is the product
-        </span>
         <h2 className="mb-[18px] text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">
           Know what crosses.
           <br />

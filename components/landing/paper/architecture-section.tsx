@@ -1,3 +1,5 @@
+import { SectionHeading } from "./section-heading";
+
 const items = [
   [
     "Observe",
@@ -20,12 +22,14 @@ export function ArchitectureSection() {
       id="security"
       className="mx-auto w-[calc(100%-40px)] pb-[42px] pt-[55px] sm:w-[min(100%-40px,700px)] sm:pb-[62px] sm:pt-[77px] lg:w-[min(1248px,calc(100%-64px))]"
     >
-      <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--paper-purple)]">
-        Built around the boundary
-      </span>
-      <h2 className="pb-4 text-[30px] sm:text-[34px]">
-        A clear line through <br /> a complex stack.
-      </h2>
+      <SectionHeading
+        title={
+          <>
+            A clear line through <br className="hidden sm:block" /> a complex stack.
+          </>
+        }
+        subtitle="One boundary, mapped across every layer you already run."
+      />
       <div className="grid grid-cols-2 border-t border-[var(--paper-line)] sm:grid-cols-4">
         {items.map(([title, text]) => (
           <article
