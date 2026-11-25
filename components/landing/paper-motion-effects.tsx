@@ -167,8 +167,8 @@ export function PaperMotionEffects() {
             run(headWords, {
               opacity: [0, 1],
               translateY: [16, 0],
-              duration: 560,
-              delay: stagger(26),
+              duration: 500,
+              delay: stagger(30),
               ease: "out(3)",
               onComplete: () => {
                 for (const el of headWords) {
@@ -183,8 +183,10 @@ export function PaperMotionEffects() {
             run(targets, {
               opacity: [0, 1],
               translateY: [20, 0],
-              duration: 620,
-              delay: stagger(70),
+              duration: 560,
+              // Begin after the heading has started so the section's content
+              // cascades in (heading → subheading → blocks) instead of all at once.
+              delay: stagger(90, { start: 340 }),
               ease: "out(3)",
               onComplete: () => {
                 for (const el of targets) {

@@ -2,7 +2,7 @@ export function ComplianceSection() {
   return (
     <section
       id="compliance"
-      className="mx-auto grid min-h-[420px] w-[calc(100%-40px)] grid-cols-1 items-center gap-[27px] py-[52px] sm:w-[min(1248px,calc(100%-64px))] sm:grid-cols-2 sm:gap-8 sm:py-[70px] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.08fr)] lg:gap-[72px]"
+      className="mx-auto hidden min-h-[420px] w-[calc(100%-40px)] grid-cols-1 items-center gap-[27px] py-[52px] sm:grid sm:w-[min(1248px,calc(100%-64px))] sm:grid-cols-2 sm:gap-8 sm:py-[70px] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.08fr)] lg:gap-[72px]"
     >
       <div className="max-w-[575px]">
         <h2 className="mb-[18px] text-[32px] font-[620] sm:text-[clamp(30px,3.25vw,42px)]">

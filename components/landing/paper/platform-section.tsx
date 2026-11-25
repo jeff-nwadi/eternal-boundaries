@@ -70,11 +70,11 @@ export function PlatformSection() {
               <h3 className="relative z-[1] mt-[10px] pb-2 text-[22px] font-[640] text-[var(--paper-ink)] sm:mt-[14px]" data-motion-cue>
                 {card.title}
               </h3>
-              <p className="relative z-[1] mt-[11px] max-w-[380px] text-[16px] leading-[1.55] text-[var(--paper-muted)] [text-wrap:pretty]">
+              <p className="relative z-[1] mt-[15px] max-w-[380px] text-[16px] leading-[1.55] text-[var(--paper-muted)] [text-wrap:pretty]">
                 {card.text}
               </p>
               <a
-                className="relative z-[1] mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-[#201d24] py-[10px] pl-[18px] pr-4 text-[13px] font-semibold !text-white transition-colors duration-150 hover:bg-[#332e38]"
+                className="relative z-[1] mt-auto inline-flex w-fit items-center gap-2 text-[13px] font-semibold !text-black transition-colors duration-150 hover:text-[var(--paper-purple)] sm:pt-4"
                 href={
                   card.id.startsWith("01")
                     ? "#how-it-works"

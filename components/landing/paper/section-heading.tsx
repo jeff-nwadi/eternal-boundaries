@@ -21,7 +21,7 @@ export function SectionHeading({
   return (
     <div
       className={[
-        "mb-[28px] max-w-[640px] text-left sm:mb-[44px]",
+        "mb-[28px] max-w-[680px] text-left sm:mb-[44px]",
         centered ? "sm:mx-auto sm:text-center" : "",
         className ?? "",
       ]
@@ -33,7 +33,7 @@ export function SectionHeading({
       </h2>
       {subtitle && (
         <p
-          className={`mt-3 max-w-[560px] text-[16px] leading-[1.6] text-balance text-[var(--paper-muted)]${
+          className={`mt-5 text-[16px] leading-[1.6] text-balance text-[var(--paper-muted)]${
             centered ? " sm:mx-auto" : ""
           }`}
         >
