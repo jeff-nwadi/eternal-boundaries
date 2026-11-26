@@ -44,7 +44,7 @@ function reportDocument({
   }).format(new Date());
 
   const frameworkRows = isLive
-    ? `<tr><td>Engine-reported mappings</td><td>${covered} / ${total}</td><td>${total - covered} not marked compliant</td></tr>`
+    ? `<tr><td>Engine-reported mappings</td><td>${covered} / ${total}</td><td>${total - covered} not enforced</td></tr>`
     : frameworks
         .map((framework) => {
           const name = framework.name.startsWith("NIST")
@@ -120,7 +120,7 @@ function reportDocument({
     <div class="muted">Generated ${escapeHtml(generatedAt)}</div>
     <div class="flag">${verificationLabel}</div>
     <p><strong>Data source:</strong> ${source}</p>
-    <div class="summary"><strong>${covered} / ${total}</strong><span class="muted">${isLive ? "engine-reported mappings marked compliant" : "controls marked covered in the sample ledger"}</span></div>
+    <div class="summary"><strong>${covered} / ${total}</strong><span class="muted">${isLive ? "controls the engine reports as enforced" : "controls marked covered in the sample ledger"}</span></div>
     <h2>Framework summary</h2>
     <table><thead><tr><th>Framework</th><th>Covered</th><th>Open</th></tr></thead><tbody>${frameworkRows}</tbody></table>
     <h2>${isLive ? "Engine-reported control mappings" : "Control families listed in sample"}</h2>

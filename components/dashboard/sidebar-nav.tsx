@@ -57,7 +57,7 @@ function DataModeChip() {
   const { isLoading, isError, data } = useComplianceMappings();
   // Honest default: the stat numbers come from the received sample files, so
   // the mode reads "Sample data" unless the live engine actually returns data.
-  const live = !isLoading && !isError && !!data?.mappings?.length;
+  const live = !isLoading && !isError && !!data?.findings?.length;
   return (
     <span className="inline-flex items-center gap-2 rounded-lg bg-black/[0.04] px-3 py-2 text-sm text-black/55">
       <span

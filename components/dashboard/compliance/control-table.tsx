@@ -19,7 +19,8 @@ import {
  * attention reads prominent (foreground, filled dot).
  */
 function ComplianceStatus({ status }: { status: string }) {
-  const needsAttention = status.toLowerCase() !== "compliant";
+  const good = ["compliant", "enforced"].includes(status.toLowerCase());
+  const needsAttention = !good;
   return (
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm">
       <span

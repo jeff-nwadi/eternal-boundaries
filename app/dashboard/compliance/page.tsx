@@ -1,6 +1,9 @@
 "use client";
 
-import { useComplianceMappings } from "@/lib/queries/use-compliance-mappings";
+import {
+  useComplianceMappings,
+  flattenFindingsToControls,
+} from "@/lib/queries/use-compliance-mappings";
 import { PageHeader } from "@/components/dashboard/ui/page-header";
 import { Panel } from "@/components/dashboard/ui/panel";
 import { LiveControlTable, ControlTable } from "@/components/dashboard/compliance/control-table";
@@ -13,21 +16,24 @@ import { complianceFrameworks } from "@/lib/mock-data";
 export default function CompliancePage() {
   const { data, isLoading, isError, error, refetch } = useComplianceMappings();
 
-  const mappings = data?.mappings ?? [];
+  const findings = data?.findings ?? [];
+  const mappings = flattenFindingsToControls(findings);
   const hasLive = mappings.length > 0;
 
   // Coverage is derived only from real records: the live engine ledger when
   // present, otherwise the sample frameworks. Never a hardcoded figure.
+  // "Covered" = a control the engine reports as actively enforced (vs. only
+  // monitored). This is the engine's own claim, not an independent audit.
   const liveTotal = mappings.length;
-  const liveCompliant = mappings.filter((m) => m.status.toUpperCase() === "COMPLIANT").length;
+  const liveCovered = mappings.filter((m) => m.status.toLowerCase() === "enforced").length;
 
   const mockCovered = complianceFrameworks.reduce((a, f) => a + f.summary.covered_count, 0);
   const mockTotal = complianceFrameworks.reduce((a, f) => a + f.summary.total_controls_tracked, 0);
 
-  const covered = hasLive ? liveCompliant : mockCovered;
+  const covered = hasLive ? liveCovered : mockCovered;
   const total = hasLive ? liveTotal : mockTotal;
   const sourceLabel = hasLive
-    ? `${data?.framework ?? "Engine"} v${data?.version ?? "1.0.0"} (engine's self-reported label) · not independently verified`
+    ? `Live engine · tenant ${data?.tenant_id ?? "—"} · ${findings.length} findings (engine-reported, not independently verified)`
     : "Sample data · not yet verified against live findings";
 
   return (
