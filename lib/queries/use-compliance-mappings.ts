@@ -57,6 +57,18 @@ function titleCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+/**
+ * Display label for a control's enforcement. "enforced" = an active Layer-Zero
+ * block at the gate (Covered). "monitored" is passive telemetry only, so it is
+ * labelled distinctly ("Monitored / Partial") so auditors/CISOs don't read it as
+ * active blocking (per backend owner, 2026-11-26).
+ */
+function enforcementLabel(enforcement: string): string {
+  return enforcement.toLowerCase() === "monitored"
+    ? "Monitored / Partial"
+    : titleCase(enforcement);
+}
+
 function fmtDate(iso: string): string {
   const d = new Date(iso);
   return Number.isNaN(d.getTime())
@@ -84,7 +96,7 @@ export function flattenFindingsToControls(findings: ComplianceFinding[]): Compli
           row: {
             control_id: control.control_id,
             framework_component: `${control.framework} — ${control.title}`,
-            status: titleCase(control.enforcement),
+            status: enforcementLabel(control.enforcement),
             last_assessed: fmtDate(finding.last_evaluated),
           },
         });
@@ -93,7 +105,7 @@ export function flattenFindingsToControls(findings: ComplianceFinding[]): Compli
 
       // Upgrade to "enforced" if any linking finding enforces it.
       if (enforced && existing.row.status.toLowerCase() !== "enforced") {
-        existing.row.status = titleCase(control.enforcement);
+        existing.row.status = enforcementLabel(control.enforcement);
       }
       // Keep the most recent assessment timestamp.
       if (!Number.isNaN(ts) && ts > existing.ts) {
